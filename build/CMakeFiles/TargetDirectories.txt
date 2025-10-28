@@ -1,0 +1,3 @@
+/home/prince/Documents/master1/PPN/Projet-Path-Tracing-M1CHPS/build/CMakeFiles/ppm.dir
+/home/prince/Documents/master1/PPN/Projet-Path-Tracing-M1CHPS/build/CMakeFiles/edit_cache.dir
+/home/prince/Documents/master1/PPN/Projet-Path-Tracing-M1CHPS/build/CMakeFiles/rebuild_cache.dir
