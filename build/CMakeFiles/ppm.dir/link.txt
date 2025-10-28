@@ -1,1 +1,0 @@
-/usr/bin/cc -Wl,--dependency-file=CMakeFiles/ppm.dir/link.d CMakeFiles/ppm.dir/src/ppm.c.o CMakeFiles/ppm.dir/src/image.c.o -o ppm
