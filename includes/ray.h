@@ -94,7 +94,6 @@ void create_ray_default_ext(Ray * ray);
  */
 void create_ray_ext(Ray * ray, const float x0, const float y0, const float z0, const float x1, const float y1, const float z1);
 
-
 void trace_ray(const size_t i, const size_t j, const Camera *c, Ray* const r);
 
 
@@ -103,7 +102,5 @@ void trace_ray(const size_t i, const size_t j, const Camera *c, Ray* const r);
  * @param r Ray
  */
 void free_ray(Ray* r);
-
-
 
 #endif
