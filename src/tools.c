@@ -6,7 +6,7 @@ int mpi_size = 1;
 void* malloc_check(const size_t size)
 {
     void* data = malloc(size);
-
+	
     if(data == NULL)
     {
         fprintf(stderr, "Failed to alloc memory.\n");
@@ -16,7 +16,7 @@ void* malloc_check(const size_t size)
     return data;
 }
 
-const float generate_random_value(const float max, const float min)
+float generate_random_value(const float max, const float min)
 {
     const float delta = max - min;
     const float RMAX = 1.0f/RAND_MAX;

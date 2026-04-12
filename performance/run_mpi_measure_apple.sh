@@ -1,20 +1,22 @@
 #!/bin/zsh
+
 WIDTH=800
 HEIGHT=600
-SAMPLES=1000
-MAX=1
+SAMPLES=500
 
-OUTPUT="performance/measures/runtime_by_samplings.csv"
+export OMP_NUM_THREADS=5
+export BOUNCES=26
 
-for J in $(seq 1 10); do
-for I in $(seq 1 $MAX); do
+for J in true close spread; do
 
-echo "run $I of $MAX with $J MPI processes and 26 bounces"
+export OMP_PROC_BIND=$J
 
-mpirun -n $J ./build/ppm $WIDTH $HEIGHT $SAMPLES
-
+for I in {1..5}; do
+mpirun -n 2 ./build/ppm $WIDTH $HEIGHT $SAMPLES
 done
 
-echo "" >> "$OUTPUT"
+echo >> performance/measures/runtime_by_samplings.csv
+
+sleep 10
 
 done

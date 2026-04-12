@@ -13,10 +13,10 @@ void create_camera(Camera * const cam, const size_t width, const size_t height, 
 	sinB = sinf(beta);
 	cosB = cosf(beta);
 
-	cam->direction = (Vector) {sinB, cosB*sinA, -cosA*cosB};
+	cam->direction = (Vector) {{sinB, cosB*sinA, -cosA*cosB}};
 	
-	if (fabs(cam->direction.Data[0]) < 1-EPS) up = (Vector){0.0f, 1.0f, 0.0f};
-	else up = (Vector){1.0f, 0.0f, 0.0f};
+	if (fabs(cam->direction.Data[0]) < 1-EPS) up = (Vector){{0.0f, 1.0f, 0.0f}};
+	else up = (Vector){{1.0f, 0.0f, 0.0f}};
 	
 	cross_ext(&cam->direction, &up, &(cam->right));
 	norm_ext(&(cam->right),&(cam->right));
