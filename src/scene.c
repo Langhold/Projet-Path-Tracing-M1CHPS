@@ -25,12 +25,19 @@ void create_scene_ext(size_t n_objects, const Vector * backgroundColor, Scene * 
 		perror("Allocation failed.\n");
 		exit(1);
 	}
+	s->lights = malloc(sizeof(Primitive*) * n_objects);
+	if (!s->lights) {
+		perror("Allocation failed.\n");
+		exit(1);
+	}
 	for (size_t i = 0; i < n_objects; ++i) {
 		s->objects[i] = NULL;
+		s->lights[i] = NULL;
 	}
 	s->background_color = malloc(sizeof(Vector));
 	mul_ext(backgroundColor, inv255, s->background_color);
 	s->size_objects = n_objects;
+	s->size_lights = 0;
 }
 
 void create_primitive_ext(void * shape, PRIM_TYPE type, float x, float y, float z, material_t m_type, float albedo, Vector *color, Primitive *prim){
@@ -50,6 +57,10 @@ void add_primitive(Primitive * object, Scene * s){
 	for (size_t i = 0; i < s->size_objects; ++i) {
 		if (s->objects[i] == NULL) {
 			s->objects[i] = object;
+			if (object->m_type == Emissive) {
+				s->lights[s->size_lights] = object;
+				s->size_lights++;
+			}
 			return;
 		}
 	}
@@ -94,6 +105,7 @@ void create_box(Primitive* prim, const float width, const float height, const fl
 	cosB = cosf(beta);
 
 	box->obb_direction = (Vector) {{sinB, cosB*sinA, -cosA*cosB}};
+	norm_ext(&box->obb_direction, &box->obb_direction);
 
 	if (fabs(box->obb_direction.Data[0]) < 1-EPS) up = (Vector){{0.0f, 1.0f, 0.0f}};
 	else up = (Vector){{1.0f, 0.0f, 0.0f}};
@@ -565,7 +577,6 @@ void add_object_to_node(object_tree_t* node, Primitive* p, int depth) {
 	
 	Vector centroid;
 	centeroid_aabb(&p_hitbox, &centroid);
-	int side = centroid.Data[axis] >= split;
 	float min = p_hitbox.bmin.Data[axis];
 	float max = p_hitbox.bmax.Data[axis];
 
@@ -726,23 +737,11 @@ void add_object_to_node_v2(object_tree_t* node, Primitive** p, int object_count,
 void print_tree(object_tree_t* node, int depth) {
 	if (!node) return;
 
-	// Indentation selon la profondeur
-	for (int i = 0; i < depth; i++) printf("  ");
-
-	// Affichage du noeud
-	printf("Node (depth %d): AABB [min=(%.2f, %.2f, %.2f) max=(%.2f, %.2f, %.2f)]\n",
-		   depth,
-		   node->box.bmin.Data[0], node->box.bmin.Data[1], node->box.bmin.Data[2],
-		   node->box.bmax.Data[0], node->box.bmax.Data[1], node->box.bmax.Data[2]);
-
 	// Affichage des objets si c’est une feuille
 	if (node->objects_count > 0 && node->objects) {
 		for (int i = 0; i < node->objects_count; i++) {
 			Primitive* p = node->objects[i];
-			for (int j = 0; j < depth; j++) printf("  ");
 			if (!p) continue;
-			printf("  Object %d: type=%d, position=(%.2f, %.2f, %.2f)\n",
-				   i, p->type, p->position.Data[0], p->position.Data[1], p->position.Data[2]);
 		}
 	}
 
@@ -797,7 +796,6 @@ object_tree_t* initialize_root_tree_v2(Scene* S) {
 		perror("Tree malloc error.\n");
 		exit(1);
 	}
-	
 	root->box = NULL_AABB;
 	root->left = NULL;
 	root->right = NULL;
@@ -1071,4 +1069,203 @@ int intersect_in_tree(object_tree_t* const tree, const Ray* r, float* closest_t,
 	if (second && tsecond >= 0.f/* && 1e-1*tsecond < *closest_t */)
 		hit |= intersect_in_tree(second, r, closest_t, intersected_object, is_intern, face);
 	return hit;
+}
+
+Ray random_Ray_demi_sphere_cosine_weighted(const Vector * origin, const Vector * normal, unsigned int* seed){
+	
+	const float u1 = rand_r(seed) / (float)RAND_MAX;
+	const float u2 = rand_r(seed) / (float)RAND_MAX;
+	const float atheta = sqrtf(u1);
+	const float phi = 2*M_PI*u2;
+	//les coordonnées dans la base locale
+	float x, y;
+	y = sinf(phi);
+	x = cosf(phi);
+	x *= atheta;
+	y *= atheta;
+	const float z = sqrtf(1 - u1);
+	
+	//coordonnées dans la base orthonormée (up,right,forward) https://www.opengl-tutorial.org/fr/intermediate-tutorials/tutorial-13-normal-mapping/
+	Vector up;
+	Vector norm;
+	Ray ray;
+	ray.position = *origin;
+	
+	if (fabs((*normal).Data[1])<1.0f-EPS){
+		create_vector_ext(&up, 0, 1, 0);
+	}
+	else{
+		create_vector_ext(&up, 1, 0, 0);
+	}
+	
+	Vector tangent;
+	cross_ext(normal, &up, &tangent);
+    norm_ext(&tangent, &tangent);
+	
+	Vector bitangent;
+	cross_ext(&tangent, normal, &bitangent);
+	
+	mul_ext(&tangent, x, &tangent);
+	mul_ext(&bitangent, y, &bitangent);
+	mul_ext(normal, z, &norm);
+	
+	add_ext(&tangent, &bitangent, &ray.direction);
+	add_ext(&ray.direction, &norm, &ray.direction);
+	
+	return ray;
+}
+
+void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path, unsigned int* seed) {
+	//Choose a random light source depending on intensity (albedo)
+	if (size_lights <= 0) {
+		return;
+	}
+	float sum_intensity = 0;
+	for (size_t i=0; i<size_lights; ++i) {
+		sum_intensity += light[i]->albedo;
+	}
+	float P[size_lights];
+	float sum = 0;
+	for (size_t i=0; i<size_lights; ++i) {
+		sum += light[i]->albedo;
+		P[i] = sum / sum_intensity;
+	}
+	float p = rand_r(seed) / (float)RAND_MAX;
+	size_t chosen = 0;
+	for (size_t i=0; i<size_lights; ++i) {
+		if (p <= P[i]) {
+			chosen = i;
+			break;
+		}
+	}
+
+	light_path[0].object = light[chosen];
+	light_path[0].object->albedo = light[chosen]->albedo;
+	light_path[0].object->color = light[chosen]->color;
+	light_path[0].object->m_type = light[chosen]->m_type;
+	light_path[0].object->object = light[chosen]->object;
+	light_path[0].object->position = light[chosen]->position;
+	light_path[0].object->type = light[chosen]->type;
+
+	light_path[0].position = light[chosen]->position; //Centre de l'objet
+	light_path[0].throughput.Data[0] = light[chosen]->albedo * light[chosen]->color.Data[0] / (light[chosen]->albedo/sum_intensity);
+	light_path[0].throughput.Data[1] = light[chosen]->albedo * light[chosen]->color.Data[1] / (light[chosen]->albedo/sum_intensity);
+	light_path[0].throughput.Data[2] = light[chosen]->albedo * light[chosen]->color.Data[2] / (light[chosen]->albedo/sum_intensity) ;
+
+	switch (light[chosen]->type) {
+		case SPHERE: {
+			const float u1 = rand_r(seed) / (float)RAND_MAX;
+			const float u2 = rand_r(seed) / (float)RAND_MAX;
+			const float phi = 2.0f*M_PI*u2;
+			const float z = 2.0f*u1-1.0f;
+			const float r = sqrtf(1.0f-z*z);
+
+			Sphere *sph = (Sphere *)light[chosen]->object;
+			light_path[0].position.Data[0] += r * cosf(phi) * sph->radius ;
+			light_path[0].position.Data[1] += r * sinf(phi) * sph->radius ;
+			light_path[0].position.Data[2] += z * sph->radius ;
+			light_path[0].throughput.Data[0] /= 4*M_PI*sph->radius*sph->radius;
+			light_path[0].throughput.Data[1] /= 4*M_PI*sph->radius*sph->radius;
+			light_path[0].throughput.Data[2] /= 4*M_PI*sph->radius*sph->radius;
+
+			sub_ext(&light_path[0].position, &light[chosen]->position, &light_path[0].normal);
+			norm_ext(&light_path[0].normal, &light_path[0].normal);
+			break;
+		}
+		case BOX: {
+			OBB *box = (OBB *)light[chosen]->object;
+			//random face
+			int face = (int)(rand_r(seed) % 6) ;
+			//random position on the face
+			float w = (rand_r(seed) / (float)RAND_MAX) * 2.0f * box->size.Data[0] - box->size.Data[0];
+			float l = (rand_r(seed) / (float)RAND_MAX) * 2.0f * box->size.Data[1] - box->size.Data[1];
+			float h = (rand_r(seed) / (float)RAND_MAX) * 2.0f * box->size.Data[2] - box->size.Data[2];
+			switch (face) {
+				case 0: {
+					//MIN				
+					light_path[0].position.Data[0] += box->obb_direction.Data[0] * box->size.Data[2] + box->obb_right.Data[0]*l + box->obb_up.Data[0]*h;
+					light_path[0].position.Data[1] += box->obb_direction.Data[1] * box->size.Data[2] + box->obb_right.Data[1] * l + box->obb_up.Data[1]*h ;
+					light_path[0].position.Data[2] += box->obb_direction.Data[2] * box->size.Data[2] + box->obb_right.Data[2] * l + box->obb_up.Data[2]*h ;
+	
+					light_path[0].normal = box->obb_direction;
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
+					break;
+				}
+				case 1: {
+					//MAX
+					light_path[0].position.Data[0] += -box->obb_direction.Data[0] * box->size.Data[2] + box->obb_right.Data[0]*l + box->obb_up.Data[0]*h ;
+					light_path[0].position.Data[1] += -box->obb_direction.Data[1] * box->size.Data[2] + box->obb_right.Data[1]*l + box->obb_up.Data[1]*h ;
+					light_path[0].position.Data[2] += -box->obb_direction.Data[2] * box->size.Data[2] + box->obb_right.Data[2]*l + box->obb_up.Data[2]*h ;
+
+					mul_ext(&box->obb_direction, -1.0f, &light_path[0].normal);
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
+					break;
+				}
+				case 2: {
+					//BOTTOM
+					light_path[0].position.Data[0] += box->obb_up.Data[0] * box->size.Data[1] + box->obb_direction.Data[0]*w + box->obb_right.Data[0]*l ;
+					light_path[0].position.Data[1] += box->obb_up.Data[1] * box->size.Data[1] + box->obb_direction.Data[1]*w + box->obb_right.Data[1]*l ;
+					light_path[0].position.Data[2] += box->obb_up.Data[2] * box->size.Data[1] + box->obb_direction.Data[2]*w + box->obb_right.Data[2]*l ;
+
+					light_path[0].normal = box->obb_up;
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
+					break;
+				}
+				case 3: {
+					//UP
+					light_path[0].position.Data[0] += -box->obb_up.Data[0] * box->size.Data[1] + box->obb_direction.Data[0]*w + box->obb_right.Data[0]*l ;
+					light_path[0].position.Data[1] += -box->obb_up.Data[1] * box->size.Data[1] + box->obb_direction.Data[1]*w + box->obb_right.Data[1]*l ;
+					light_path[0].position.Data[2] += -box->obb_up.Data[2] * box->size.Data[1] + box->obb_direction.Data[2]*w + box->obb_right.Data[2]*l ;
+
+					mul_ext(&box->obb_up, -1.0f, &light_path[0].normal);
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
+					break;
+				}
+				case 4: {
+					//RIGHT
+					light_path[0].position.Data[0] += box->obb_right.Data[0] * box->size.Data[0] + box->obb_direction.Data[0]*w + box->obb_up.Data[0]*h ;
+					light_path[0].position.Data[1] += box->obb_right.Data[1] * box->size.Data[0] + box->obb_direction.Data[1]*w + box->obb_up.Data[1]*h ;
+					light_path[0].position.Data[2] += box->obb_right.Data[2] * box->size.Data[0] + box->obb_direction.Data[2]*w + box->obb_up.Data[2]*h ;
+
+					light_path[0].normal = box->obb_right;
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
+					break;
+				}
+				case 5: {
+					//LEFT
+					light_path[0].position.Data[0] += -box->obb_right.Data[0] * box->size.Data[0] + box->obb_direction.Data[0]*w + box->obb_up.Data[0]*h ;
+					light_path[0].position.Data[1] += -box->obb_right.Data[1] * box->size.Data[0] + box->obb_direction.Data[1]*w + box->obb_up.Data[1]*h ;
+					light_path[0].position.Data[2] += -box->obb_right.Data[2] * box->size.Data[0] + box->obb_direction.Data[2]*w + box->obb_up.Data[2]*h ;
+					
+					mul_ext(&box->obb_right, -1.0f, &light_path[0].normal);
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
+					break;
+				}
+				norm_ext(&light_path[0].normal, &light_path[0].normal);
+			}
+			break;
+		}
+		case BBOX:
+		return;
+	}
+
+	Ray r_new = random_Ray_demi_sphere_cosine_weighted(&light_path[0].position, &light_path[0].normal, seed);
+	light_path[0].throughput.Data[0] *= M_PI / dot(&r_new.direction, &light_path[0].normal);
+	light_path[0].throughput.Data[1] *= M_PI / dot(&r_new.direction, &light_path[0].normal);
+	light_path[0].throughput.Data[2] *= M_PI / dot(&r_new.direction, &light_path[0].normal);
+	light_path[0].direction = r_new.direction;
+	light_path[0].is_light = 1;
+	light_path[0].wo = r_new.direction;
 }

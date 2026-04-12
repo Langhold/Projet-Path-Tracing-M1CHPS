@@ -49,8 +49,6 @@ void create_ray_ext(Ray * ray, const float x0, const float y0, const float z0, c
 
 void trace_ray(const size_t i, const size_t j, const Camera *cam, Ray* const r)
 {
-   
-
     float Pixel_x = (2.0f*i + 1.0f - cam->width) * cam->inv_height * cam->fov;
     float Pixel_y = (cam->height - 2.0f*j - 1.0f) * cam->inv_height * cam->fov;
 	
