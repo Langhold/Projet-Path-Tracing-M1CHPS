@@ -73,8 +73,10 @@ typedef struct Primitive
 
 typedef struct Scene{
 	Primitive ** objects;
+	Primitive ** lights;
 	Vector * background_color;
 	size_t size_objects;
+	size_t size_lights;
 	Camera camera;
 }Scene;
 
@@ -87,6 +89,16 @@ typedef struct object_tree_t{
 	struct object_tree_t* left;
 } object_tree_t;
 
+
+typedef struct Vertex{
+	Vector position;
+	Vector direction;
+	Vector normal;
+	Vector throughput;
+	Vector wo;
+	Primitive *object;
+	int is_light;
+}Vertex;
 
 typedef struct Large_BVH_t{
 	AABB box;
@@ -188,6 +200,9 @@ Large_BVH_t* initialize_tree_clustering(const Scene* S, unsigned int* seed, cons
 
 int intersect_in_tree(object_tree_t* const tree, const Ray* r, float* closest_t, Primitive** intersected_object, int* is_intern, int* face);
 
+Ray random_Ray_demi_sphere_cosine_weighted(const Vector * origin, const Vector * normal, unsigned int* seed);
+
+void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path, unsigned int* seed);
 void free_clusters(Large_BVH_t** root);
 
 static const float inv255 = 1 / 255.0f;

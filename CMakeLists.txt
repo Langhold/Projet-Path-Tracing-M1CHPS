@@ -88,7 +88,6 @@ add_executable(ppm src/ppm.c)
 
 target_link_libraries(ppm PRIVATE LibPathTracing)
 
-
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_options(ppm PRIVATE -Wall -Wextra -g -DDEBUG)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
