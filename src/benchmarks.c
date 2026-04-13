@@ -23,7 +23,7 @@ void benchmark_huge(Scene* scene, size_t width, size_t height){
 	
 	float xmax = ymax * width / height;
 	
-	Vector color = {{ 155, 205, 55 }};
+	Vector color = {{ 255, 255, 255 }};
 	for (int i = 0; i < amount_s; ++i){
 		for (int j = 0; j < amount_s; ++j){
 			for (int k = 0; k < amount_s; ++k){
@@ -238,7 +238,7 @@ void benchmark_medium(Scene* scene, size_t width, size_t height){
 
 	Vector light_bulb;
 	create_vector_ext(&light_bulb, 255, 255, 255);
-	create_sphere(p5, r, -12, 9, -20, Emissive, 30, &light_bulb);
+	create_sphere(p5, r, -1.2, 0.9, -2, Emissive, 5, &light_bulb);
 	add_primitive(p5, scene);
 	
 	float x2 = 12, z2 = -20;
@@ -255,12 +255,13 @@ void benchmark_medium(Scene* scene, size_t width, size_t height){
 	create_box(p8, 1.7, 0.6, 1.7, x2, 7.2, z2, Lambertian, 0.9, &pylone_up, 0, 0);
 	add_primitive(p8, scene);
 
-	create_box(p9, 2, 2.5, 1.7, x2, 9, z2, Emissive, 20, &light_bulb, 45, 60);
+	create_sphere(p9, r, x2, 0.9, z2, Emissive, 5, &light_bulb);
 	add_primitive(p9, scene);
 
 	Vector mirror;
 	create_vector_ext(&mirror, 255, 255, 255);
-	create_box(p10, 3, 10, 0.1, -10, -1, -8, Specular, 1, &mirror, 125, 75);
+	//create_box(p10, 0.3, 1, 0.01, -1.3, -0.6, -1.3, Specular, 0.92, &mirror, 125, 75);
+	create_box(p10, 0.01, 2, 5, -2.85/2, 0.25, 0, Specular, 0.92, &mirror, 0, 0);
 	add_primitive(p10, scene);
 
 	Vector big_light;

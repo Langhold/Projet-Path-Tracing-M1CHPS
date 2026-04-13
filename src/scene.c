@@ -5,6 +5,7 @@
 #endif
 
 #define MAX_DEPTH 100
+#define MAX_ITER 10
 
 void free_scene(Scene* S){
 	free_scene_objects(S);
@@ -424,6 +425,13 @@ bool intersect_in_scene(struct Ray* r, const Scene* const S, int *object, Vector
 }
 
 
+/*###################################################################################################*/
+/*###################################################################################################*/
+/*###################################################################################################*/
+/*###################################################################################################*/
+/*###################################################################################################*/
+
+
 
 void centeroid_aabb(AABB const* box, Vector* centeroid){
 	if (!box) return;
@@ -434,7 +442,7 @@ void centeroid_aabb(AABB const* box, Vector* centeroid){
 		(box->bmax.Data[2] + box->bmin.Data[2]) * 0.5f}};
 }
 
-AABB compute_aabb_sphere(Primitive* p){
+AABB compute_aabb_sphere(const Primitive* p){
 	if (!p) exit(1);
 	if (p->type != SPHERE) exit(1);
 	Sphere s = *(Sphere *)p->object;
@@ -451,7 +459,7 @@ AABB compute_aabb_sphere(Primitive* p){
 	return box;
 }
 
-AABB compute_aabb_bbox(Primitive* p){
+AABB compute_aabb_bbox(const Primitive* p){
 	if (!p) exit(1);
 	if (p->type != BOX) exit(1);
 	OBB* b = (OBB *)p->object;
@@ -469,7 +477,7 @@ AABB compute_aabb_bbox(Primitive* p){
 	return box;
 }
 
-AABB compute_hitbox(Primitive* p){
+AABB compute_hitbox(const Primitive* p){
 	if(!p) return NULL_AABB;
 	switch (p->type) {
 		case SPHERE:
@@ -541,59 +549,6 @@ void update_aabb_from_children(object_tree_t* node) {
 }
 
 
-void add_object_to_node(object_tree_t* node, Primitive* p, int depth) {
-	if (!node || !p) return;
-
-	AABB p_hitbox = compute_hitbox(p);
-
-	if ((!node->left && !node->right) && (node->objects_count < MAX_OBJECTS || depth >= MAX_DEPTH)) {
-		if (!node->objects) {
-			node->objects = malloc(sizeof(Primitive*) * MAX_OBJECTS);
-			if (!node->objects) { perror("Allocation failed.\n"); exit(1); }
-		}
-		node->objects[node->objects_count++] = p;
-
-		for (int i = 0; i < 3; i++) {
-			node->box.bmin.Data[i] = fminf(node->box.bmin.Data[i], p_hitbox.bmin.Data[i]);
-			node->box.bmax.Data[i] = fmaxf(node->box.bmax.Data[i], p_hitbox.bmax.Data[i]);
-		}
-		return;
-	}
-
-	if (!node->left) add_node(node, 0);
-	if (!node->right) add_node(node, 1);
-
-	float size[3] = {
-		node->box.bmax.Data[0] - node->box.bmin.Data[0],
-		node->box.bmax.Data[1] - node->box.bmin.Data[1],
-		node->box.bmax.Data[2] - node->box.bmin.Data[2]
-	};
-	int axis = 0;
-	if (size[1] > size[0] && size[1] >= size[2]) axis = 1;
-	else if (size[2] > size[0] && size[2] > size[1]) axis = 2;
-
-	float split = (node->box.bmin.Data[axis] + node->box.bmax.Data[axis]) * 0.5f;
-
-	
-	Vector centroid;
-	centeroid_aabb(&p_hitbox, &centroid);
-	float min = p_hitbox.bmin.Data[axis];
-	float max = p_hitbox.bmax.Data[axis];
-
-	
-	if (max <= split) {
-		add_object_to_node(node->left, p, depth + 1);
-	}
-	else if (min >= split) {
-		add_object_to_node(node->right, p, depth + 1);
-	}
-	else {
-		add_object_to_node(node->left, p, depth + 1);
-		add_object_to_node(node->right, p, depth + 1);
-	}
-
-	update_aabb_from_children(node);
-}
 
 typedef struct obj_arrange{
 	Primitive* p;
@@ -755,40 +710,6 @@ void print_tree_root(object_tree_t* root) {
 	print_tree(root, 0);
 }
 
-object_tree_t* initialize_root_tree(Scene* S) {
-	if (S == NULL) return NULL;
-	object_tree_t* root = malloc(sizeof(object_tree_t));
-	if (!root) {
-		perror("Tree malloc error.\n");
-		exit(1);
-	}
-	
-	root->box = NULL_AABB;
-	root->left = NULL;
-	root->right = NULL;
-	root->objects = malloc(sizeof(Primitive*) * MAX_OBJECTS);
-	if (!root->objects) {
-		perror("Tree malloc error.\n");
-		exit(1);
-	}
-	root->objects_count = 0;
-
-	for (size_t i = 0; i < S->size_objects; ++i) {
-		Primitive* p = S->objects[i];
-		if (p == NULL) {
-			continue;
-		}
-		if ((p->type == SPHERE && !p->object)) {
-			fprintf(stderr, "Scene contains invalid sphere at index %zu\n", i);
-			exit(1);
-		}
-		add_object_to_node(root, p, 0);
-		
-	}
-	print_tree_root(root);
-	return root;
-}
-
 object_tree_t* initialize_root_tree_v2(Scene* S) {
 	if (S == NULL) return NULL;
 	object_tree_t* root = malloc(sizeof(object_tree_t));
@@ -831,59 +752,6 @@ int check_intersection_box(AABB* box, Vector* hit){
 	}
 }
 
-/*float intersect_box_t(const Ray* r, const AABB* box, int* is_intern, int* face) {
-	float tmin = -FLT_MAX;
-	float tmax = FLT_MAX;
-	int enterAxis = -1, exitAxis = -1;
-
-	for (int i = 0; i < 3; ++i) {
-		float origin = r->position.Data[i];
-		float dir = r->direction.Data[i];
-		float minA = box->bmin.Data[i];
-		float maxA = box->bmax.Data[i];
-
-		if (fabsf(dir) < EPS) {
-			// Rayon parallèle à l'axe
-			if (origin < minA - EPS || origin > maxA + EPS)
-				return -1.f;
-			continue;
-		}
-
-		float invD = 1.0f / dir;
-		float t1 = (minA - origin) * invD;
-		float t2 = (maxA - origin) * invD;
-		float low = fminf(t1, t2);
-		float high = fmaxf(t1, t2);
-
-		if (low > tmin) {
-			tmin = low;
-			enterAxis = i;
-		}
-		if (high < tmax) {
-			tmax = high;
-			exitAxis = i;
-		}
-
-		if (tmin > tmax + EPS)
-			return -1.f;
-	}
-
-	if (tmax < EPS) return -1.f;
-
-	if (is_intern) *is_intern = (tmin < EPS && tmax > EPS) ? 1 : 0;
-
-	if (face) {
-		int axis = (is_intern && *is_intern) ? exitAxis : enterAxis;
-		float dir = r->direction.Data[axis];
-		switch (axis) {
-			case 0: *face = (dir > 0) ? MIN : MAX; break;
-			case 1: *face = (dir > 0) ? BOTTOM : UP; break;
-			case 2: *face = (dir > 0) ? BACK : FRONT; break;
-		}
-	}
-
-	return (tmin > EPS) ? tmin : tmax;
-}*/
 
 float intersect_box_t(const Ray* r, const AABB* box, int* is_intern, int* face) {
 	float tmin = -FLT_MAX;
@@ -924,6 +792,7 @@ float intersect_box_t(const Ray* r, const AABB* box, int* is_intern, int* face) 
 
 	if (tmax < EPS) return -1.f; // Intersection derrière le rayon
 
+	if (!is_intern && !face) return (tmin > EPS) ? tmin : tmax;
 	// Déterminer si le rayon commence à l'intérieur
 	if (is_intern) *is_intern = (tmin < EPS && tmax > EPS) ? 1 : 0;
 
@@ -937,6 +806,49 @@ float intersect_box_t(const Ray* r, const AABB* box, int* is_intern, int* face) 
 			case 2: *face = (dir > 0) ? BACK : FRONT; break;
 		}
 	}
+
+	// Retourner la première intersection positive
+	return (tmin > EPS) ? tmin : tmax;
+}
+
+float intersect_AABB_t(const Ray* r, const AABB* box) {
+	float tmin = -FLT_MAX;
+	float tmax = FLT_MAX;
+	int enterAxis = -1, exitAxis = -1;
+
+	for (int i = 0; i < 3; ++i) {
+		float origin = r->position.Data[i];
+		float dir = r->direction.Data[i];
+		float minA = box->bmin.Data[i];
+		float maxA = box->bmax.Data[i];
+
+		if (fabsf(dir) < EPS) {
+			// Rayon parallèle à l'axe
+			if (origin < minA - EPS || origin > maxA + EPS)
+				return -1.f; // Pas d'intersection
+			continue; // Le rayon reste dans la tranche pour cet axe
+		}
+
+		float invD = 1.0f / dir;
+		float t1 = (minA - origin) * invD;
+		float t2 = (maxA - origin) * invD;
+
+		float low = fminf(t1, t2);
+		float high = fmaxf(t1, t2);
+
+		if (low > tmin) {
+			tmin = low;
+			enterAxis = i; // Axe par lequel le rayon entre
+		}
+		if (high < tmax) {
+			tmax = high;
+			exitAxis = i; // Axe par lequel le rayon sort
+		}
+		if (tmax < 0.f) return -1.f;
+		if (tmin > tmax + EPS) return -1.f; // Pas d'intersection
+	}
+
+	if (tmax < EPS) return -1.f; // Intersection derrière le rayon
 
 	// Retourner la première intersection positive
 	return (tmin > EPS) ? tmin : tmax;
@@ -995,8 +907,7 @@ int intersect_in_tree(object_tree_t* const tree, const Ray* r, float* closest_t,
 
 	int hit = 0;
 	
-	int node_intern = 0, node_face = -1;
-	float tbox = intersect_box_t(r, &tree->box, &node_intern, &node_face);
+	float tbox = intersect_AABB_t(r, &tree->box);
 
 	if (tbox < 0.f) return 0;
 	
@@ -1035,10 +946,8 @@ int intersect_in_tree(object_tree_t* const tree, const Ray* r, float* closest_t,
 	if (tree->objects_count > 0.f) return hit;
 	
 	float tleft = -1.f, tright = -1.f;
-
-	tleft = intersect_box_t(r, &tree->left->box, NULL, NULL);
-
-	tright = intersect_box_t(r, &tree->right->box, NULL, NULL);
+	tleft = intersect_AABB_t(r, &tree->left->box);
+	tright = intersect_AABB_t(r, &tree->right->box);
 
 	if (tleft < EPS) tleft = -1.f;
 	if (tright < EPS) tright = -1.f;
@@ -1267,4 +1176,205 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 	light_path[0].direction = r_new.direction;
 	light_path[0].is_light = 1;
 	light_path[0].wo = r_new.direction;
+}
+static inline float dist2(const Vector* a, const Vector* b) {
+	float dx = a->Data[0] - b->Data[0];
+	float dy = a->Data[1] - b->Data[1];
+	float dz = a->Data[2] - b->Data[2];
+	return dx*dx + dy*dy + dz*dz;
+}
+
+
+/*###################################################################################################*/
+/*###################################################################################################*/
+/*###################################################################################################*/
+/*###################################################################################################*/
+/*###################################################################################################*/
+
+
+typedef struct cluster_t{
+	int count;
+	Vector centroid;
+	Vector sum;
+	Primitive** objects;
+	AABB box;
+} cluster_t;
+
+
+AABB compute_aabb_cluster(const cluster_t* cluster){
+	AABB hb = NULL_AABB;
+	for (int i = 0; i<cluster->count; ++i) {
+		Primitive* current_object = cluster->objects[i];
+		AABB obj_hb = compute_hitbox(current_object);
+		hb.bmin.Data[0] = fminf(obj_hb.bmin.Data[0], hb.bmin.Data[0]);
+		hb.bmin.Data[1] = fminf(obj_hb.bmin.Data[1], hb.bmin.Data[1]);
+		hb.bmin.Data[2] = fminf(obj_hb.bmin.Data[2], hb.bmin.Data[2]);
+		hb.bmax.Data[0] = fmaxf(obj_hb.bmax.Data[0], hb.bmax.Data[0]);
+		hb.bmax.Data[1] = fmaxf(obj_hb.bmax.Data[1], hb.bmax.Data[1]);
+		hb.bmax.Data[2] = fmaxf(obj_hb.bmax.Data[2], hb.bmax.Data[2]);
+	}
+	return hb;
+}
+
+void kmeans(int K, int N, const Primitive** Objects, cluster_t* clusters, unsigned int* seed){
+	if (!clusters || !Objects || N == 0 || K <= 0) return;
+
+	Vector centroids[N];
+	unsigned int labels[N], all_index[K];
+	
+	for (int i = 0; i < N; ++i) {
+		AABB box = compute_hitbox(Objects[i]);
+		centeroid_aabb(&box, &centroids[i]);
+	}
+
+	// Initialise le centroid du cluster comme étant celui d'un objets aléatoire de la scene qui n'a pas encore servi pour un autre
+	for (int k = 0; k < K; ++k) {
+		clusters[k].objects = malloc(N * sizeof(Primitive*));
+		clusters[k].count = 0;
+
+		int unique = 0;
+
+		while (!unique) {
+			unsigned int index = rand_r(seed) % N;
+			Vector candidate = centroids[index];
+			all_index[k] = index;
+			unique = 1;
+
+			for (int j = 0; j < k; ++j) {
+				if (all_index[j] == index) {
+					unique = 0;
+					break;
+				}
+			}
+
+			if (unique) {
+				clusters[k].centroid = candidate;
+			}
+		}
+	}
+
+
+	for (int iter = 0; iter < MAX_ITER; ++iter) {
+
+		for (int i = 0; i < N; ++i) {
+
+			float best_dist = 1e30f;
+			int best_k = 0;
+
+			for (int k = 0; k < K; ++k) {
+				float d = dist2(&centroids[i], &clusters[k].centroid);
+
+				if (d < best_dist) {
+					best_dist = d;
+					best_k = k;
+				}
+			}
+
+			labels[i] = best_k;
+		}
+
+		for (int k = 0; k < K; ++k) {
+			clusters[k].sum = (Vector){{0.f, 0.f, 0.f}};
+			clusters[k].count = 0;
+		}
+
+		for (int i = 0; i < N; ++i) {
+			int k = labels[i];
+
+			clusters[k].sum.Data[0] += centroids[i].Data[0];
+			clusters[k].sum.Data[1] += centroids[i].Data[1];
+			clusters[k].sum.Data[2] += centroids[i].Data[2];
+
+			clusters[k].objects[clusters[k].count++] = (Primitive*)Objects[i];
+		}
+
+		for (int k = 0; k < K; ++k) {
+
+			if (clusters[k].count > 0) {
+				clusters[k].centroid.Data[0] = clusters[k].sum.Data[0] / clusters[k].count;
+				clusters[k].centroid.Data[1] = clusters[k].sum.Data[1] / clusters[k].count;
+				clusters[k].centroid.Data[2] = clusters[k].sum.Data[2] / clusters[k].count;
+			} else {
+				clusters[k].centroid = centroids[rand_r(seed) % N];
+			}
+		}
+	}
+	for (int k = 0; k < K; ++k) {
+		clusters[k].box = compute_aabb_cluster(&clusters[k]);
+	}
+}
+
+Large_BVH_t* initialize_root_tree_clustering(const Primitive** Objects, const int N, const int K, unsigned int* seed) {
+	if (!Objects || K<=0) return NULL;
+	cluster_t clusters[K];
+	
+	Large_BVH_t* root = malloc(sizeof(Large_BVH_t));
+	if(!root){
+		perror("Allocation failed for tree\n");
+		abort();
+	}
+	root->clusters = calloc(K, sizeof(object_tree_t*));
+	if(!root->clusters){
+		perror("Allocation failed clusters for tree\n");
+		abort();
+	}
+	kmeans(K, N, Objects, clusters, seed);
+	AABB box = NULL_AABB;
+	for (int k = 0; k<K; ++k) {
+		root->clusters[k] = malloc(sizeof(object_tree_t));
+		root->clusters[k]->box = NULL_AABB;
+		root->clusters[k]->left = NULL;
+		root->clusters[k]->right = NULL;
+		root->clusters[k]->objects = malloc(sizeof(Primitive*) * MAX_OBJECTS);
+		if (!root->clusters[k]->objects) {
+			perror("Tree malloc error.\n");
+			exit(1);
+		}
+		root->clusters[k]->objects_count = 0;
+		
+		add_object_to_node_v2(root->clusters[k], clusters[k].objects, clusters[k].count, 1);
+		box.bmin.Data[0] = fminf(box.bmin.Data[0],clusters[k].box.bmin.Data[0]);
+		box.bmin.Data[1] = fminf(box.bmin.Data[1],clusters[k].box.bmin.Data[1]);
+		box.bmin.Data[2] = fminf(box.bmin.Data[2],clusters[k].box.bmin.Data[2]);
+		box.bmax.Data[0] = fmaxf(box.bmax.Data[0],clusters[k].box.bmax.Data[0]);
+		box.bmax.Data[1] = fmaxf(box.bmax.Data[1],clusters[k].box.bmax.Data[1]);
+		box.bmax.Data[2] = fmaxf(box.bmax.Data[2],clusters[k].box.bmax.Data[2]);
+		free(clusters[k].objects);
+	}
+	root->box = box;
+	root->K = K;
+	
+	return root;
+}
+
+
+Large_BVH_t* initialize_tree_clustering(const Scene* S, unsigned int* seed, const int K){
+	return initialize_root_tree_clustering((const Primitive**)S->objects, (const int)S->size_objects, K, seed);
+}
+
+int intersect_in_clusters(Large_BVH_t* const tree, const Ray* r, float* closest_t, Primitive** intersected_object, int* is_intern, int* face) {
+	if (!tree || !closest_t) return 0;
+
+	int hit = 0;
+	float tbox = intersect_box_t(r, &tree->box, NULL, NULL);
+
+	if (tbox < 0.f) return 0;
+	
+	for (int k = 0; k < tree->K; ++k) {
+		float tcluster = intersect_box_t(r, &tree->clusters[k]->box, NULL, NULL);
+
+		if (tcluster < 0.f)
+			continue;
+
+		hit |= intersect_in_tree(tree->clusters[k], r, closest_t, intersected_object, is_intern, face);
+	}
+	
+	return hit;
+}
+
+void free_clusters(Large_BVH_t** root){
+	if (!root) return;
+	for (int i = 0; i<(*root)->K; ++i) {
+		if ((*root)->clusters[i]) free_tree_objects(&(*root)->clusters[i]);
+	}
 }

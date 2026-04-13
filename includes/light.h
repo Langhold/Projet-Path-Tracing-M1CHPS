@@ -34,7 +34,9 @@ void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length,
  * @param color output: the color of the pixel
  */
 void path_trace(const int x1, const int y1, const int local_y, const int width, Scene const * S, const size_t bounces, float* color_buffer, unsigned int* seed);
-void path_trace_t(const int x1, const int y1, Scene const * S, const size_t bounces, Vector * pixel_color, unsigned int* seed, object_tree_t* const tree);
+
+void path_trace_t(const int x1, const int y1, const int local_y, const int width, Scene const * S, const size_t bounces, float* color_buffer, unsigned int* seed, object_tree_t* const tree);
+void path_trace_clusters(const int x1, const int y1, const int local_y, const int width, Scene const * S, const size_t bounces, float* color_buffer, unsigned int* seed, Large_BVH_t* const tree);
 
 
 int get_bounces(void);

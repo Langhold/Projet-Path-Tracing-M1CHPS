@@ -211,4 +211,10 @@ void display_vector(const Vector* const u);
  */
 void free_vector(Vector* u);
 
+static inline float dist(const Vector* u, const Vector* v){
+	Vector w;
+	sub_ext(u, v, &w);
+	
+	return fabsf(length(&w));
+}
 #endif

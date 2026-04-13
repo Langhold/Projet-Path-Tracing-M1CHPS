@@ -1,11 +1,10 @@
 #include "light.h"
 
 int russian_roulette(Vector* throughput, unsigned int* seed){
-	float p = max(throughput->Data[0], max(throughput->Data[1], throughput->Data[2]));
-	p = fmax(p, 0.05f);
-	p = fmin(p, 0.95f);
 	
-	float epsilon = rand_r(seed) / (float)RAND_MAX;
+	const float p = 0.2126f * throughput->Data[0] + 0.7152f * throughput->Data[1] + 0.0722f * throughput->Data[2];
+	
+	const float epsilon = rand_r(seed) / (float)RAND_MAX;
 	
 	if (epsilon > p) {
 		//kill path
@@ -78,7 +77,7 @@ void ray_sampling(Ray *r, const Scene * S, int dmax, Vector * radiance, unsigned
 				break;
 			}
 			case Specular:{
-				float dotn = dot(&current_ray.direction, &n);
+				const float dotn = dot(&current_ray.direction, &n);
 				
 				Vector wo;
 				wo.Data[0] = current_ray.direction.Data[0] - 2.0f * dotn * n.Data[0];
@@ -128,7 +127,7 @@ void path_trace(const int x1, const int y1, const int local_y, const int width, 
 }
 
 int get_bounces(void){
-	char * env = getenv("BOUNCES");
+	const char * env = getenv("BOUNCES");
 	if(!env) return 26;
 	else return atoi(env);
 	return 0;
@@ -350,6 +349,7 @@ void ray_sampling_no_light(Ray* const r, object_tree_t* const scene, int dmax, V
 			}
 			case Specular:{
 				float dotn = dot(&current_ray.direction, &n);
+				if (dotn > 0.f) abort();
 				
 				
 				Vector wo;
@@ -363,11 +363,9 @@ void ray_sampling_no_light(Ray* const r, object_tree_t* const scene, int dmax, V
 				r_new.direction = wo;
 				r_new.position = offset_origin;
 				
-				float cosTheta = fabsf(dot(&current_ray.direction, &n));
-				float fresnel = albedo + (1.0f - albedo) * powf(1.0f - cosTheta, 5.0f);
 
 				for (int i = 0; i < 3; ++i){
-					throughput.Data[i] *= fresnel;
+					throughput.Data[i] *= albedo;
 				}
 				
 				if (d > 10) {
@@ -507,4 +505,141 @@ void path_trace_t(const int x1, const int y1, Scene const * S, const size_t boun
 		
 		return;
 	}
+}
+void path_trace_t(const int x1, const int y1, const int local_y, const int width, Scene const * S, const size_t bounces, float* color_buffer, unsigned int* seed, object_tree_t* const tree)
+{
+	
+	static Ray ray;
+	trace_ray(x1, y1, &S->camera, &ray);
+	
+	static Vector radiance;
+	ray_sampling_t(&ray, tree, (int)bounces, &radiance, seed, S->background_color);
+	
+	size_t index = (local_y * width + x1) * 3;
+	
+	color_buffer[index+0] += radiance.Data[0];
+	color_buffer[index+1] += radiance.Data[1];
+	color_buffer[index+2] += radiance.Data[2];
+	 
+	
+	return;
+}
+
+
+void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Vector * radiance, unsigned int* seed, Vector* bg_color){
+	Vector throughput = {{1.f, 1.f, 1.f}};
+	Ray current_ray = *r;
+	
+	for (int i = 0; i < 3; ++i)
+			radiance->Data[i] = 0.0f;
+	
+	int is_intern = 0, face = -1;
+	for (int d = 0; d<dmax; ++d) {
+		Vector n;
+		Vector hit;
+		float t = FLT_MAX;
+		Primitive* obj = NULL;
+		
+		if (!intersect_in_clusters(scene, &current_ray, &t, &obj, &is_intern, &face) || !obj) {
+			for (int i = 0; i < 3; ++i) {
+				radiance->Data[i] += throughput.Data[i] * bg_color->Data[i];
+			}
+			return;
+		}
+		
+		linear_ext(&current_ray.position, &current_ray.direction, t, &hit);
+		compute_normal(obj, &n, is_intern, face, &hit);
+		
+		if (dot(&n, &current_ray.direction) > 0.0f) {
+			mul_ext(&n, -1.0f, &n);
+		}
+		const float albedo = obj->albedo;
+		
+		
+		Vector offset_origin;
+		Vector n_eps;
+		mul_ext(&n, EPS, &n_eps);
+		add_ext(&hit, &n_eps, &offset_origin);
+		
+		
+		
+		
+		switch (obj->m_type){
+			case Emissive:{
+				for (int i = 0; i < 3; ++i){
+					radiance->Data[i] += throughput.Data[i] * obj->color.Data[i] * albedo;
+				}
+				return;
+			}
+				
+			case Lambertian:
+			{
+				Ray r_new = random_Ray_demi_sphere_cosine_weighted(&offset_origin, &n, seed);
+				for (int i = 0; i < 3; ++i){
+					throughput.Data[i] *= obj->color.Data[i] * albedo;
+				}
+				current_ray = r_new;
+				
+				
+				if (d > 10) {
+					if (russian_roulette(&throughput, seed)) {
+						return;
+					}
+				}
+				 
+				break;
+			}
+			case Specular:{
+				float dotn = dot(&current_ray.direction, &n);
+				if (dotn > 0.f) abort();
+				
+				
+				Vector wo;
+				wo.Data[0] = current_ray.direction.Data[0] - 2.0f * dotn * n.Data[0];
+				wo.Data[1] = current_ray.direction.Data[1] - 2.0f * dotn * n.Data[1];
+				wo.Data[2] = current_ray.direction.Data[2] - 2.0f * dotn * n.Data[2];
+				
+				norm_ext(&wo, &wo);
+				
+				Ray r_new;
+				r_new.direction = wo;
+				r_new.position = offset_origin;
+				
+
+				for (int i = 0; i < 3; ++i){
+					throughput.Data[i] *= albedo;
+				}
+				
+				if (d > 10) {
+					if (russian_roulette(&throughput, seed)) {
+						return;
+					}
+				}
+				
+				current_ray = r_new;
+				break;
+			}
+		}
+	}
+	for (int i = 0; i < 3; ++i){
+			radiance->Data[i] = 0.0f;
+	}
+}
+
+void path_trace_clusters(const int x1, const int y1, const int local_y, const int width, Scene const * S, const size_t bounces, float* color_buffer, unsigned int* seed, Large_BVH_t* const tree) {
+	
+	static Ray ray;
+	trace_ray(x1, y1, &S->camera, &ray);
+	
+	static Vector radiance;
+	ray_sampling_clusters(&ray, tree, (int)bounces, &radiance, seed, S->background_color);
+	
+	const size_t index = (local_y * width + x1) * 3;
+	
+	color_buffer[index+0] += radiance.Data[0];
+	color_buffer[index+1] += radiance.Data[1];
+	color_buffer[index+2] += radiance.Data[2];
+	 
+	
+	return;
 }

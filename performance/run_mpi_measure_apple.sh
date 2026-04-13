@@ -1,25 +1,22 @@
 #!/bin/zsh
+
 WIDTH=800
 HEIGHT=600
-SAMPLES=1000
-_MPI=10
-_OMP=16
+SAMPLES=500
 
+export OMP_NUM_THREADS=5
+export BOUNCES=26
 
+for J in true close spread; do
 
+export OMP_PROC_BIND=$J
 
-for K in $(seq 1 $_OMP); do
-
-export OMP_NUM_THREADS=$K
-
-for I in $(seq 1 $_MPI); do
-for J in $(seq 1 3); do
-
-echo "Working with $I MPI thread and $K OMP threads"
-mpirun -n $I ./build/ppm $WIDTH $HEIGHT $SAMPLES 25 no_image
-
+for I in {1..5}; do
+mpirun -n 2 ./build/ppm $WIDTH $HEIGHT $SAMPLES
 done
 
-done
+echo >> performance/measures/runtime_by_samplings.csv
+
+sleep 10
 
 done
