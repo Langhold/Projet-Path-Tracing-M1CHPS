@@ -1172,7 +1172,8 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 			norm_ext(&light_path[0].normal, &light_path[0].normal);
 			break;
 		}
-		case BOX: {
+		case BOX :
+		case BBOX: {
 			OBB *box = (OBB *)light[chosen]->object;
 			//random face
 			int face = (int)(rand_r(seed) % 6) ;
@@ -1257,9 +1258,6 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 			}
 			break;
 		}
-		case BBOX:
-			printf("the hell am i doing here?\n");
-		return;
 	}
 
 	Ray r_new = random_Ray_demi_sphere_cosine_weighted(&light_path[0].position, &light_path[0].normal, seed);
