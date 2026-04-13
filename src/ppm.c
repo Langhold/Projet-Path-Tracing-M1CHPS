@@ -9,7 +9,7 @@ static inline void color_float_to_int(float* const local_color_buffer, const int
 	float r = local_color_buffer[idx_rgb]   * inv_samples;
 	float g = local_color_buffer[idx_rgb+1] * inv_samples;
 	float b = local_color_buffer[idx_rgb+2] * inv_samples;
-
+	
 	r = max(0.f, min(255.f, r));
 	g = max(0.f, min(255.f, g));
 	b = max(0.f, min(255.f, b));
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 					pixel_color->Data[0] = 0.0f;
 					pixel_color->Data[1] = 0.0f;
 					pixel_color->Data[2] = 0.0f;
-					for (size_t i=0; i<print_rate; ++i) {
+			 		for (size_t i=0; i<print_rate; ++i) {
 						//path_trace(x1, y1, local_y, width, &scene, bounces, local_color_buffer, &seed_per_threads);
 						path_trace_t(x1, y1, &scene, bounces, pixel_color, &seed_per_threads, tree);
 					}

@@ -225,20 +225,22 @@ void ray_sampling_t(Ray* const r, object_tree_t* const scene, int dmax, Vertex *
 					throughput.Data[i] *= obj->color.Data[i] * albedo;
 				}
 				path[d].direction = current_ray.direction;
+				path[d].wo = r_new.direction;
+
+				path[d].position = r_new.position;
+				path[d].throughput = throughput;
+				path[d].normal = n;
+				norm_ext(&path[d].normal, &path[d].normal);
+				path[d].object = obj;
+
+
 				current_ray = r_new;
-				path[d].wo = current_ray.direction;
-				
 				if (d > 10) {
 					if (russian_roulette(&throughput, seed)) {
-						path[d].position = current_ray.position;
-						path[d].wo = r_new.direction;
-						path[d].throughput = throughput;
-						path[d].normal = n;
-						path[d].object = obj;
 						return;
 					}
 				}
-				 
+				
 				break;
 			}
 			case Specular:{
@@ -259,35 +261,29 @@ void ray_sampling_t(Ray* const r, object_tree_t* const scene, int dmax, Vertex *
 				float fresnel = albedo + (1.0f - albedo) * powf(1.0f - cosTheta, 5.0f);
 
 				for (int i = 0; i < 3; ++i){
-					throughput.Data[i] *= fresnel;
+					throughput.Data[i] *= fresnel * obj->color.Data[i];
 				}
 				path[d].direction = current_ray.direction;
 				path[d].wo = r_new.direction;
 
+				path[d].position = r_new.position;
+				path[d].throughput.Data[0] *= throughput.Data[0];
+				path[d].throughput.Data[1] *= throughput.Data[1];
+				path[d].throughput.Data[2] *= throughput.Data[2];
+				path[d].normal = n;
+				norm_ext(&path[d].normal, &path[d].normal);
+				path[d].object = obj;
+				
+				current_ray = r_new;
 				if (d > 10) {
 					if (russian_roulette(&throughput, seed)) {
-						path[d].position = r_new.position;
-						path[d].wo = r_new.direction;
-						path[d].throughput.Data[0] *= obj->color.Data[0];
-						path[d].throughput.Data[1] *= obj->color.Data[1];
-						path[d].throughput.Data[2] *= obj->color.Data[2];
-						path[d].normal = n;
-						path[d].object = obj;
 						return;
 					}
 				}
 				
-				current_ray = r_new;
 				break;
 			}
 		}
-		path[d].position = current_ray.position;
-		path[d].throughput.Data[0] = throughput.Data[0];
-		path[d].throughput.Data[1] = throughput.Data[1];
-		path[d].throughput.Data[2] = throughput.Data[2];
-		path[d].normal = n;
-		norm_ext(&path[d].normal, &path[d].normal);
-		path[d].object = obj;
 	}
 }
 
@@ -430,7 +426,7 @@ void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length,
 			if (dist2 < 0.0001) continue;
 			norm_ext(&r.direction, &r.direction);
 			intersect_in_scene(&r, S, &object, &hit, &n);
-			if (hit.Data[0] != light_path[l].position.Data[0] && hit.Data[1] != light_path[l].position.Data[1] && hit.Data[2] != light_path[l].position.Data[2]) {
+			if (fabsf(hit.Data[0] - light_path[l].position.Data[0]) > 1e-8f || fabsf(hit.Data[1] - light_path[l].position.Data[1]) > 1e-8f || fabsf(hit.Data[2] - light_path[l].position.Data[2]) > 1e-8f) {
 				continue;
 			}
 			else {
@@ -443,8 +439,6 @@ void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length,
 				cos_camera = fabsf(dot(&camera_path[c].normal, &r.direction)) ;
 				cos_light = fabsf(dot(&light_path[l].normal, &r_light)) ;
 				G = cos_camera * cos_light / dist2;
-
-				// printf("G=%f, cos_cam=%f, cos_l=%f, dist2=%f\n", G, cos_camera, cos_light, dist2);
 				
 				sum_light = sum_camera;
 				r2 = 1.0f;
@@ -456,6 +450,8 @@ void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length,
 				}
 
 				weight = 1.0f/sum_light;
+
+				// printf("cam_thpt=%f, l_thpt=%f, bsdf_cam=%f, bsdf_l=%f, G=%f, weight=%f\n", camera_path[c].throughput.Data[0], light_path[l].throughput.Data[0], bsdf_camera.Data[0], bsdf_light.Data[0], G, weight);
 
 				for (i=0; i<3; ++i) {
 					color->Data[i] += camera_path[c].throughput.Data[i] * light_path[l].throughput.Data[i] * bsdf_camera.Data[i] * bsdf_light.Data[i] * G * weight;

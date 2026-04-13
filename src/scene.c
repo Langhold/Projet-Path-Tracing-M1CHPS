@@ -1148,9 +1148,9 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 	light_path[0].object->type = light[chosen]->type;
 
 	light_path[0].position = light[chosen]->position; //Centre de l'objet
-	light_path[0].throughput.Data[0] = light[chosen]->albedo * light[chosen]->color.Data[0] / (light[chosen]->albedo/sum_intensity);
-	light_path[0].throughput.Data[1] = light[chosen]->albedo * light[chosen]->color.Data[1] / (light[chosen]->albedo/sum_intensity);
-	light_path[0].throughput.Data[2] = light[chosen]->albedo * light[chosen]->color.Data[2] / (light[chosen]->albedo/sum_intensity) ;
+	light_path[0].throughput.Data[0] = light[chosen]->color.Data[0] * sum_intensity;
+	light_path[0].throughput.Data[1] = light[chosen]->color.Data[1] * sum_intensity;
+	light_path[0].throughput.Data[2] = light[chosen]->color.Data[2] * sum_intensity;
 
 	switch (light[chosen]->type) {
 		case SPHERE: {
@@ -1188,9 +1188,9 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 					light_path[0].position.Data[2] += box->obb_direction.Data[2] * box->size.Data[2] + box->obb_right.Data[2] * l + box->obb_up.Data[2]*h ;
 	
 					light_path[0].normal = box->obb_direction;
-					light_path[0].throughput.Data[0] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
-					light_path[0].throughput.Data[1] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
-					light_path[0].throughput.Data[2] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[1]*box->size.Data[2]*6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[1]*box->size.Data[2]*6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[1]*box->size.Data[2]*6 ;
 					break;
 				}
 				case 1: {
@@ -1200,9 +1200,9 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 					light_path[0].position.Data[2] += -box->obb_direction.Data[2] * box->size.Data[2] + box->obb_right.Data[2]*l + box->obb_up.Data[2]*h ;
 
 					mul_ext(&box->obb_direction, -1.0f, &light_path[0].normal);
-					light_path[0].throughput.Data[0] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
-					light_path[0].throughput.Data[1] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
-					light_path[0].throughput.Data[2] /= 4*box->size.Data[1]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[1]*box->size.Data[2]*6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[1]*box->size.Data[2]*6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[1]*box->size.Data[2]*6 ;
 					break;
 				}
 				case 2: {
@@ -1212,9 +1212,9 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 					light_path[0].position.Data[2] += box->obb_up.Data[2] * box->size.Data[1] + box->obb_direction.Data[2]*w + box->obb_right.Data[2]*l ;
 
 					light_path[0].normal = box->obb_up;
-					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
-					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
-					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[2]*6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[2]*6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[2]*6 ;
 					break;
 				}
 				case 3: {
@@ -1224,9 +1224,9 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 					light_path[0].position.Data[2] += -box->obb_up.Data[2] * box->size.Data[1] + box->obb_direction.Data[2]*w + box->obb_right.Data[2]*l ;
 
 					mul_ext(&box->obb_up, -1.0f, &light_path[0].normal);
-					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
-					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
-					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[2]/6 ;
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[2]*6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[2]*6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[2]*6 ;
 					break;
 				}
 				case 4: {
@@ -1236,9 +1236,9 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 					light_path[0].position.Data[2] += box->obb_right.Data[2] * box->size.Data[0] + box->obb_direction.Data[2]*w + box->obb_up.Data[2]*h ;
 
 					light_path[0].normal = box->obb_right;
-					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
-					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
-					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[1]*6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[1]*6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[1]*6 ;
 					break;
 				}
 				case 5: {
@@ -1248,9 +1248,9 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 					light_path[0].position.Data[2] += -box->obb_right.Data[2] * box->size.Data[0] + box->obb_direction.Data[2]*w + box->obb_up.Data[2]*h ;
 					
 					mul_ext(&box->obb_right, -1.0f, &light_path[0].normal);
-					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
-					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
-					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[1]/6 ;
+					light_path[0].throughput.Data[0] /= 4*box->size.Data[0]*box->size.Data[1]*6 ;
+					light_path[0].throughput.Data[1] /= 4*box->size.Data[0]*box->size.Data[1]*6 ;
+					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[1]*6 ;
 					break;
 				}
 				norm_ext(&light_path[0].normal, &light_path[0].normal);
@@ -1258,6 +1258,7 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 			break;
 		}
 		case BBOX:
+			printf("the hell am i doing here?\n");
 		return;
 	}
 

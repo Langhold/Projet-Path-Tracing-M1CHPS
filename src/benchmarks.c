@@ -217,7 +217,7 @@ void benchmark_medium(Scene* scene, size_t width, size_t height){
 	Primitive* p13 = malloc(sizeof(Primitive));
 
 	Vector raybox_color;
-	create_vector_ext(&raybox_color, 126, 33, 33);
+	create_vector_ext(&raybox_color, 33, 33, 126);
 	create_box(p1, 28.5, 20, 50, 0, 2.5, 0, Lambertian, 0.9, &raybox_color, 0, 0);
 	add_primitive(p1, scene);
 
@@ -288,11 +288,11 @@ void benchmark_BDPT(Scene* scene, size_t width, size_t height){
 	
 	Vector bg;
 	create_vector_ext(&bg, 230, 230, 230);
-	create_scene_ext(5, &bg, scene);
+	create_scene_ext(6, &bg, scene);
 	
 	Primitive*  p1  = malloc(sizeof(Primitive));
 	Primitive*  p2  = malloc(sizeof(Primitive));
-	// Primitive*  p3  = malloc(sizeof(Primitive));
+	Primitive*  p3  = malloc(sizeof(Primitive));
 	Primitive*  p4  = malloc(sizeof(Primitive));
 	Primitive*  p5  = malloc(sizeof(Primitive));
 	Primitive*  p6  = malloc(sizeof(Primitive));
@@ -307,10 +307,10 @@ void benchmark_BDPT(Scene* scene, size_t width, size_t height){
 	create_sphere(p2, 0.2, 0, 0, -8, Emissive, 10, &lumiere);
 	add_primitive(p2, scene);
 
-	// Vector cube;
-	// create_vector_ext(&cube, 255, 123, 123);
-	// create_box(p3, 2, 2, 2, 0, 0, -4, Lambertian, 0.9, &cube, 0, 0);
-	// add_primitive(p3, scene);
+	Vector cube;
+	create_vector_ext(&cube, 255, 123, 123);
+	create_box(p3, 2, 2, 2, 0, 0, -4, Lambertian, 0.9, &cube, 0, 0);
+	add_primitive(p3, scene);
 
 	Vector boule1;
 	create_vector_ext(&boule1, 255, 123, 123);
