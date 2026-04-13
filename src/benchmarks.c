@@ -238,7 +238,7 @@ void benchmark_medium(Scene* scene, size_t width, size_t height){
 
 	Vector light_bulb;
 	create_vector_ext(&light_bulb, 255, 255, 255);
-	create_sphere(p5, r, -1.2, 0.9, -2, Emissive, 5, &light_bulb);
+	create_sphere(p5, r, -12, 9, -20, Emissive, 100, &light_bulb);
 	add_primitive(p5, scene);
 	
 	float x2 = 12, z2 = -20;
@@ -255,18 +255,17 @@ void benchmark_medium(Scene* scene, size_t width, size_t height){
 	create_box(p8, 1.7, 0.6, 1.7, x2, 7.2, z2, Lambertian, 0.9, &pylone_up, 0, 0);
 	add_primitive(p8, scene);
 
-	create_sphere(p9, r, x2, 0.9, z2, Emissive, 5, &light_bulb);
+	create_box(p9, 2, 2.5, 1.7, x2, 9, z2, Emissive, 80, &light_bulb, 45, 60);
 	add_primitive(p9, scene);
 
 	Vector mirror;
 	create_vector_ext(&mirror, 255, 255, 255);
-	//create_box(p10, 0.3, 1, 0.01, -1.3, -0.6, -1.3, Specular, 0.92, &mirror, 125, 75);
-	create_box(p10, 0.01, 2, 5, -2.85/2, 0.25, 0, Specular, 0.92, &mirror, 0, 0);
+	create_box(p10, 3, 10, 0.1, -10, -1, -8, Specular, 1, &mirror, 125, 75);
 	add_primitive(p10, scene);
 
 	Vector big_light;
 	create_vector_ext(&big_light, 200, 200, 131);
-	create_sphere(p11, 4, 0, -8, 17, Emissive, 40, &big_light);
+	create_sphere(p11, 4, 0, -8, 17, Emissive, 120, &big_light);
 	add_primitive(p11, scene);
 	
 
