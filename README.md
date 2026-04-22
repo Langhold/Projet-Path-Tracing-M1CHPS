@@ -45,7 +45,7 @@ The goal of this experiment is to measure the performances of the Path Tracer by
 Build the project in Release mode:
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release
-make -C build
+cmake --build build
 ```
    - Image resolution: WxH
    - Number of samples: N
