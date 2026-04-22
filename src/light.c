@@ -1,10 +1,9 @@
 #include "light.h"
 
-
 int russian_roulette(Vector* throughput, unsigned int* seed){
 	
-	float p = 0.2126f * throughput->Data[0] + 0.7152f * throughput->Data[1] + 0.0722f * throughput->Data[2];
-	p = fminf(1.f, p);
+	const float p = 0.2126f * throughput->Data[0] + 0.7152f * throughput->Data[1] + 0.0722f * throughput->Data[2];
+	
 	const float epsilon = rand_r(seed) / (float)RAND_MAX;
 	
 	if (epsilon > p) {
@@ -156,6 +155,17 @@ void ray_sampling_clusters_no_light(Ray* const r, Large_BVH_t* const scene, int 
 	}
 }
 
+static float compute_pdf(float pdf, const Vector* normal, const Vector* from, const Vector* to){
+	if (pdf <= 0.f) return 0.f;
+	Vector w;
+	sub_ext(to, from, &w);
+	float d2 = fabsf(dot(&w, &w));
+	if (d2 < 1e-20f) return 0.f;
+	norm_ext(&w, &w);
+	float cos = fabsf(dot(normal, &w));
+	return pdf * cos / d2;
+}
+
 void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length, Vertex *light_path, int light_path_length, Large_BVH_t* const tree) {
 	if (camera_path_length <= 0 || light_path_length <= 0) {
     	return;
@@ -164,39 +174,52 @@ void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length,
 	Vector r_light;
 	Vector bsdf_camera = (Vector){{0.0f,0.0f,0.0f}};
 	Vector bsdf_light = (Vector){{0.0f,0.0f,0.0f}};
+	Vector neg_wi = (Vector){{0.f,0.0f,0.0f}};
 	float dist2 = 0.0f, cos_camera = 0.0f, cos_light = 0.0f, G = 0.0f;
-	float pdf_fwd = 0.0f, pdf_rev = 0.0f, r1 = 1.0f, r2 = 1.0f, weight = 0.0f;
-	float t;
+	float cur_cos = 0.0f, r1 = 1.0f, sum_mis = 1.0f, weight = 0.0f;
 	int c,l,i;
-	float sum_camera = 1.0f, sum_light = 0.0f;
+	float t = FLT_MAX;
 	Primitive* obj = NULL;
 	int is_intern = 0, face = -1;
 
 	for (c=0; c<camera_path_length; ++c) {
-		t = FLT_MAX;
-		bsdf_camera.Data[0] = camera_path[c].object->albedo * camera_path[c].object->color.Data[0] / M_PI;
-		bsdf_camera.Data[1] = camera_path[c].object->albedo * camera_path[c].object->color.Data[1] / M_PI;
-		bsdf_camera.Data[2] = camera_path[c].object->albedo * camera_path[c].object->color.Data[2] / M_PI;
-		r.position = camera_path[c].position;
-		r1 = 1.0f;
-		sum_camera = 1.0f;
-		for (i=c-1; i>=0; --i) {
-			pdf_fwd = fabsf(dot(&camera_path[i].normal, &camera_path[i].direction))/M_PI ;
-			pdf_rev = fabsf(dot(&camera_path[i].normal, &camera_path[i].wo))/M_PI ;
-			r1 *= pdf_rev / pdf_fwd;
-			sum_camera += r1;
-		}
+
+		if (camera_path[c].object->m_type == Specular) continue;
+
 		if (c == camera_path_length-1 && camera_path[c].object->albedo > 1) {
-			color->Data[0] += camera_path[c].throughput.Data[0] / sum_camera;
-			color->Data[1] += camera_path[c].throughput.Data[1] / sum_camera;
-			color->Data[2] += camera_path[c].throughput.Data[2] / sum_camera;
+			color->Data[0] += camera_path[c].throughput.Data[0];
+			color->Data[1] += camera_path[c].throughput.Data[1];
+			color->Data[2] += camera_path[c].throughput.Data[2];
 			continue;
 		}
 
+		if (c > 0) {
+			cur_cos = fabsf(dot(&camera_path[c].normal, &camera_path[c-1].direction))/M_PI;
+			camera_path[c].pdf_fwd = compute_pdf(cur_cos, &camera_path[c-1].normal, &camera_path[c-1].position, &camera_path[c].position);
+			mul_ext(&camera_path[c].direction, -1.0f, &neg_wi);
+			cur_cos = fabsf(dot(&camera_path[c].normal, &neg_wi)) / M_PI;
+			camera_path[c-1].pdf_rev = compute_pdf(cur_cos, &camera_path[c-1].normal, &camera_path[c].position, &camera_path[c-1].position);
+		}
+
+		if (camera_path[c].object->m_type == Specular) {
+			bsdf_camera.Data[0] = 1.0f;
+			bsdf_camera.Data[1] = 1.0f;
+			bsdf_camera.Data[2] = 1.0f;	
+		}
+		else {
+			bsdf_camera.Data[0] = camera_path[c].object->albedo * camera_path[c].object->color.Data[0] / M_PI;
+			bsdf_camera.Data[1] = camera_path[c].object->albedo * camera_path[c].object->color.Data[1] / M_PI;
+			bsdf_camera.Data[2] = camera_path[c].object->albedo * camera_path[c].object->color.Data[2] / M_PI;
+		}
+		r.position = camera_path[c].position;
+
 		for (l=0; l<light_path_length; ++l) {
+	
+			if (light_path[l].object->m_type == Specular) continue;
+
 			sub_ext(&light_path[l].position, &camera_path[c].position, &r.direction);
-			dist2 = dot(&r.direction, &r.direction);
-			if (dist2 < 0.0001) continue;
+			dist2 = fabsf(dot(&r.direction, &r.direction));
+			if (dist2 < 1e-20f) dist2=1e-20f;
 			norm_ext(&r.direction, &r.direction);
 			intersect_in_clusters(tree, &r, &t, &obj, &is_intern, &face);
 
@@ -206,32 +229,63 @@ void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length,
 			else {
 				if (l > 0 && light_path[l].object->albedo > 1.0f) continue;
 				mul_ext(&r.direction, -1.0f, &r_light);
-				bsdf_light.Data[0] = light_path[l].object->albedo * light_path[l].object->color.Data[0] / M_PI;
-				bsdf_light.Data[1] = light_path[l].object->albedo * light_path[l].object->color.Data[1] / M_PI;
-				bsdf_light.Data[2] = light_path[l].object->albedo * light_path[l].object->color.Data[2] / M_PI;
+				if (light_path[l].object->m_type == Specular) {
+					bsdf_light.Data[0] = 1.0f;
+					bsdf_light.Data[1] = 1.0f;
+					bsdf_light.Data[2] = 1.0f;
+				}
+				else {
+					bsdf_light.Data[0] = light_path[l].object->albedo * light_path[l].object->color.Data[0] / M_PI;
+					bsdf_light.Data[1] = light_path[l].object->albedo * light_path[l].object->color.Data[1] / M_PI;
+					bsdf_light.Data[2] = light_path[l].object->albedo * light_path[l].object->color.Data[2] / M_PI;
+				}
+
+				if (l>0) {
+					cur_cos = fabsf(dot(&light_path[l-1].normal, &light_path[l-1].wo)) / M_PI;
+					light_path[l].pdf_fwd = compute_pdf(cur_cos, &light_path[l].normal, &light_path[l-1].position, &light_path[l].position);
+					mul_ext(&light_path[l].direction, -1.0f, &neg_wi);
+					cur_cos = fabsf(dot(&light_path[l].normal, &neg_wi)) / M_PI;
+					light_path[l-1].pdf_rev = compute_pdf(cur_cos, &light_path[l-1].normal, &light_path[l].position, &light_path[l-1].position);
+
+					cur_cos = fabsf(dot(&light_path[l].normal, &r_light)) / M_PI;
+					camera_path[c].pdf_rev = compute_pdf(cur_cos, &light_path[l].normal, &light_path[l].position, &camera_path[c].position);
+					cur_cos = fabsf(dot(&camera_path[c].normal, &r.direction)) / M_PI;
+					light_path[l].pdf_rev = compute_pdf(cur_cos, &camera_path[c].normal, &camera_path[c].position, &light_path[l].position);
+				}
+				else { // l==0
+					cur_cos = fabsf(dot(&camera_path[c].normal, &r_light));
+					camera_path[c].pdf_rev = light_path[0].pdf_fwd * cur_cos / dist2 ;
+				}
+
+				r1 = 1.0f;
+				sum_mis = 1.0f;
+				for (i=c; i>=0; --i) { //camera part of mis_weight
+					if (camera_path[i].pdf_fwd == 0.f) break;
+					r1 *= camera_path[i].pdf_rev / camera_path[i].pdf_fwd ;
+					if (camera_path[i].object->m_type != Specular) sum_mis += r1 ;
+				}
+				r1 = 1.0f;
+				for (i=l; i>=0; --i) { //light part of mis_weight
+					if (light_path[i].pdf_fwd == 0.f) break;
+					r1 *= light_path[i].pdf_rev / light_path[i].pdf_fwd ;
+					if (light_path[i].object->m_type != Specular) sum_mis += r1 ;
+				}
+
+				weight = 1.0f/sum_mis;
 
 				cos_camera = fabsf(dot(&camera_path[c].normal, &r.direction)) ;
 				cos_light = fabsf(dot(&light_path[l].normal, &r_light)) ;
 				G = cos_camera * cos_light / dist2;
-				
-				sum_light = sum_camera;
-				r2 = 1.0f;
-				for (i=l-1; i>=0; --i) {
-					pdf_fwd = fabsf(dot(&light_path[i].normal, &light_path[i].direction))/M_PI ;
-					pdf_rev = fabsf(dot(&light_path[i].normal, &light_path[i].wo))/M_PI ;
-					r2 *= pdf_rev / pdf_fwd;
-					sum_light += r2;
-				}
 
-				weight = 1.0f/sum_light;
+				// printf("G=%f, cos_camera=%f, cos_light=%f, dist2=%f\n", G, cos_camera, cos_light, dist2);
 
 				// printf("cam_thpt=%f, l_thpt=%f, bsdf_cam=%f, bsdf_l=%f, G=%f, weight=%f\n", camera_path[c].throughput.Data[0], light_path[l].throughput.Data[0], bsdf_camera.Data[0], bsdf_light.Data[0], G, weight);
-
 				for (i=0; i<3; ++i) {
 					color->Data[i] += camera_path[c].throughput.Data[i] * light_path[l].throughput.Data[i] * bsdf_camera.Data[i] * bsdf_light.Data[i] * G * weight;
 				}
 			}
 		}
+
 	}
 	return;
 }
@@ -271,7 +325,7 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Ver
 		switch (obj->m_type){
 			case Emissive:{
 				if (path[d].is_light == 0) {
-					path[d].position = current_ray.position;
+					path[d].position = hit;
 					path[d].direction = current_ray.direction;
 					path[d].throughput.Data[0] = throughput.Data[0] * obj->color.Data[0] * obj->albedo;
 					path[d].throughput.Data[1] = throughput.Data[1] * obj->color.Data[1] * obj->albedo;
@@ -292,10 +346,17 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Ver
 				for (int i = 0; i < 3; ++i){
 					throughput.Data[i] *= obj->color.Data[i] * albedo;
 				}
+
+				if (d > 10) {
+					if (russian_roulette(&throughput, seed)) {
+						(*path_length)--;
+						return;
+					}
+				}
 				path[d].direction = current_ray.direction;
 				path[d].wo = r_new.direction;
 
-				path[d].position = r_new.position;
+				path[d].position = hit;
 				path[d].throughput = throughput;
 				path[d].normal = n;
 				norm_ext(&path[d].normal, &path[d].normal);
@@ -303,11 +364,7 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Ver
 
 
 				current_ray = r_new;
-				if (d > 10) {
-					if (russian_roulette(&throughput, seed)) {
-						return;
-					}
-				}
+				
 				break;
 			}
 				
@@ -355,8 +412,8 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Ver
 	}
 }
 
-void path_trace_t(const int x1, const int y1, Scene const * S, const size_t bounces, Vector * pixel_color, unsigned int* seed, Large_BVH_t* const tree, int is_bdpt){
-	if (S->size_lights > 0 && is_bdpt) {
+void path_trace_t(const int x1, const int y1, Scene const * S, const size_t bounces, Vector * pixel_color, unsigned int* seed, Large_BVH_t* const tree){
+	if (S->size_lights > 0) {
 		Ray ray, light_ray;
 
 		Vertex camera_path[bounces];
@@ -378,6 +435,8 @@ void path_trace_t(const int x1, const int y1, Scene const * S, const size_t boun
 		ray_sampling_clusters(&ray, tree, (int)bounces, camera_path, seed, &camera_path_length, S->background_color);
 		ray_sampling_clusters(&light_ray, tree, (int)bounces, light_path, seed, &light_path_length, S->background_color);
 
+		camera_path[0].pdf_fwd = compute_pdf(1.0f, &camera_path[0].normal, &S->camera.position, &camera_path[0].position);
+
 		Vector color = {{0.0f,0.0f,0.0f}};
 		compute_vertex(&color, camera_path, camera_path_length, light_path, light_path_length, tree);
 				
@@ -393,11 +452,25 @@ void path_trace_t(const int x1, const int y1, Scene const * S, const size_t boun
 		
 		Vector radiance;
 		ray_sampling_clusters_no_light(&ray, tree, (int)bounces, &radiance, seed, S->background_color);
-				
+		
 		pixel_color->Data[0] += radiance.Data[0];
 		pixel_color->Data[1] += radiance.Data[1];
 		pixel_color->Data[2] += radiance.Data[2];
 		
 		return;
 	}
+}
+
+void path_trace_original(const int x1, const int y1, Scene const * S, const size_t bounces, Vector * pixel_color, unsigned int* seed, Large_BVH_t* const tree) {
+	Ray ray;
+	trace_ray(x1, y1, &S->camera, &ray);
+	
+	Vector radiance;
+	ray_sampling_clusters_no_light(&ray, tree, (int)bounces, &radiance, seed, S->background_color);
+			
+	pixel_color->Data[0] += radiance.Data[0];
+	pixel_color->Data[1] += radiance.Data[1];
+	pixel_color->Data[2] += radiance.Data[2];
+	
+	return;
 }
