@@ -31,7 +31,7 @@ typedef struct Image_32bit
  * @param width Longueur
  * @param height Hauteur
  */
-Image_32bit* create_image_32bit(const size_t width, const size_t height, const size_t samples);
+Image_32bit* create_image_32bit(const size_t width, const size_t height);
 
 /**
  * @brief
@@ -79,7 +79,7 @@ void write_image_file_32bit(Image_32bit *const img, const size_t current_samples
  * @param b Bleu
  * @param a Alpha
  */
-//void clear_frame_color_32bit(Image_32bit *const img, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
+void clear_frame_color_32bit(Image_32bit *const img, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
 
 /**
  * @brief Libère la mémoire allouée par une image
