@@ -1,44 +1,70 @@
 #include "light.h"
+#include "config.h"
+#include "bdpt.h"
 #include <time.h>
 #include <unistd.h>
 
 #include "mpi.h"
 
 static inline void color_float_to_int(float* const local_color_buffer, const int idx_rgb, uint32_t* local_pixels_buffer, const int idx, float const inv_samples){
+	static float gamma_inv = 1.f / 2.2f;
 	
 	float r = local_color_buffer[idx_rgb]   * inv_samples;
 	float g = local_color_buffer[idx_rgb+1] * inv_samples;
 	float b = local_color_buffer[idx_rgb+2] * inv_samples;
-
-	r = max(0.f, min(255.f, r));
-	g = max(0.f, min(255.f, g));
-	b = max(0.f, min(255.f, b));
+	/*r = r / (1.f + r);  g = g / (1.f + g);  b = b / (1.f + b);*/
+	/*r = powf(r, gamma_inv);*/
+	/*g = powf(g, gamma_inv);*/
+	/*b = powf(b, gamma_inv);*/
+	if (r > 255.f) r = 255.f;
+	if (g > 255.f) g = 255.f;
+	if (b > 255.f) b = 255.f;
 
 	local_pixels_buffer[idx] = get_color_32bit(r, g, b, 0);
 }
 
-static inline void print_time(struct timespec const* t0, struct timespec* t1, size_t const i, size_t const smpls, size_t const bounces){
+static inline void print_time(struct timespec const* t0, struct timespec* t1, size_t const i, size_t const smpls, size_t const bounces, const int print_rate, const int mpi_size)
+{
+	
 	clock_gettime(CLOCK_MONOTONIC, t1);
-	char* path="performance/measures/runtime_by_samplings.csv";
-	
+	double elapsed = (t1->tv_sec - t0->tv_sec) + (t1->tv_nsec - t0->tv_nsec) * 1e-9;
+	char* output_path = getenv("PT_MEASURES_PATH");
+	if(!output_path) output_path = "runtime_by_samplings";
+	char path[256];
+	snprintf(path, sizeof(path), "performance/measures/%s.csv", output_path);
+
 	bool exists = (access(path, F_OK) == 0);
-	
-	FILE *f = fopen(path, "a");
+	FILE* f = fopen(path, "a");
 	if (!f) {
 		perror("fopen");
 		exit(1);
 	}
-	
+
 	if (!exists) {
-		fprintf(f, "MPI,OMP,nsamples,bounces,runtime\n");
+		fprintf(f, "MPI,OMP,nsamples,bounces");
+		for (size_t s = print_rate; s <= smpls; s+=print_rate) {
+			fprintf(f, ",%zu", s);
+		}
+		fprintf(f, "\n");
 	}
+
 	char* omp_num_threads = getenv("OMP_NUM_THREADS");
 	int threads = omp_num_threads ? atoi(omp_num_threads) : 1;
-	double elapsed = (t1->tv_sec - t0->tv_sec) + (t1->tv_nsec - t0->tv_nsec) * 1e-9;
-	fprintf(f, "%d,%d,%ld,%ld,%.6f\n",mpi_size, threads, i, bounces, elapsed);
-	if(i == smpls) fprintf(f, "\n");
+
+	static bool first = 1;
+	if (first) {
+		fprintf(f, "%d,%d,%ld,%ld", mpi_size, threads, smpls, bounces);
+		first = 0;
+	}
+
+	fprintf(f, ",%.6f", elapsed);
+
+	if (i == smpls) {
+		fprintf(f, "\n");
+		first = 1;
+	}
+
 	fclose(f);
-	
 }
 
 int main(int argc, char** argv)
@@ -46,46 +72,32 @@ int main(int argc, char** argv)
 	setvbuf(stdout, NULL, _IONBF, 0);
 	
 	srand((unsigned int)time(NULL));
-	if(argc < 4)
+	if(argc == 0)
 	{
-		fprintf(stderr,"Error : Incomplete arguments.\n Please using: %s width height samples\n",argv[0]);
+		fprintf(stderr,"Error : Incomplete arguments.\n Please using: %s <CONFIG>.txt\n",argv[0]);
 		exit(1);
 	}
-
-	const int width  = atoi(argv[1]);
-	const int height = atoi(argv[2]);
-	const size_t smpls = atoi(argv[3]);
-
-	size_t limit = 1;
-	int can_print_image = 1;
-	int measures = 1;
-
-	if (argc > 4 && argv[4][0] != '-') {
-		limit = atoi(argv[4]);
-	}
-
-	for (int arg = 4; arg < argc; ++arg) {
-		if (!strcmp(argv[arg], "no_image")) {
-			can_print_image = 0;
-		} else if (!strcmp(argv[arg], "measures")) {
-			measures = 10;
-		}
-	}
-
-	for (int arg = 4; arg < argc; ++arg) {
-		if (strcmp(argv[arg], "no_image") && strcmp(argv[arg], "measures") && !(arg == 4 && argv[4][0] != '-')) {
-			printf("Error: please use \"no_image\" or \"measures\" instead of \"%s\".\n", argv[arg]);
-			exit(1);
-		}
-	}
 	
+	const char* path = argv[1];
+	pt_config_t config;
 	
-	size_t bounces = (size_t) get_bounces();
+	load_config(&config, path);
 
+	
+
+/* ######################### SIMULATION CONFIGURATION ########################### */
+	const int width  = config.width;
+	const int height = config.height;
+	const size_t smpls = config.samples;
+	const int bounces = config.bounces;
+	const int measures = config.n_measures ? config.n_measures : 1;
+	
+	int can_print_image = config.can_print;
+	size_t print_rate = config.print_rate ? config.print_rate : 1;
 	
 //######################### Create the entier scene ###########################
 	Scene scene;
-	benchmark1(&scene, width, height);
+	config.benchmark(&scene, width, height);
 	
 	object_tree_t* tree = initialize_root_tree_v2(&scene);
 	unsigned int seed = (unsigned int) time(NULL);
@@ -93,9 +105,6 @@ int main(int argc, char** argv)
 	Large_BVH_t* tree_clusters = initialize_tree_clustering(&scene, &seed, K);
 //############################################################################
 	
-	if(!limit) exit(1);
-	size_t print_rate = smpls / limit;
-	if(print_rate == 0) print_rate = 1;
 	
 	MPI_Init(&argc, &argv);
 	MPI_Comm_rank(MPI_COMM_WORLD, &mpi_rank);
@@ -105,25 +114,26 @@ int main(int argc, char** argv)
 	
 	struct timespec t0, t1;
 	if (mpi_rank == 0) {
-		fprintf(stdout,"Using path tracing image %dx%d.\n", width, height);
-		
+		print_config(&config);
 		clock_gettime(CLOCK_MONOTONIC, &t0);
 	}
 
 	const int per_t_height = height / mpi_size;
-	float *local_color_buffer = calloc(width * per_t_height * 3, sizeof(float));
+	float *local_color_buffer = malloc(width * per_t_height * 3* sizeof(float));
 	uint32_t *local_pixels_buffer = calloc(width * per_t_height, sizeof(uint32_t));
-
+#pragma omp parallel for schedule(static)
+			for (int i = 0; i < width * per_t_height * 3; i++)
+				local_color_buffer[i] = 0.0f;
+	
 	int start = per_t_height*mpi_rank;
 	int end = per_t_height*(mpi_rank+1);
 	
 	
 	for (int m = 0; m<measures; ++m) {
-		memset(local_color_buffer, 0, width * per_t_height * 3* sizeof(float));
 #pragma omp parallel
 		{
 			Vector pixel_color;
-			unsigned int seed_per_threads = time(NULL) ^ (mpi_rank << 8) ^ omp_get_thread_num();
+			unsigned int seed_per_threads = time(NULL) ^ getpid() ^ omp_get_thread_num();
 			for(size_t p = print_rate; p <= smpls; p+=print_rate) {
 #pragma omp for schedule(static)
 				for(int y1 = start; y1 < end; ++y1){
@@ -134,7 +144,8 @@ int main(int argc, char** argv)
 						pixel_color.Data[2] = 0.0f;
 						for (size_t i=0; i<print_rate; ++i) {
 							//path_trace(x1, y1, local_y, width, &scene, bounces, local_color_buffer, &seed_per_threads);
-							path_trace_t(x1, y1, &scene, bounces, &pixel_color, &seed_per_threads, tree_clusters);
+							path_trace_t(x1, y1, &scene, bounces, &pixel_color, &seed_per_threads, tree_clusters, 0);
+							//bdpt_render_pixel(x1, y1, &scene, tree_clusters, bounces, &pixel_color, &seed);
 						}
 						local_color_buffer[(local_y * width + x1) * 3 + 0] += pixel_color.Data[0];
 						local_color_buffer[(local_y * width + x1) * 3 + 1] += pixel_color.Data[1];
@@ -157,7 +168,7 @@ int main(int argc, char** argv)
 					
 					if (mpi_size != 1){
 						if (mpi_rank == 0) {
-							print_time(&t0, &t1, p, smpls, bounces);
+							print_time(&t0, &t1, 0, smpls, bounces, print_rate, mpi_size);
 							if((can_print_image)||(p==smpls)){
 								MPI_Gather(local_pixels_buffer, width * per_t_height, MPI_INT32_T, image->buffer, width * per_t_height, MPI_INT32_T, 0, MPI_COMM_WORLD);
 								write_image_file_32bit(image, p);
@@ -171,7 +182,7 @@ int main(int argc, char** argv)
 						}
 					}
 					else {
-						print_time(&t0, &t1, p, smpls, bounces);
+						print_time(&t0, &t1, 0, smpls, bounces, print_rate, mpi_size);
 						memcpy(image->buffer, local_pixels_buffer, width * per_t_height * sizeof(uint32_t));
 						write_image_file_32bit(image, p);
 					}

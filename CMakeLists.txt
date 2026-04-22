@@ -54,6 +54,8 @@ add_library(LibPathTracing
     src/vector.c
     src/light.c
     src/benchmarks.c
+    src/bdpt.c
+    src/config.c
 )
 
 target_include_directories(LibPathTracing PUBLIC ${PROJECT_SOURCE_DIR}/includes)

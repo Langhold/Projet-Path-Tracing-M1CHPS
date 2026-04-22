@@ -1,7 +1,7 @@
 #ifndef light_h
 #define light_h
 
-
+#include "config.h"
 #include "scene.h"
 #include <omp.h>
 
@@ -32,7 +32,9 @@ void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length,
  * @param N input: number of samples
  * @param color output: the color of the pixel
  */
-void path_trace_t(const int x1, const int y1, Scene const * S, const size_t bounces, Vector * pixel_color, unsigned int* seed, Large_BVH_t* const tree);
+void path_trace_t(const int x1, const int y1, Scene const * S, const size_t bounces, Vector * pixel_color, unsigned int* seed, Large_BVH_t* const tree, int is_bdst);
+
+
 
 int get_bounces(void);
 

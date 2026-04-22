@@ -1,9 +1,10 @@
 #include "light.h"
 
+
 int russian_roulette(Vector* throughput, unsigned int* seed){
 	
-	const float p = 0.2126f * throughput->Data[0] + 0.7152f * throughput->Data[1] + 0.0722f * throughput->Data[2];
-	
+	float p = 0.2126f * throughput->Data[0] + 0.7152f * throughput->Data[1] + 0.0722f * throughput->Data[2];
+	p = fminf(1.f, p);
 	const float epsilon = rand_r(seed) / (float)RAND_MAX;
 	
 	if (epsilon > p) {
@@ -165,13 +166,14 @@ void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length,
 	Vector bsdf_light = (Vector){{0.0f,0.0f,0.0f}};
 	float dist2 = 0.0f, cos_camera = 0.0f, cos_light = 0.0f, G = 0.0f;
 	float pdf_fwd = 0.0f, pdf_rev = 0.0f, r1 = 1.0f, r2 = 1.0f, weight = 0.0f;
+	float t;
 	int c,l,i;
 	float sum_camera = 1.0f, sum_light = 0.0f;
-	float t = FLT_MAX;
 	Primitive* obj = NULL;
 	int is_intern = 0, face = -1;
 
 	for (c=0; c<camera_path_length; ++c) {
+		t = FLT_MAX;
 		bsdf_camera.Data[0] = camera_path[c].object->albedo * camera_path[c].object->color.Data[0] / M_PI;
 		bsdf_camera.Data[1] = camera_path[c].object->albedo * camera_path[c].object->color.Data[1] / M_PI;
 		bsdf_camera.Data[2] = camera_path[c].object->albedo * camera_path[c].object->color.Data[2] / M_PI;
@@ -333,9 +335,9 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Ver
 				path[d].wo = r_new.direction;
 
 				path[d].position = r_new.position;
-				path[d].throughput.Data[0] *= throughput.Data[0];
-				path[d].throughput.Data[1] *= throughput.Data[1];
-				path[d].throughput.Data[2] *= throughput.Data[2];
+				path[d].throughput.Data[0] = throughput.Data[0];
+				path[d].throughput.Data[1] = throughput.Data[1];
+				path[d].throughput.Data[2] = throughput.Data[2];
 				path[d].normal = n;
 				norm_ext(&path[d].normal, &path[d].normal);
 				path[d].object = obj;
@@ -353,8 +355,8 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Ver
 	}
 }
 
-void path_trace_t(const int x1, const int y1, Scene const * S, const size_t bounces, Vector * pixel_color, unsigned int* seed, Large_BVH_t* const tree){
-	if (S->size_lights > 0) {
+void path_trace_t(const int x1, const int y1, Scene const * S, const size_t bounces, Vector * pixel_color, unsigned int* seed, Large_BVH_t* const tree, int is_bdpt){
+	if (S->size_lights > 0 && is_bdpt) {
 		Ray ray, light_ray;
 
 		Vertex camera_path[bounces];

@@ -108,7 +108,7 @@ void create_box(Primitive* prim, const float width, const float height, const fl
 	box->obb_direction = (Vector) {{sinB, cosB*sinA, -cosA*cosB}};
 	norm_ext(&box->obb_direction, &box->obb_direction);
 
-	if (fabs(box->obb_direction.Data[0]) < 1-EPS) up = (Vector){{0.0f, 1.0f, 0.0f}};
+	if (fabsf(box->obb_direction.Data[0]) < 1-EPS) up = (Vector){{0.0f, 1.0f, 0.0f}};
 	else up = (Vector){{1.0f, 0.0f, 0.0f}};
 	
 	cross_ext(&box->obb_direction, &up, &(box->obb_right));
@@ -1000,7 +1000,7 @@ Ray random_Ray_demi_sphere_cosine_weighted(const Vector * origin, const Vector *
 	Ray ray;
 	ray.position = *origin;
 	
-	if (fabs((*normal).Data[1])<1.0f-EPS){
+	if (fabsf((*normal).Data[1])<1.0f-EPS){
 		create_vector_ext(&up, 0, 1, 0);
 	}
 	else{
@@ -1029,6 +1029,8 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 	if (size_lights <= 0) {
 		return;
 	}
+	/* <<<<<<<<<<<<<<<<<<<<*/
+	/*
 	float sum_intensity = 0;
 	for (size_t i=0; i<size_lights; ++i) {
 		sum_intensity += light[i]->albedo;
@@ -1046,7 +1048,32 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 			chosen = i;
 			break;
 		}
+	}*/
+	/* ===================== */
+	
+	float sum_intensity = 0.0f;
+	for (size_t i = 0; i < size_lights; ++i) sum_intensity += light[i]->albedo;
+	if (sum_intensity <= 0.0f) return;
+
+	const float u = rand_r(seed) / (float)RAND_MAX;
+	size_t chosen = size_lights - 1;
+	float cumul = 0.0f;
+	for (size_t i = 0; i < size_lights; ++i) {
+		cumul += light[i]->albedo / sum_intensity;
+		if (u <= cumul) { chosen = i; break; }
 	}
+	Primitive *L = light[chosen];
+	const float p_light = L->albedo / sum_intensity;
+	
+	const Vector Le = L->color;
+
+	light_path[0].object   = L;
+	light_path[0].is_light = 1;
+
+	
+	/* >>>>>>>>>>>>>>>>>>>> */
+	/* <<<<<<<<<<<<<<<<<<<< */
+	/*
 
 	light_path[0].object = light[chosen];
 	light_path[0].object->albedo = light[chosen]->albedo;
@@ -1060,6 +1087,14 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 	light_path[0].throughput.Data[0] = light[chosen]->color.Data[0] * sum_intensity;
 	light_path[0].throughput.Data[1] = light[chosen]->color.Data[1] * sum_intensity;
 	light_path[0].throughput.Data[2] = light[chosen]->color.Data[2] * sum_intensity;
+	
+	
+	
+	float p_light = sum_intensity /  light[chosen]->albedo;
+	light_path[0].throughput.Data[0] = light[chosen]->color.Data[0] * p_light;
+	light_path[0].throughput.Data[1] = light[chosen]->color.Data[1] * p_light;
+	light_path[0].throughput.Data[2] = light[chosen]->color.Data[2] * p_light;
+
 
 	switch (light[chosen]->type) {
 		case SPHERE: {
@@ -1081,8 +1116,8 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 			norm_ext(&light_path[0].normal, &light_path[0].normal);
 			break;
 		}
-		case BOX :
-		case BBOX: {
+		case BBOX :
+		case BOX: {
 			OBB *box = (OBB *)light[chosen]->object;
 			//random face
 			int face = (int)(rand_r(seed) % 6) ;
@@ -1163,20 +1198,333 @@ void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path
 					light_path[0].throughput.Data[2] /= 4*box->size.Data[0]*box->size.Data[1]*6 ;
 					break;
 				}
-				norm_ext(&light_path[0].normal, &light_path[0].normal);
+				
 			}
 			break;
 		}
 	}
+	 */
+	
+	/* ===================== */
+	
+	Vector pos    = L->position;
+	Vector normal = {0};
+	float p_area  = 0.0f;
 
+	switch (L->type) {
+		case SPHERE: {
+			Sphere *sph = (Sphere *)L->object;
+			const float u1 = rand_r(seed) / (float)RAND_MAX;
+			const float u2 = rand_r(seed) / (float)RAND_MAX;
+			const float phi = 2.0f * (float)M_PI * u2;
+			const float z   = 2.0f * u1 - 1.0f;
+			const float r   = sqrtf(fmaxf(0.0f, 1.0f - z*z));
+
+			const float dx = r * cosf(phi) * sph->radius;
+			const float dy = r * sinf(phi) * sph->radius;
+			const float dz = z * sph->radius;
+
+			pos.Data[0] += dx;  pos.Data[1] += dy;  pos.Data[2] += dz;
+
+			normal.Data[0] = dx / sph->radius;
+			normal.Data[1] = dy / sph->radius;
+			normal.Data[2] = dz / sph->radius;
+
+			p_area = 1.0f / (4.0f * (float)M_PI * sph->radius * sph->radius);
+			break;
+		}
+
+		case BBOX:
+		case BOX: {
+			OBB *box = (OBB *)L->object;
+			const float sx = box->size.Data[0];
+			const float sy = box->size.Data[1];
+			const float sz = box->size.Data[2];
+
+			const float A_d  = 4.0f * sx * sy;
+			const float A_u  = 4.0f * sx * sz;
+			const float A_r  = 4.0f * sy * sz;
+			const float A_tot = 2.0f * (A_d + A_u + A_r);
+
+			float t = (rand_r(seed) / (float)RAND_MAX) * A_tot;
+			int face;
+			if      ((t -= A_d) < 0) face = 0;
+			else if ((t -= A_d) < 0) face = 1;
+			else if ((t -= A_u) < 0) face = 2;
+			else if ((t -= A_u) < 0) face = 3;
+			else if ((t -= A_r) < 0) face = 4;
+			else                     face = 5;
+
+			const float s_right = (rand_r(seed)/(float)RAND_MAX) * 2.0f * sx - sx;
+			const float s_up    = (rand_r(seed)/(float)RAND_MAX) * 2.0f * sy - sy;
+			const float s_dir   = (rand_r(seed)/(float)RAND_MAX) * 2.0f * sz - sz;
+
+			const Vector R = box->obb_right;
+			const Vector U = box->obb_up;
+			const Vector D = box->obb_direction;
+			Vector off;
+
+			switch (face) {
+				case 0:
+					off.Data[0] =  D.Data[0]*sz + R.Data[0]*s_right + U.Data[0]*s_up;
+					off.Data[1] =  D.Data[1]*sz + R.Data[1]*s_right + U.Data[1]*s_up;
+					off.Data[2] =  D.Data[2]*sz + R.Data[2]*s_right + U.Data[2]*s_up;
+					normal = D;
+					break;
+				case 1:
+					off.Data[0] = -D.Data[0]*sz + R.Data[0]*s_right + U.Data[0]*s_up;
+					off.Data[1] = -D.Data[1]*sz + R.Data[1]*s_right + U.Data[1]*s_up;
+					off.Data[2] = -D.Data[2]*sz + R.Data[2]*s_right + U.Data[2]*s_up;
+					mul_ext(&D, -1.0f, &normal);
+					break;
+				case 2:
+					off.Data[0] =  U.Data[0]*sy + R.Data[0]*s_right + D.Data[0]*s_dir;
+					off.Data[1] =  U.Data[1]*sy + R.Data[1]*s_right + D.Data[1]*s_dir;
+					off.Data[2] =  U.Data[2]*sy + R.Data[2]*s_right + D.Data[2]*s_dir;
+					normal = U;
+					break;
+				case 3:
+					off.Data[0] = -U.Data[0]*sy + R.Data[0]*s_right + D.Data[0]*s_dir;
+					off.Data[1] = -U.Data[1]*sy + R.Data[1]*s_right + D.Data[1]*s_dir;
+					off.Data[2] = -U.Data[2]*sy + R.Data[2]*s_right + D.Data[2]*s_dir;
+					mul_ext(&U, -1.0f, &normal);
+					break;
+				case 4:
+					off.Data[0] =  R.Data[0]*sx + U.Data[0]*s_up + D.Data[0]*s_dir;
+					off.Data[1] =  R.Data[1]*sx + U.Data[1]*s_up + D.Data[1]*s_dir;
+					off.Data[2] =  R.Data[2]*sx + U.Data[2]*s_up + D.Data[2]*s_dir;
+					normal = R;
+					break;
+				default: case 5 :
+					off.Data[0] = -R.Data[0]*sx + U.Data[0]*s_up + D.Data[0]*s_dir;
+					off.Data[1] = -R.Data[1]*sx + U.Data[1]*s_up + D.Data[1]*s_dir;
+					off.Data[2] = -R.Data[2]*sx + U.Data[2]*s_up + D.Data[2]*s_dir;
+					mul_ext(&R, -1.0f, &normal);
+					break;
+			}
+			pos.Data[0] += off.Data[0];
+			pos.Data[1] += off.Data[1];
+			pos.Data[2] += off.Data[2];
+			norm_ext(&normal, &normal);
+			p_area = 1.0f / A_tot;
+			break;
+		}
+
+		default:
+			return;
+	}
+
+	light_path[0].position = pos;
+	light_path[0].normal   = normal;
+	
+	
+	/* >>>>>>>>>>>>>>>>>>>> */
+	
+	
+	/* <<<<<<<<<<<<<<<<<<<< */
+	
+	/*
 	Ray r_new = random_Ray_demi_sphere_cosine_weighted(&light_path[0].position, &light_path[0].normal, seed);
-	light_path[0].throughput.Data[0] *= M_PI / dot(&r_new.direction, &light_path[0].normal);
-	light_path[0].throughput.Data[1] *= M_PI / dot(&r_new.direction, &light_path[0].normal);
-	light_path[0].throughput.Data[2] *= M_PI / dot(&r_new.direction, &light_path[0].normal);
+	light_path[0].throughput.Data[0] *= M_PI;
+	light_path[0].throughput.Data[1] *= M_PI;
+	light_path[0].throughput.Data[2] *= M_PI;
 	light_path[0].direction = r_new.direction;
 	light_path[0].is_light = 1;
-	light_path[0].wo = r_new.direction;
+	light_path[0].wo = r_new.direction;*/
+	
+	/* ===================== */
+	
+	Ray r_new = random_Ray_demi_sphere_cosine_weighted(&pos, &normal, seed);
+	light_path[0].direction = r_new.direction;
+	light_path[0].wo        = r_new.direction;
+	
+	const float inv = (float)M_PI / (p_light * p_area);
+	light_path[0].throughput.Data[0] = Le.Data[0] * inv;
+	light_path[0].throughput.Data[1] = Le.Data[1] * inv;
+	light_path[0].throughput.Data[2] = Le.Data[2] * inv;
+	
+	
+	/* pour calculer le MIS, on stocke les pdf d'après Claude*/
+	light_path[0].pdf_pos = p_light * p_area;
+	light_path[0].pdf_dir = fmaxf(dot(&r_new.direction, &normal), 0.0f) / (float)M_PI;
+	
+	/* >>>>>>>>>>>>>>>>>>>> */
+	
+	
+	
 }
+/*
+void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path, unsigned int* seed) {
+	if (size_lights == 0) return;
+
+	 * ---------------------------------------------------------------
+	 * 1) Choix de la source : p_light(i) = albedo_i / sum_intensity
+	 * ---------------------------------------------------------------
+	float sum_intensity = 0.0f;
+	for (size_t i = 0; i < size_lights; ++i) sum_intensity += light[i]->albedo;
+	if (sum_intensity <= 0.0f) return;
+
+	const float u = rand_r(seed) / (float)RAND_MAX;
+	size_t chosen = size_lights - 1;  /* fallback flottant
+	float cumul = 0.0f;
+	for (size_t i = 0; i < size_lights; ++i) {
+		cumul += light[i]->albedo / sum_intensity;
+		if (u <= cumul) { chosen = i; break; }
+	}
+	Primitive *L = light[chosen];
+	const float p_light = L->albedo / sum_intensity;
+
+	 Convention d'émission — À ADAPTER si Le = color*albedo chez vous
+	const Vector Le = L->color;
+
+	light_path[0].object   = L;   * simple référence, pas de copie *
+	light_path[0].is_light = 1;
+
+	 * ---------------------------------------------------------------
+	 * 2) Échantillonnage d'un point sur la surface de la source
+	 *    → position, normale sortante, p_area (PDF d'aire)
+	 * ---------------------------------------------------------------
+	Vector pos    = L->position;
+	Vector normal = {0};
+	float p_area = 0.0f;
+
+	switch (L->type) {
+		case SPHERE: {
+			Sphere *sph = (Sphere *)L->object;
+			const float u1 = rand_r(seed) / (float)RAND_MAX;
+			const float u2 = rand_r(seed) / (float)RAND_MAX;
+			const float phi = 2.0f * (float)M_PI * u2;
+			const float z   = 2.0f * u1 - 1.0f;
+			const float r   = sqrtf(fmaxf(0.0f, 1.0f - z*z));
+
+			const float dx = r * cosf(phi) * sph->radius;
+			const float dy = r * sinf(phi) * sph->radius;
+			const float dz = z * sph->radius;
+
+			pos.Data[0] += dx;  pos.Data[1] += dy;  pos.Data[2] += dz;
+
+			* normale = (pos - centre)/radius, déjà unitaire *
+			normal.Data[0] = dx / sph->radius;
+			normal.Data[1] = dy / sph->radius;
+			normal.Data[2] = dz / sph->radius;
+
+			p_area = 1.0f / (4.0f * (float)M_PI * sph->radius * sph->radius);
+			break;
+		}
+
+		case BOX:
+		case BBOX: {
+			OBB *box = (OBB *)L->object;
+			* Convention : size[0]↔obb_right, size[1]↔obb_up, size[2]↔obb_direction *
+			const float sx = box->size.Data[0];
+			const float sy = box->size.Data[1];
+			const float sz = box->size.Data[2];
+
+			* Aires des 3 paires de faces *
+			const float A_d  = 4.0f * sx * sy;
+			const float A_u  = 4.0f * sx * sz;
+			const float A_r  = 4.0f * sy * sz;
+			const float A_tot = 2.0f * (A_d + A_u + A_r);
+
+			float t = (rand_r(seed) / (float)RAND_MAX) * A_tot;
+			int face;
+			if      ((t -= A_d) < 0) face = 0;
+			else if ((t -= A_d) < 0) face = 1;
+			else if ((t -= A_u) < 0) face = 2;
+			else if ((t -= A_u) < 0) face = 3;
+			else if ((t -= A_r) < 0) face = 4;
+			else                     face = 5;
+
+			const float s_right = (rand_r(seed)/(float)RAND_MAX) * 2.0f * sx - sx;
+			const float s_up    = (rand_r(seed)/(float)RAND_MAX) * 2.0f * sy - sy;
+			const float s_dir   = (rand_r(seed)/(float)RAND_MAX) * 2.0f * sz - sz;
+
+			const Vector R = box->obb_right;
+			const Vector U = box->obb_up;
+			const Vector D = box->obb_direction;
+			Vector off;
+
+			switch (face) {
+				case 0: * +direction : centre ± D·sz + R·s_right + U·s_up *
+					off.Data[0] =  D.Data[0]*sz + R.Data[0]*s_right + U.Data[0]*s_up;
+					off.Data[1] =  D.Data[1]*sz + R.Data[1]*s_right + U.Data[1]*s_up;
+					off.Data[2] =  D.Data[2]*sz + R.Data[2]*s_right + U.Data[2]*s_up;
+					normal = D;
+					break;
+				case 1: * -direction *
+					off.Data[0] = -D.Data[0]*sz + R.Data[0]*s_right + U.Data[0]*s_up;
+					off.Data[1] = -D.Data[1]*sz + R.Data[1]*s_right + U.Data[1]*s_up;
+					off.Data[2] = -D.Data[2]*sz + R.Data[2]*s_right + U.Data[2]*s_up;
+					mul_ext(&D, -1.0f, &normal);
+					break;
+				case 2: * +up : D·s_dir + R·s_right + U·sy *
+					off.Data[0] =  U.Data[0]*sy + R.Data[0]*s_right + D.Data[0]*s_dir;
+					off.Data[1] =  U.Data[1]*sy + R.Data[1]*s_right + D.Data[1]*s_dir;
+					off.Data[2] =  U.Data[2]*sy + R.Data[2]*s_right + D.Data[2]*s_dir;
+					normal = U;
+					break;
+				case 3: * -up *
+					off.Data[0] = -U.Data[0]*sy + R.Data[0]*s_right + D.Data[0]*s_dir;
+					off.Data[1] = -U.Data[1]*sy + R.Data[1]*s_right + D.Data[1]*s_dir;
+					off.Data[2] = -U.Data[2]*sy + R.Data[2]*s_right + D.Data[2]*s_dir;
+					mul_ext(&U, -1.0f, &normal);
+					break;
+				case 4: * +right : R·sx + U·s_up + D·s_dir *
+					off.Data[0] =  R.Data[0]*sx + U.Data[0]*s_up + D.Data[0]*s_dir;
+					off.Data[1] =  R.Data[1]*sx + U.Data[1]*s_up + D.Data[1]*s_dir;
+					off.Data[2] =  R.Data[2]*sx + U.Data[2]*s_up + D.Data[2]*s_dir;
+					normal = R;
+					break;
+				default: * case 5 : -right *
+					off.Data[0] = -R.Data[0]*sx + U.Data[0]*s_up + D.Data[0]*s_dir;
+					off.Data[1] = -R.Data[1]*sx + U.Data[1]*s_up + D.Data[1]*s_dir;
+					off.Data[2] = -R.Data[2]*sx + U.Data[2]*s_up + D.Data[2]*s_dir;
+					mul_ext(&R, -1.0f, &normal);
+					break;
+			}
+			pos.Data[0] += off.Data[0];
+			pos.Data[1] += off.Data[1];
+			pos.Data[2] += off.Data[2];
+			norm_ext(&normal, &normal);             * sécurité *
+			p_area = 1.0f / A_tot;                  * uniforme sur la surface totale *
+			break;
+		}
+
+		default:
+			return;  * type non émetteur / non géré *
+	}
+
+	light_path[0].position = pos;
+	light_path[0].normal   = normal;
+
+	 * ---------------------------------------------------------------
+	 * 3) Direction émise : cosine-weighted hemisphere, p_ω = cos(θ)/π
+	 * --------------------------------------------------------------- *
+	Ray r_new = random_Ray_demi_sphere_cosine_weighted(&pos, &normal, seed);
+	light_path[0].direction = r_new.direction;
+	light_path[0].wo        = r_new.direction;
+
+	 * ---------------------------------------------------------------
+	 * 4) Throughput initial du light path
+	 *
+	 *   α₀ = Le · cos(θ) / ( p_light · p_area · p_ω )
+	 *      = Le · cos(θ) · π / ( p_light · p_area · cos(θ) )
+	 *      = Le · π / ( p_light · p_area )
+	 *
+	 *   (le cos(θ) se simplifie avec celui de la PDF cosine-weighted)
+	 * --------------------------------------------------------------- *
+	const float inv = (float)M_PI / (p_light * p_area);
+	light_path[0].throughput.Data[0] = Le.Data[0] * inv;
+	light_path[0].throughput.Data[1] = Le.Data[1] * inv;
+	light_path[0].throughput.Data[2] = Le.Data[2] * inv;
+
+	* --- Optionnel mais recommandé pour le MIS : stocker les PDFs ---
+	light_path[0].pdf_pos = p_light * p_area;
+	light_path[0].pdf_dir = fmaxf(dot(&r_new.direction, &normal), 0.0f) / (float)M_PI;
+	
+}
+*/
+
 static inline float dist2(const Vector* a, const Vector* b) {
 	float dx = a->Data[0] - b->Data[0];
 	float dy = a->Data[1] - b->Data[1];
@@ -1377,4 +1725,5 @@ void free_clusters(Large_BVH_t** root){
 	for (int i = 0; i<(*root)->K; ++i) {
 		if ((*root)->clusters[i]) free_tree_objects(&(*root)->clusters[i]);
 	}
+	free((*root)->clusters); free(*root);
 }
