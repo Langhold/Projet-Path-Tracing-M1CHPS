@@ -8,7 +8,7 @@ A path tracer using Monte Carlo for image rendering written in C.
 ### Build 
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release
-make -C build
+cmake --build build
 ```
 
 ### Run 
