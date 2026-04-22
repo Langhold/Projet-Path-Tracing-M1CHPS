@@ -12,10 +12,10 @@ static inline void color_float_to_int(float* const local_color_buffer, const int
 	float r = local_color_buffer[idx_rgb]   * inv_samples;
 	float g = local_color_buffer[idx_rgb+1] * inv_samples;
 	float b = local_color_buffer[idx_rgb+2] * inv_samples;
-	r = r / (1.f + r);  g = g / (1.f + g);  b = b / (1.f + b);
-	r = powf(r, gamma_inv);
-	g = powf(g, gamma_inv);
-	b = powf(b, gamma_inv);
+	//r = r / (1.f + r);  g = g / (1.f + g);  b = b / (1.f + b);
+	/*r = powf(r, gamma_inv);*/
+	/*g = powf(g, gamma_inv);*/
+	/*b = powf(b, gamma_inv);*/
 	if (r > 255.f) r = 255.f;
 	if (g > 255.f) g = 255.f;
 	if (b > 255.f) b = 255.f;
@@ -23,15 +23,17 @@ static inline void color_float_to_int(float* const local_color_buffer, const int
 	local_pixels_buffer[idx] = get_color_32bit(r, g, b, 0);
 }
 
-static inline void print_time(struct timespec const* t0, struct timespec* t1, size_t const i, size_t const smpls, size_t const bounces, const int print_rate, const int mpi_size)
+static inline void print_time(struct timespec const* t0, struct timespec* t1, size_t const i, pt_config_t* config, const int mpi_size)
 {
 	
-	clock_gettime(CLOCK_MONOTONIC, t1);
-	double elapsed = (t1->tv_sec - t0->tv_sec) + (t1->tv_nsec - t0->tv_nsec) * 1e-9;
-	char* output_path = getenv("PT_MEASURES_PATH");
+	static double elapsed =  0;
+	elapsed += (t1->tv_sec - t0->tv_sec) + (t1->tv_nsec - t0->tv_nsec) * 1e-9;
+	/*char* output_path = getenv("PT_MEASURES_PATH");
 	if(!output_path) output_path = "runtime_by_samplings";
 	char path[256];
-	snprintf(path, sizeof(path), "performance/measures/%s.csv", output_path);
+	snprintf(path, sizeof(path), "performance/measures/%s.csv", output_path);*/
+	
+	const char* path = config->output_filename;
 
 	bool exists = (access(path, F_OK) == 0);
 	FILE* f = fopen(path, "a");
@@ -42,7 +44,7 @@ static inline void print_time(struct timespec const* t0, struct timespec* t1, si
 
 	if (!exists) {
 		fprintf(f, "MPI,OMP,nsamples,bounces");
-		for (size_t s = print_rate; s <= smpls; s+=print_rate) {
+		for (size_t s = config->print_rate; s <= config->samples; s+=config->print_rate) {
 			fprintf(f, ",%zu", s);
 		}
 		fprintf(f, "\n");
@@ -53,15 +55,16 @@ static inline void print_time(struct timespec const* t0, struct timespec* t1, si
 
 	static bool first = 1;
 	if (first) {
-		fprintf(f, "%d,%d,%ld,%ld", mpi_size, threads, smpls, bounces);
+		fprintf(f, "%d,%d,%zu,%d", mpi_size, threads, config->samples, config->bounces);
 		first = 0;
 	}
 
 	fprintf(f, ",%.6f", elapsed);
 
-	if (i == smpls) {
+	if (i >= config->samples) {
 		fprintf(f, "\n");
 		first = 1;
+		elapsed = 0;
 	}
 
 	fclose(f);
@@ -99,6 +102,7 @@ int main(int argc, char** argv)
 	Scene scene;
 	config.benchmark(&scene, width, height);
 	
+	
 	object_tree_t* tree = initialize_root_tree_v2(&scene);
 	unsigned int seed = (unsigned int) time(NULL);
 	const int K = 4;
@@ -115,7 +119,7 @@ int main(int argc, char** argv)
 	struct timespec t0, t1;
 	if (mpi_rank == 0) {
 		print_config(&config);
-		clock_gettime(CLOCK_MONOTONIC, &t0);
+		
 	}
 
 	const int per_t_height = height / mpi_size;
@@ -130,6 +134,10 @@ int main(int argc, char** argv)
 	
 	
 	for (int m = 0; m<measures; ++m) {
+		if (mpi_rank == 0){
+			printf("%d measure on %d\n", m+1, measures);
+			clock_gettime(CLOCK_MONOTONIC, &t0);
+		}
 #pragma omp parallel
 		{
 			Vector pixel_color;
@@ -167,13 +175,14 @@ int main(int argc, char** argv)
 					
 					if (mpi_size != 1){
 						if (mpi_rank == 0) {
-							print_time(&t0, &t1, 0, smpls, bounces, print_rate, mpi_size);
+							print_time(&t0, &t1, p, &config, mpi_size);
 							if((can_print_image)||(p==smpls)){
 								MPI_Gather(local_pixels_buffer, width * per_t_height, MPI_INT32_T, image->buffer, width * per_t_height, MPI_INT32_T, 0, MPI_COMM_WORLD);
 								write_image_file_32bit(image, p);
 								printf("image_32bit%zu written\n", p);
 							}
 							
+							clock_gettime(CLOCK_MONOTONIC, &t0);
 						}
 						else {
 							if(can_print_image || p==smpls)
@@ -181,9 +190,10 @@ int main(int argc, char** argv)
 						}
 					}
 					else {
-						print_time(&t0, &t1, 0, smpls, bounces, print_rate, mpi_size);
+						print_time(&t0, &t1, 0, &config, mpi_size);
 						memcpy(image->buffer, local_pixels_buffer, width * per_t_height * sizeof(uint32_t));
 						write_image_file_32bit(image, p);
+						clock_gettime(CLOCK_MONOTONIC, &t0);
 					}
 				}
 			}

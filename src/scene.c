@@ -1688,6 +1688,7 @@ Large_BVH_t* initialize_root_tree_clustering(const Primitive** Objects, const in
 		box.bmax.Data[1] = fmaxf(box.bmax.Data[1],clusters[k].box.bmax.Data[1]);
 		box.bmax.Data[2] = fmaxf(box.bmax.Data[2],clusters[k].box.bmax.Data[2]);
 		free(clusters[k].objects);
+		print_tree_root(root->clusters[k]);
 	}
 	root->box = box;
 	root->K = K;
