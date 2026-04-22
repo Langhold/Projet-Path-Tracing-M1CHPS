@@ -12,10 +12,10 @@ static inline void color_float_to_int(float* const local_color_buffer, const int
 	float r = local_color_buffer[idx_rgb]   * inv_samples;
 	float g = local_color_buffer[idx_rgb+1] * inv_samples;
 	float b = local_color_buffer[idx_rgb+2] * inv_samples;
-	/*r = r / (1.f + r);  g = g / (1.f + g);  b = b / (1.f + b);*/
-	/*r = powf(r, gamma_inv);*/
-	/*g = powf(g, gamma_inv);*/
-	/*b = powf(b, gamma_inv);*/
+	r = r / (1.f + r);  g = g / (1.f + g);  b = b / (1.f + b);
+	r = powf(r, gamma_inv);
+	g = powf(g, gamma_inv);
+	b = powf(b, gamma_inv);
 	if (r > 255.f) r = 255.f;
 	if (g > 255.f) g = 255.f;
 	if (b > 255.f) b = 255.f;
@@ -78,14 +78,14 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 	
-	const char* path = argv[1];
-	pt_config_t config;
-	
-	load_config(&config, path);
 
 	
 
 /* ######################### SIMULATION CONFIGURATION ########################### */
+	const char* path = argv[1];
+	pt_config_t config;
+	load_config(&config, path);
+	
 	const int width  = config.width;
 	const int height = config.height;
 	const size_t smpls = config.samples;
@@ -152,7 +152,6 @@ int main(int argc, char** argv)
 						local_color_buffer[(local_y * width + x1) * 3 + 2] += pixel_color.Data[2];
 					}
 				}
-#pragma omp barrier
 #pragma omp single
 				{
 					if (mpi_rank == 0) clock_gettime(CLOCK_MONOTONIC, &t1);

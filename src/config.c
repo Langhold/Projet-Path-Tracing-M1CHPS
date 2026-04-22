@@ -92,12 +92,19 @@ void print_config(pt_config_t* config) {
 	"┌──────────────────────────────┐\n"
 	"│ PATH TRACER WITH MONTE CARLO │\n"
 	"└──────────────────────────────┘\n"
-	" CONFIG PARAMETERS\n"
+	" IMAGE PARAMETERS\n"
 	" ┬──────────────────────────────\n"
 	" ├%-20s %d\n"
 	" ├%-20s %d\n"
 	" ├%-20s %zu\n"
 	" └%-20s %d\n"
+	" -──────────────────────────────\n"
+	" MEASURE PARAMETERS\n"
+	" ┬──────────────────────────────\n"
+	" ├%-20s %zd\n"
+	" ├%-20s %d\n"
+	" └%-20s %s\n"
+	" -──────────────────────────────\n"
 	" %-20s\n"
 	" ┬──────────────────────────────\n"
 	" └%s\n",
@@ -105,6 +112,9 @@ void print_config(pt_config_t* config) {
 	"HEIGHT",config->height,
 	"SAMPLES",config->samples,
 	"BOUNCES",config->bounces,
+	"PRINT RATE",config->print_rate,
+	"MEASURES",config->n_measures,
+	"OUTPUT FILE",config->output_filename,
 	"BENCHMARK",config->benchmark_name
   );
 }
