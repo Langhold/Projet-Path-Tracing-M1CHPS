@@ -1,6 +1,6 @@
 #include <simd/fLight.h>
 
-void phong_model(fRay *r, fSphere *sph, fQuad *q, fRGB *pixel_color, fHit *hit_surface, size_t x, size_t y, size_t width)
+void phong_model(fScene *scene, fRay *r, fRGB *pixel_color, fHit *hit_surface, size_t x, size_t y, size_t width)
 {
     const __vec4f ray_origin_x = load(r->ori_x);
     const __vec4f ray_origin_y = load(r->ori_y);
@@ -10,7 +10,7 @@ void phong_model(fRay *r, fSphere *sph, fQuad *q, fRGB *pixel_color, fHit *hit_s
     const __vec4f ray_direction_y = load(r->dir_y);
     const __vec4f ray_direction_z = load(r->dir_z);
 
-    intersect_in_scene_f(&ray_origin_x, &ray_origin_y, &ray_origin_z, &ray_direction_x, &ray_direction_y, &ray_direction_z, sph, q, hit_surface);
+    intersect_in_scene_f(scene, &ray_origin_x, &ray_origin_y, &ray_origin_z, &ray_direction_x, &ray_direction_y, &ray_direction_z, hit_surface);
 
     const __vec4f lightColor_r = one;
     const __vec4f lightColor_g = one;
@@ -142,7 +142,7 @@ void phong_model(fRay *r, fSphere *sph, fQuad *q, fRGB *pixel_color, fHit *hit_s
     store(pixel_color->b, &tmp17);
 }
 
-void diffuse_render(fRay *r, fSphere *sph, fQuad *q, fRGB *pixel_color, fHit *hit_surface)
+void diffuse_render(fScene *scene, fRay *r, fRGB *pixel_color, fHit *hit_surface)
 {
     const __vec4f ray_ori_x = load(r->ori_x);
     const __vec4f ray_ori_y = load(r->ori_y);
@@ -152,7 +152,7 @@ void diffuse_render(fRay *r, fSphere *sph, fQuad *q, fRGB *pixel_color, fHit *hi
     const __vec4f ray_dir_y = load(r->dir_y);
     const __vec4f ray_dir_z = load(r->dir_z);
 
-    intersect_in_scene_f(&ray_ori_x, &ray_ori_y, &ray_ori_z, &ray_dir_x, &ray_dir_y, &ray_dir_z, sph, q, hit_surface);
+    intersect_in_scene_f(scene, &ray_ori_x, &ray_ori_y, &ray_ori_z, &ray_dir_x, &ray_dir_y, &ray_dir_z, hit_surface);
 
     const __vec4f lightPos_x = zero;
     const __vec4f lightPos_y = zero;
@@ -312,7 +312,7 @@ void frandom_Ray_demi_sphere_cosine_weighted(__vec4f *dir_x, __vec4f *dir_y, __v
     *dir_z = add_(dir_z, &norm_z);
 }
 
-void fray_sampling(fRay *r, fSphere *sph, fQuad *q, const float *background_color, fRGB *radiance, fHit *hit_surface, int dmax, unsigned int *seed)
+void fray_sampling(fScene *scene, fRay *r, const float *background_color, fRGB *radiance, fHit *hit_surface, int dmax, unsigned int *seed)
 {
     __vec4f throughput_r = one;
     __vec4f throughput_g = one;
@@ -344,7 +344,7 @@ void fray_sampling(fRay *r, fSphere *sph, fQuad *q, const float *background_colo
 
     for (int d = 0; d < dmax; ++d)
     {
-        intersect_in_scene_f(&current_ray_ori_x, &current_ray_ori_y, &current_ray_ori_z, &current_ray_dir_x, &current_ray_dir_y, &current_ray_dir_z, sph, q, hit_surface);
+        intersect_in_scene_f(scene, &current_ray_ori_x, &current_ray_ori_y, &current_ray_ori_z, &current_ray_dir_x, &current_ray_dir_y, &current_ray_dir_z, hit_surface);
         __vec4f mask_is_hitting = load(hit_surface->isHitting);
 
         // if ray active and hit miss
@@ -518,10 +518,63 @@ void fray_sampling(fRay *r, fSphere *sph, fQuad *q, const float *background_colo
     store(radiance->b, &radiance_b);
 }
 
-void fBenchmark_mouse(fSphere *sph, fQuad *cornel_box)
+void fpath_tracing(fScene *scene, size_t n_sample, size_t n_bounce, size_t width, size_t height, fImage *img)
+{
+    fRGB batch_radiance;
+    set_fRGB(&batch_radiance, 4);
+
+    fHit batch_hit;
+    set_fHit(&batch_hit, 4);
+    const float background_color[3] = {0.1, 0.1, 0.5};
+
+    fRay batch_ray;
+    set_fray(&batch_ray, 4);
+
+    unsigned int seed = time(NULL);
+
+    for (uint64_t y = 0; y < height; ++y)
+    {
+        const __vec4f y_s = _mm_set1_ps(y);
+        for (uint64_t x = 0; x < width; x += 4)
+        {
+            const __vec4f x_s = set(x + 3, x + 2, x + 1, x);
+            trace_ray_simd(&scene->cam, &scene->inv_w, &scene->inv_h, &scene->aspr_, &x_s, &y_s, &scene->fov, &batch_ray);
+
+            float accumulate_r[4] = {0}, accumulate_g[4] = {0}, accumulate_b[4] = {0};
+
+            for (uint64_t s = 0; s < n_sample; ++s)
+            {
+                fray_sampling(scene, &batch_ray, background_color, &batch_radiance, &batch_hit, n_bounce, &seed);
+                for (int i = 0; i < 4; i++)
+                {
+                    accumulate_r[i] += batch_radiance.r[i];
+                    accumulate_g[i] += batch_radiance.g[i];
+                    accumulate_b[i] += batch_radiance.b[i];
+                }
+            }
+            const float inv_n = 1.0f / n_sample;
+            for (int i = 0; i < 4; i++)
+            {
+                batch_radiance.r[i] = accumulate_r[i] * inv_n;
+                batch_radiance.g[i] = accumulate_g[i] * inv_n;
+                batch_radiance.b[i] = accumulate_b[i] * inv_n;
+            }
+
+            put_pixel(img, y, x, &batch_radiance);
+        }
+    }
+
+    free_fRay(&batch_ray);
+    free_fHit(&batch_hit);
+    free_fRGB(&batch_radiance);
+}
+
+void fBenchmark_mouse(fScene *scene, size_t width, size_t height)
 {
 
-    set_fSphere(sph, 10);
+    float position[3] = {0.0f, -0.2f, 0.9f};
+
+    set_fScene(scene, position, 10, 0, 10, 5, width, height);
 
     const float beige[3] = {198.0f / 255.0f, 146.0f / 255.0f, 148.0f / 255.0f};
     const float black[3] = {0.0f, 0.0f, 0.0f};
@@ -541,19 +594,17 @@ void fBenchmark_mouse(fSphere *sph, fQuad *cornel_box)
     const float p5[3] = {-0.30, -0.05, -1.05};
     const float p6[3] = {0.30, -0.05, -1.05};
 
-    add_fSphere(sph, head, color_h, 0.5, 1, Lambertian);
-    add_fSphere(sph, left_ear, black, 0.30, 1, Lambertian);
-    add_fSphere(sph, right_ear, black, 0.30, 1, Lambertian);
-    add_fSphere(sph, p0, white, 0.10, 1, Lambertian);
-    add_fSphere(sph, p1, black, 0.06, 1, Lambertian);
+    add_fSphere(&scene->spheres, head, color_h, 0.5, 1, Lambertian);
+    add_fSphere(&scene->spheres, left_ear, black, 0.30, 1, Lambertian);
+    add_fSphere(&scene->spheres, right_ear, black, 0.30, 1, Lambertian);
+    add_fSphere(&scene->spheres, p0, white, 0.10, 1, Lambertian);
+    add_fSphere(&scene->spheres, p1, black, 0.06, 1, Lambertian);
 
-    add_fSphere(sph, p2, white, 0.10, 1, Lambertian);
-    add_fSphere(sph, p3, black, 0.06, 1, Lambertian);
-    add_fSphere(sph, p4, black, 0.10, 1, Lambertian);
-    add_fSphere(sph, p5, beige, 0.07, 1, Lambertian);
-    add_fSphere(sph, p6, beige, 0.07, 1, Lambertian);
-
-    set_fQuad(cornel_box, 5);
+    add_fSphere(&scene->spheres, p2, white, 0.10, 1, Lambertian);
+    add_fSphere(&scene->spheres, p3, black, 0.06, 1, Lambertian);
+    add_fSphere(&scene->spheres, p4, black, 0.10, 1, Lambertian);
+    add_fSphere(&scene->spheres, p5, beige, 0.07, 1, Lambertian);
+    add_fSphere(&scene->spheres, p6, beige, 0.07, 1, Lambertian);
 
     const float min[3] = {-5.0f, -3.0f, -5.0f};
     const float max[3] = {5.0f, 3.0f, 5.0f};
@@ -573,9 +624,9 @@ void fBenchmark_mouse(fSphere *sph, fQuad *cornel_box)
     const float color_0[3] = {0.9019f, 0.9019f, 0.9019f};
     const float orange[3] = {0.92f, 0.92f, 0.92f};
 
-    add_fQuad(cornel_box, min, dy, dz, color_0, 0.9, Lambertian);
-    add_fQuad(cornel_box, max, mdy, mdz, color_0, 0.9, Lambertian);
-    add_fQuad(cornel_box, min, dx, dz, color_0, 0.9, Lambertian);
-    add_fQuad(cornel_box, max, mdx, mdz, white_light, 10.0f, Emissive);
-    add_fQuad(cornel_box, min, dx, dy, color_0, 0.9, Lambertian);
+    add_fQuad(&scene->quads, min, dy, dz, color_0, 0.9, Lambertian);
+    add_fQuad(&scene->quads, max, mdy, mdz, color_0, 0.9, Lambertian);
+    add_fQuad(&scene->quads, min, dx, dz, color_0, 0.9, Lambertian);
+    add_fQuad(&scene->quads, max, mdx, mdz, white_light, 10.0f, Emissive);
+    add_fQuad(&scene->quads, min, dx, dy, color_0, 0.9, Lambertian);
 }

@@ -30,15 +30,6 @@ void put_pixel(fImage *img, uint64_t y, uint64_t x, const fRGB *c)
     __vec4f color_g = load(c->g);
     __vec4f color_b = load(c->b);
 
-    /*     if (img->r[step] > 1.0f || img->r[step] == NAN || img->r[step] == INFINITY)
-            printf("Error value on red\n");
-
-        if (img->g[step] > 1.0f || img->g[step] == NAN || img->g[step] == INFINITY)
-            printf("Error value on green\n");
-
-        if (img->b[step] > 1.0f || img->b[step] == NAN || img->b[step] == INFINITY)
-            printf("Error value on blue\n"); */
-
     store(img->r + step, &color_r);
     store(img->g + step, &color_g);
     store(img->b + step, &color_b);

@@ -379,7 +379,7 @@ void free_fQuad(fQuad *q)
     free(q->type);
 }
 
-void intersect_in_scene_f(const __vec4f *origin_x, const __vec4f *origin_y, const __vec4f *origin_z, const __vec4f *dir_x, const __vec4f *dir_y, const __vec4f *dir_z, fSphere *sph, fQuad *q, fHit *hits)
+void intersect_in_scene_f(fScene *scene, const __vec4f *origin_x, const __vec4f *origin_y, const __vec4f *origin_z, const __vec4f *dir_x, const __vec4f *dir_y, const __vec4f *dir_z, fHit *hits)
 {
 
     __vec4f tmin = max_limit;
@@ -397,7 +397,7 @@ void intersect_in_scene_f(const __vec4f *origin_x, const __vec4f *origin_y, cons
     __vec4f n_y_min = max_limit;
     __vec4f n_z_min = max_limit;
 
-    intersect_fquad(q, origin_x,
+    intersect_fquad(&scene->quads, origin_x,
                     origin_y, origin_z,
                     dir_x, dir_y, dir_z,
                     &n_x_min, &n_y_min, &n_z_min,
@@ -405,7 +405,7 @@ void intersect_in_scene_f(const __vec4f *origin_x, const __vec4f *origin_y, cons
                     &albedo_min, &type_min,
                     &tmin, &hit_mask);
 
-    intersect_fsphere(sph, origin_x,
+    intersect_fsphere(&scene->spheres, origin_x,
                       origin_y, origin_z,
                       dir_x, dir_y, dir_z,
                       &n_x_min, &n_y_min, &n_z_min,
@@ -525,4 +525,29 @@ void add_fQuad(fQuad *q, const float *Q, const float *u, const float *v, const f
     q->wz[q->size] = w_[2];
 
     q->size++;
+}
+
+void set_fScene(fScene *scene, const float *cam_position, float pitch, float yaw, size_t sphere_capacity, size_t quad_capacity, size_t width, size_t height)
+{
+
+    create_fcamera(&scene->cam, cam_position[0], cam_position[1], cam_position[2], pitch, yaw);
+
+    const float inv_width = 1.0f / width;
+    const float inv_height = 1.0f / height;
+    const float aspr = (float)(width) / height;
+    const float degree = 60.f;
+
+    scene->fov = set1(tan(radian(degree * 0.5f)));
+    scene->aspr_ = set1(aspr);
+    scene->inv_w = set1(inv_width);
+    scene->inv_h = set1(inv_height);
+
+    set_fSphere(&scene->spheres, sphere_capacity);
+    set_fQuad(&scene->quads, quad_capacity);
+}
+
+void free_fScene(fScene *scene)
+{
+    free_fSphere(&scene->spheres);
+    free_fQuad(&scene->quads);
 }
