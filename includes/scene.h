@@ -8,17 +8,19 @@
 #ifndef scene_h
 #define scene_h
 
+#include <stdint.h>
 #include "image.h"
 #include "ray.h"
 
 typedef enum PRIM_TYPE
 {
 	SPHERE,
-	BBOX, //the Bounding Box
-	BOX //regular Box
-}PRIM_TYPE;
+	BBOX, // the Bounding Box
+	BOX	  // regular Box
+} PRIM_TYPE;
 
-typedef enum {
+typedef enum
+{
 	Lambertian,
 	Specular,
 	Emissive
@@ -34,7 +36,7 @@ typedef struct AABB
 {
 	Vector bmin;
 	Vector bmax;
-}AABB;
+} AABB;
 
 /**
  * @brief A 3D OBB
@@ -52,7 +54,7 @@ typedef struct OBB
 	Vector obb_up;
 	Vector obb_direction;
 	Vector size;
-}OBB;
+} OBB;
 
 /**
  * @brief A 3D Sphere
@@ -62,36 +64,37 @@ typedef struct OBB
 typedef struct Sphere
 {
 	float radius;
-}Sphere;
+} Sphere;
 
 typedef struct Primitive
 {
-	void * object;
+	void *object;
 	Vector position;
 	Vector color;
 	PRIM_TYPE type;
 	material_t m_type;
 	float albedo;
-}Primitive;
+} Primitive;
 
-typedef struct Scene{
-	Primitive ** objects;
-	Vector * background_color;
+typedef struct Scene
+{
+	Primitive **objects;
+	Vector *background_color;
 	size_t size_objects;
 	Camera camera;
-}Scene;
+} Scene;
 
 /**
  * @brief Free scene
  * @param S A pointer of a scene
  */
-void free_scene(Scene * S);
+void free_scene(Scene *S);
 
 /**
  * @brief Free pointer objects in the scene
  * @param S A pointer of a scene
  */
-void free_scene_objects(Scene * S);
+void free_scene_objects(Scene *S);
 
 /**
  * @brief Alloc a scene of n\_objects objects, nb\_lightsources light sources and with a background color
@@ -99,23 +102,20 @@ void free_scene_objects(Scene * S);
  * @param backgroundColor a uint32_t represent the background color
  * @param s output Scene
  */
-void create_scene_ext(size_t n_objects, const Vector * backgroundColor, Scene * s);
+void create_scene_ext(size_t n_objects, const Vector *backgroundColor, Scene *s);
 
+void create_sphere(Primitive *prim, const float radius, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color);
 
-void create_sphere(Primitive* prim, const float radius, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color);
+void create_box(Primitive *prim, const float width, const float height, const float length, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color, const float pitch, const float yaw);
 
-void create_box(Primitive* prim, const float width, const float height, const float length, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color, const float pitch, const float yaw);
-
-void create_cube(Primitive* prim, const float width, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color);
+void create_cube(Primitive *prim, const float width, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color);
 
 /**
  * @brief Alloc a scene of n\_objects objects, nb\_lightsources light sources and with a background color
  * @param object object to add
  * @param s output Scene
  */
-void add_primitive(Primitive * object, Scene * s);
-
-
+void add_primitive(Primitive *object, Scene *s);
 
 /**
  * @brief Compute the intersection of a camra ray and a AABB box
@@ -123,7 +123,7 @@ void add_primitive(Primitive * object, Scene * s);
  * @param box AABB box
  * @return If there is an intersection
  */
-bool intersect_box(Ray* const r, const AABB* const box, Vector *hit, int * face, int * is_intern);
+bool intersect_box(Ray *const r, const AABB *const box, Vector *hit, int *face, int *is_intern);
 
 /**
  * @brief Compute the intersection of a camra ray and a OBB box
@@ -131,7 +131,7 @@ bool intersect_box(Ray* const r, const AABB* const box, Vector *hit, int * face,
  * @param box OBB box
  * @return If there is an intersection
  */
-bool intersect_obb(Ray* const r, const OBB* const box, Vector *hit, int *face, int *is_intern);
+bool intersect_obb(Ray *const r, const OBB *const box, Vector *hit, int *face, int *is_intern);
 
 /**
  * @brief Compute the intersection of a ray and a sphere
@@ -140,7 +140,7 @@ bool intersect_obb(Ray* const r, const OBB* const box, Vector *hit, int *face, i
  * @param radius Sphere radius
  * @return Set of points
  */
-bool intersect_sphere(Ray* const r, Vector *position, float radius, Vector *hit);
+bool intersect_sphere(Ray *const r, Vector *position, float radius, Vector *hit);
 
 /**
  * @brief return a pointer of the intersection point between the ray and the closer object
@@ -149,7 +149,7 @@ bool intersect_sphere(Ray* const r, Vector *position, float radius, Vector *hit)
  * @return index of the object
  * @return intersection:  The poter to the intersection point
  */
-bool intersect_in_scene(struct Ray* r, const Scene* const S, int * object, Vector *hit, Vector *n);
+bool intersect_in_scene(struct Ray *r, const Scene *const S, int *object, Vector *hit, Vector *n);
 
 /**
  * @brief Compute the sphere normal vector at a point
@@ -157,7 +157,7 @@ bool intersect_in_scene(struct Ray* r, const Scene* const S, int * object, Vecto
  * @param center sphere's center pointer
  * @return pointer to the normal vector
  */
-Vector get_normal_vector_sphere(const Vector * point, const Vector *center);
+Vector get_normal_vector_sphere(const Vector *point, const Vector *center);
 
 /**
  * @brief Compute the sphere normal vector at a point
@@ -166,5 +166,7 @@ Vector get_normal_vector_sphere(const Vector * point, const Vector *center);
 Vector get_normal_vector_box(int *face, int is_intern);
 
 static const float inv255 = 1 / 255.0f;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif /* scene_h */

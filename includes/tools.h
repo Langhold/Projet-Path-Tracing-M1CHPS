@@ -23,10 +23,9 @@ extern int mpi_size;
  */
 typedef enum QUADRATIC_STATE
 {
-    TWO_SOLUTION,
-    ONE_SOLUTION,
-}QUADRATIC_STATE;
-
+	TWO_SOLUTION,
+	ONE_SOLUTION,
+} QUADRATIC_STATE;
 
 /**
  * @brief Quadratic solution info
@@ -35,10 +34,10 @@ typedef enum QUADRATIC_STATE
  */
 typedef struct Quadratic_info
 {
-    QUADRATIC_STATE state;
-    float x0;
-    float x1;
-}Quadratic_info;
+	QUADRATIC_STATE state;
+	float x0;
+	float x1;
+} Quadratic_info;
 
 /**
  * @brief Linear solution info
@@ -46,15 +45,15 @@ typedef struct Quadratic_info
  */
 typedef struct Linear_info
 {
-    float x0;
-}Linear_info;
+	float x0;
+} Linear_info;
 
 /**
  * @brief Alloc memory and check if it's succed
  * @param size Size of the memory to alloc
  * @return memory allocated
  */
-void* malloc_check(const size_t size);
+void *malloc_check(const size_t size);
 
 /**
  * @brief Generate random single precision scalar
@@ -62,7 +61,7 @@ void* malloc_check(const size_t size);
  * @param min Min value
  * @return a single precision scalar
  */
-const float generate_random_value(const float max, const float min);
+float generate_random_value(const float max, const float min);
 
 /**
  * @brief Resolve a quadratic equation
@@ -71,7 +70,7 @@ const float generate_random_value(const float max, const float min);
  * @param c c
  * @return Quadratic solution info
  */
-Quadratic_info* quadratic_resolution(const float a, const float b, const float c);
+Quadratic_info *quadratic_resolution(const float a, const float b, const float c);
 
 /**
  * @brief Resolve a linear equation
@@ -79,17 +78,14 @@ Quadratic_info* quadratic_resolution(const float a, const float b, const float c
  * @param b b
  * @return Linear solution info
  */
-Linear_info* linear_resolution(const float a, const float b);
+Linear_info *linear_resolution(const float a, const float b);
 
-
-
-static inline void swap(float* const restrict a, float* const restrict b)
+static inline void swap(float *const restrict a, float *const restrict b)
 {
 	float c = *a;
 	*a = *b;
 	*b = c;
 }
-
 
 static inline float max(const float a, const float b)
 {

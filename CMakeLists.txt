@@ -12,23 +12,40 @@ add_library(LibPathTracing
     src/tools.c
     src/vector.c
     src/light.c
+
+    src/simd/fSimd.c
+    src/simd/fHit.c
+    src/simd/fColor.c
+    src/simd/fImage.c
+    src/simd/fRay.c
+    src/simd/fScene.c
+    src/simd/fLight.c
 )
+
 
 set(COMMON_COMPILE_FLAGS
     $<$<CONFIG:Debug>:-Wall -Wextra -g -O0 -fno-inline -fno-omit-frame-pointer>
     $<$<CONFIG:Release>:-O3 -march=native -Wno-all>
 )
 
+set(SIMD_COMPILE_FLAGS -Werror -Wall -Wextra -O3 -march=native -g3)
+
+set_source_files_properties(src/simd/fSimd.c PROPERTIES
+    COMPILE_OPTIONS "${SIMD_COMPILE_FLAGS}"
+)
+
 target_include_directories(LibPathTracing PUBLIC ${PROJECT_SOURCE_DIR}/includes)
 
-target_link_libraries(LibPathTracing m)
+target_link_libraries(LibPathTracing m sleef)
 
 add_executable(ppm src/ppm.c)
+add_executable(simd main.c)
 
 target_link_libraries(ppm PRIVATE LibPathTracing MPI::MPI_C)
-
+target_link_libraries(simd PRIVATE LibPathTracing)
 
 target_compile_options(ppm PRIVATE ${COMMON_COMPILE_FLAGS})
+target_compile_options(simd PRIVATE ${SIMD_COMPILE_FLAGS})
 
 add_executable(test_runner
                             test/test_runner.c 
