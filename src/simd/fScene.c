@@ -527,7 +527,7 @@ void add_fQuad(fQuad *q, const float *Q, const float *u, const float *v, const f
     q->size++;
 }
 
-void set_fScene(fScene *scene, const float *cam_position, float pitch, float yaw, size_t sphere_capacity, size_t quad_capacity, size_t width, size_t height)
+void set_fScene(fScene *scene, const float *cam_position, float degree, float pitch, float yaw, size_t sphere_capacity, size_t quad_capacity, size_t width, size_t height)
 {
 
     create_fcamera(&scene->cam, cam_position[0], cam_position[1], cam_position[2], pitch, yaw);
@@ -535,7 +535,6 @@ void set_fScene(fScene *scene, const float *cam_position, float pitch, float yaw
     const float inv_width = 1.0f / width;
     const float inv_height = 1.0f / height;
     const float aspr = (float)(width) / height;
-    const float degree = 60.f;
 
     scene->fov = set1(tan(radian(degree * 0.5f)));
     scene->aspr_ = set1(aspr);

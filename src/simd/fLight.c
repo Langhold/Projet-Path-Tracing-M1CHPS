@@ -574,7 +574,7 @@ void fBenchmark_mouse(fScene *scene, size_t width, size_t height)
 
     float position[3] = {0.0f, -0.2f, 0.9f};
 
-    set_fScene(scene, position, 10, 0, 10, 5, width, height);
+    set_fScene(scene, position, 50.f, 10, 0, 10, 5, width, height);
 
     const float beige[3] = {198.0f / 255.0f, 146.0f / 255.0f, 148.0f / 255.0f};
     const float black[3] = {0.0f, 0.0f, 0.0f};

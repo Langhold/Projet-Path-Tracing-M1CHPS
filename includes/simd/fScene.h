@@ -118,7 +118,7 @@ typedef struct fScene
     __vec4f inv_h;
 } fScene;
 
-void set_fScene(fScene *scene, const float *cam_position, float pitch, float yaw, size_t sphere_capacity, size_t quad_capacity, size_t width, size_t height);
+void set_fScene(fScene *scene, const float *cam_position, float degree, float pitch, float yaw, size_t sphere_capacity, size_t quad_capacity, size_t width, size_t height);
 
 void intersect_in_scene_f(fScene *scene, const __vec4f *origin_x, const __vec4f *origin_y, const __vec4f *origin_z, const __vec4f *dir_x, const __vec4f *dir_y, const __vec4f *dir_z, fHit *hits);
 void free_fScene(fScene *scene);
