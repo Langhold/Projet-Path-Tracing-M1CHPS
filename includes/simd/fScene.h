@@ -18,13 +18,13 @@ typedef struct fSphere
     __attribute__((aligned(16))) float *x;
     __attribute__((aligned(16))) float *y;
     __attribute__((aligned(16))) float *z;
-    __attribute__((aligned(16))) float *color;
+    __attribute__((aligned(16))) float *albedo;
     __attribute__((aligned(16))) float *r;
     __attribute__((aligned(16))) float *g;
     __attribute__((aligned(16))) float *b;
     __attribute__((aligned(16))) float *radius;
     __attribute__((aligned(16))) float *type;
-    __attribute__((aligned(16))) float *albedo;
+    __attribute__((aligned(16))) float *emission_power;
 
     uint64_t size;
     uint64_t capacity;
@@ -34,14 +34,14 @@ typedef struct fSphere
 } fSphere;
 
 void set_fSphere(fSphere *sph, uint64_t c);
-void add_fSphere(fSphere *sph, const float *coord, const float *color, const float radius, float albedo, const float type);
-void add_fSphere_(fSphere *sph, float x, float y, float z, float r, float g, float b, const float radius, float albedo, const float type);
+void add_fSphere(fSphere *sph, const float *coord, const float *albedo, const float radius, float emission_power, const float type);
+void add_fSphere_(fSphere *sph, float x, float y, float z, float r, float g, float b, const float radius, float emission_power, const float type);
 
 void intersect_fsphere(fSphere *sph,
                        const __vec4f *origin_x, const __vec4f *origin_y, const __vec4f *origin_z,
                        const __vec4f *dir_x, const __vec4f *dir_y, const __vec4f *dir_z,
                        __vec4f *n_x_min, __vec4f *n_y_min, __vec4f *n_z_min,
-                       __vec4f *color_r_min, __vec4f *color_g_min, __vec4f *color_b_min,
+                       __vec4f *albedo_r_min, __vec4f *albedo_g_min, __vec4f *albedo_b_min,
                        __vec4f *albedo_min, __vec4f *type_min,
                        __vec4f *tmin, __vec4f *hit_mask);
 
@@ -78,14 +78,14 @@ typedef struct fQuad
     __attribute__((aligned(16))) float *wy;
     __attribute__((aligned(16))) float *wz;
 
-    __attribute__((aligned(16))) float *color;
+    __attribute__((aligned(16))) float *albedo;
 
     __attribute__((aligned(16))) float *r;
     __attribute__((aligned(16))) float *g;
     __attribute__((aligned(16))) float *b;
 
     __attribute__((aligned(16))) float *type;
-    __attribute__((aligned(16))) float *albedo;
+    __attribute__((aligned(16))) float *emission_power;
 
     uint64_t size;
     uint64_t capacity;
@@ -95,12 +95,12 @@ typedef struct fQuad
 } fQuad;
 
 void set_fQuad(fQuad *q, uint64_t c);
-void add_fQuad(fQuad *q, const float *Q, const float *u, const float *v, const float *c, float albedo, float type);
+void add_fQuad(fQuad *q, const float *Q, const float *u, const float *v, const float *c, float emission_power, float type);
 void intersect_fquad(fQuad *q,
                      const __vec4f *origin_x, const __vec4f *origin_y, const __vec4f *origin_z,
                      const __vec4f *dir_x, const __vec4f *dir_y, const __vec4f *dir_z,
                      __vec4f *n_x_min, __vec4f *n_y_min, __vec4f *n_z_min,
-                     __vec4f *color_r_min, __vec4f *color_g_min, __vec4f *color_b_min,
+                     __vec4f *albedo_r_min, __vec4f *albedo_g_min, __vec4f *albedo_b_min,
                      __vec4f *albedo_min, __vec4f *type_min,
                      __vec4f *tmin, __vec4f *hit_mask);
 void free_fQuad(fQuad *q);
@@ -119,6 +119,9 @@ typedef struct fScene
 } fScene;
 
 void set_fScene(fScene *scene, const float *cam_position, float degree, float pitch, float yaw, size_t sphere_capacity, size_t quad_capacity, size_t width, size_t height);
+
+void add_fSquare(fQuad *q, const float width, const float height, const float depth, const float *position, const float *albedo, float emission_power, float type);
+void add_cornel_box(fQuad *q, const float width, const float height, const float depth, const float *position, float emission_power, float type);
 
 void intersect_in_scene_f(fScene *scene, const __vec4f *origin_x, const __vec4f *origin_y, const __vec4f *origin_z, const __vec4f *dir_x, const __vec4f *dir_y, const __vec4f *dir_z, fHit *hits);
 void free_fScene(fScene *scene);

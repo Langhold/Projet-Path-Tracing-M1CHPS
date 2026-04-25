@@ -5,13 +5,16 @@
 #include <stdlib.h>
 #include <math.h>
 #include <tools.h>
-#define EPSILON 1e-5
+#define EPSILON 1e-4
 
 typedef __m128 __vec4f;
 
 extern __m128 three_half;
 extern __m128 half;
 extern __m128 epsilon;
+extern __m128 epsilon_0;
+extern __m128 epsilon_1;
+
 extern __m128 max_limit;
 extern __m128 zero;
 extern __m128 one;
@@ -66,6 +69,7 @@ int fuse(const __vec4f *mask);
 __vec4f blendv(const __vec4f *A, const __vec4f *B, const __vec4f *mask);
 
 __vec4f greater(const __vec4f *A, const __vec4f *B);
+__vec4f greater_or_equal(const __vec4f *A, const __vec4f *B);
 
 __vec4f rcp(const __vec4f *A);
 

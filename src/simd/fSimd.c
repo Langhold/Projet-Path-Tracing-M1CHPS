@@ -5,6 +5,8 @@ __m128 three_half;
 __m128 half;
 __m128 epsilon;
 __m128 max_limit;
+__m128 epsilon_0;
+__m128 epsilon_1;
 __m128 zero;
 __m128 one;
 __m128 minus_one;
@@ -16,7 +18,7 @@ void init_global_variable()
 {
     three_half = _mm_set1_ps(1.5f);
     half = _mm_set1_ps(0.5f);
-    epsilon = _mm_set1_ps(EPSILON);
+    epsilon = _mm_set1_ps(1e-3);
     max_limit = _mm_set1_ps(__FLT_MAX__);
     zero = _mm_setzero_ps();
     one = _mm_set1_ps(1.0f);
@@ -25,6 +27,8 @@ void init_global_variable()
     minus_two = _mm_set1_ps(-2.0f);
 
     two_pi = _mm_set1_ps(2.0 * M_PI);
+    epsilon_0 = _mm_set1_ps(1e-3);
+    epsilon_1 = _mm_set1_ps(1e-3);
 }
 
 __vec4f load(float *data)
@@ -135,6 +139,11 @@ __vec4f blendv(const __vec4f *A, const __vec4f *B, const __vec4f *mask)
 __vec4f greater(const __vec4f *A, const __vec4f *B)
 {
     return _mm_cmpgt_ps(*A, *B);
+};
+
+__vec4f greater_or_equal(const __vec4f *A, const __vec4f *B)
+{
+    return _mm_cmpge_ps(*A, *B);
 };
 
 __vec4f rcp(const __vec4f *A)

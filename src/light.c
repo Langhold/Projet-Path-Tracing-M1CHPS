@@ -200,9 +200,11 @@ void benchmark_huge(Scene *scene, size_t width, size_t height)
 
 	int amount = 2500;
 	int amount_s = (int)sqrtf((float)amount);
+
 	Vector bg;
 	create_vector_ext(&bg, 0, 0, 0);
 	create_scene_ext(amount + 1, &bg, scene);
+
 	int dist = 10;
 	float ymax = dist * tanf(25.f * M_PI / 180.0f);
 

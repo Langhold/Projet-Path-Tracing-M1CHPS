@@ -125,9 +125,9 @@ void phong_model(fScene *scene, fRay *r, fRGB *pixel_color, fHit *hit_surface, s
     __vec4f phong_light_g = min_(&one, &tmp10);
     __vec4f phong_light_b = min_(&one, &tmp11);
 
-    __vec4f tmp12 = load(hit_surface->hcr);
-    __vec4f tmp13 = load(hit_surface->hcg);
-    __vec4f tmp14 = load(hit_surface->hcb);
+    __vec4f tmp12 = load(hit_surface->har);
+    __vec4f tmp13 = load(hit_surface->hag);
+    __vec4f tmp14 = load(hit_surface->hab);
 
     __vec4f color_r = mul_(&phong_light_r, &tmp12);
     __vec4f color_g = mul_(&phong_light_g, &tmp13);
@@ -213,9 +213,9 @@ void diffuse_render(fScene *scene, fRay *r, fRGB *pixel_color, fHit *hit_surface
 
         __vec4f intensity = max_(&d, &zero);
 
-        __vec4f hcr = load(hit_surface->hcr + step);
-        __vec4f hcg = load(hit_surface->hcg + step);
-        __vec4f hcb = load(hit_surface->hcb + step);
+        __vec4f hcr = load(hit_surface->har + step);
+        __vec4f hcg = load(hit_surface->hag + step);
+        __vec4f hcb = load(hit_surface->hab + step);
 
         __vec4f color_r = mul_(&intensity, &hcr);
         __vec4f color_g = mul_(&intensity, &hcg);
@@ -231,7 +231,7 @@ void diffuse_render(fScene *scene, fRay *r, fRGB *pixel_color, fHit *hit_surface
     }
 }
 
-void frandom_Ray_demi_sphere_cosine_weighted(__vec4f *dir_x, __vec4f *dir_y, __vec4f *dir_z, const __vec4f *origin_x, const __vec4f *origin_y, const __vec4f *origin_z, const __vec4f *normal_x, const __vec4f *normal_y, const __vec4f *normal_z, unsigned int *seed)
+void frandom_Ray_demi_sphere_cosine_weighted(__vec4f *dir_x, __vec4f *dir_y, __vec4f *dir_z, const __vec4f *normal_x, const __vec4f *normal_y, const __vec4f *normal_z, unsigned int *seed)
 {
 
     const float u01 = (float)rand_r(seed) / (float)RAND_MAX;
@@ -270,7 +270,7 @@ void frandom_Ray_demi_sphere_cosine_weighted(__vec4f *dir_x, __vec4f *dir_y, __v
     __vec4f right_y = set1(0);
     __vec4f right_z = set1(0);
 
-    __vec4f diff = sub_(&one, &epsilon);
+    __vec4f diff = sub_(&one, &epsilon_0);
     __vec4f fnormal_y = absf_(normal_y);
     __vec4f mask_normal_y = lower(&fnormal_y, &diff);
 
@@ -314,6 +314,7 @@ void frandom_Ray_demi_sphere_cosine_weighted(__vec4f *dir_x, __vec4f *dir_y, __v
 
 void fray_sampling(fScene *scene, fRay *r, const float *background_color, fRGB *radiance, fHit *hit_surface, int dmax, unsigned int *seed)
 {
+
     __vec4f throughput_r = one;
     __vec4f throughput_g = one;
     __vec4f throughput_b = one;
@@ -361,8 +362,11 @@ void fray_sampling(fScene *scene, fRay *r, const float *background_color, fRGB *
         radiance_g = add_(&radiance_g, &color_is_miss_g);
         radiance_b = add_(&radiance_b, &color_is_miss_b);
 
-        // Mask out unactive rays
+        // Mask out unactive rays if a rays was previously active but there is no hit
         mask_is_active = and_(&mask_is_active, &mask_is_hitting);
+
+        if (fuse(&mask_is_active) == 0)
+            break;
 
         // normal at hit surface
         __vec4f hit_surface_nx = load(hit_surface->hnx);
@@ -389,63 +393,27 @@ void fray_sampling(fScene *scene, fRay *r, const float *background_color, fRGB *
         __vec4f hit_surface_py = load(hit_surface->hpy);
         __vec4f hit_surface_pz = load(hit_surface->hpz);
 
-        // albedo at hit surface
-        __vec4f albedo = load(hit_surface->albedo);
+        // emission power at hit surface
+        __vec4f emission_power = load(hit_surface->hit_emissive_power);
 
-        __vec4f hit_surface_nx_eps = mul_(&hit_surface_nx, &epsilon);
-        __vec4f hit_surface_ny_eps = mul_(&hit_surface_ny, &epsilon);
-        __vec4f hit_surface_nz_eps = mul_(&hit_surface_nz, &epsilon);
+        __vec4f hit_surface_nx_eps = mul_(&hit_surface_nx, &epsilon_1);
+        __vec4f hit_surface_ny_eps = mul_(&hit_surface_ny, &epsilon_1);
+        __vec4f hit_surface_nz_eps = mul_(&hit_surface_nz, &epsilon_1);
 
         // offset origin
         __vec4f offset_origin_x = add_(&hit_surface_px, &hit_surface_nx_eps);
         __vec4f offset_origin_y = add_(&hit_surface_py, &hit_surface_ny_eps);
         __vec4f offset_origin_z = add_(&hit_surface_pz, &hit_surface_nz_eps);
 
-        __vec4f obj_color_r = load(hit_surface->hcr);
-        __vec4f obj_color_g = load(hit_surface->hcg);
-        __vec4f obj_color_b = load(hit_surface->hcb);
+        __vec4f albedo_r = load(hit_surface->har);
+        __vec4f albedo_g = load(hit_surface->hag);
+        __vec4f albedo_b = load(hit_surface->hab);
 
-        __vec4f type = load(hit_surface->type);
+        __vec4f type = load(hit_surface->hit_type);
 
         __vec4f mask_is_emissive = equal(&type, &mask_emissive);
         __vec4f mask_is_lambertian = equal(&type, &mask_lambertian);
         __vec4f mask_is_specular = equal(&type, &mask_specular);
-
-        // Emissive
-        __vec4f albedo_with_color_r = mul_(&albedo, &obj_color_r);
-        __vec4f albedo_with_color_g = mul_(&albedo, &obj_color_g);
-        __vec4f albedo_with_color_b = mul_(&albedo, &obj_color_b);
-
-        __vec4f radiance_emissive_r = mul_(&throughput_r, &obj_color_r);
-        __vec4f radiance_emissive_g = mul_(&throughput_g, &obj_color_g);
-        __vec4f radiance_emissive_b = mul_(&throughput_b, &obj_color_b);
-
-        // Lambertian
-
-        __vec4f albedo_with_color_r_0 = mul_(&albedo, &obj_color_r);
-        __vec4f albedo_with_color_g_0 = mul_(&albedo, &obj_color_g);
-        __vec4f albedo_with_color_b_0 = mul_(&albedo, &obj_color_b);
-
-        __vec4f inv_pi = set1(0.31830988618f);
-
-        albedo_with_color_r_0 = mul_(&albedo_with_color_r_0, &inv_pi);
-        albedo_with_color_g_0 = mul_(&albedo_with_color_g_0, &inv_pi);
-        albedo_with_color_b_0 = mul_(&albedo_with_color_b_0, &inv_pi);
-
-        __vec4f lambertian_throughput_r = mul_(&throughput_r, &albedo_with_color_r_0);
-        __vec4f lambertian_throughput_g = mul_(&throughput_g, &albedo_with_color_g_0);
-        __vec4f lambertian_throughput_b = mul_(&throughput_b, &albedo_with_color_b_0);
-        // Specular
-        __vec4f dot_normal_ray_dir_1 = dot_(&hit_surface_nx, &hit_surface_ny, &hit_surface_nz, &current_ray_dir_x, &current_ray_dir_y, &current_ray_dir_z);
-        __vec4f two_dot = mul_(&two, &dot_normal_ray_dir_1);
-
-        __vec4f mul_x = mul_(&two_dot, &hit_surface_nx);
-        __vec4f mul_y = mul_(&two_dot, &hit_surface_ny);
-        __vec4f mul_z = mul_(&two_dot, &hit_surface_nz);
-
-        __vec4f specular_throughput_r = mul_(&throughput_r, &zero_nine);
-        __vec4f specular_throughput_g = mul_(&throughput_g, &zero_nine);
-        __vec4f specular_throughput_b = mul_(&throughput_b, &zero_nine);
 
         // Emissive (no bounce)
 
@@ -454,13 +422,44 @@ void fray_sampling(fScene *scene, fRay *r, const float *background_color, fRGB *
         __vec4f lambertian_bounce_dir_y;
         __vec4f lambertian_bounce_dir_z;
 
-        frandom_Ray_demi_sphere_cosine_weighted(&lambertian_bounce_dir_x, &lambertian_bounce_dir_y, &lambertian_bounce_dir_z, &offset_origin_x, &offset_origin_y, &offset_origin_z, &hit_surface_nx, &hit_surface_ny, &hit_surface_nz, seed);
+        frandom_Ray_demi_sphere_cosine_weighted(&lambertian_bounce_dir_x, &lambertian_bounce_dir_y, &lambertian_bounce_dir_z, &hit_surface_nx, &hit_surface_ny, &hit_surface_nz, seed);
 
         // Specular bounce
+
+        __vec4f two_dot = mul_(&two, &dot_normal_ray_dir);
+
+        __vec4f mul_x = mul_(&two_dot, &hit_surface_nx);
+        __vec4f mul_y = mul_(&two_dot, &hit_surface_ny);
+        __vec4f mul_z = mul_(&two_dot, &hit_surface_nz);
+
         __vec4f specular_bounce_dir_x = sub_(&current_ray_dir_x, &mul_x);
         __vec4f specular_bounce_dir_y = sub_(&current_ray_dir_y, &mul_y);
         __vec4f specular_bounce_dir_z = sub_(&current_ray_dir_z, &mul_z);
-        norm_(&specular_bounce_dir_x, &specular_bounce_dir_y, &specular_bounce_dir_z, &specular_bounce_dir_x, &specular_bounce_dir_y, &specular_bounce_dir_z);
+
+        // Emissive
+        __vec4f albedo_with_emission_r = mul_(&emission_power, &albedo_r);
+        __vec4f albedo_with_emission_g = mul_(&emission_power, &albedo_g);
+        __vec4f albedo_with_emission_b = mul_(&emission_power, &albedo_b);
+
+        __vec4f emission_throughput_r = mul_(&throughput_r, &albedo_with_emission_r);
+        __vec4f emission_throughput_g = mul_(&throughput_g, &albedo_with_emission_g);
+        __vec4f emission_throughput_b = mul_(&throughput_b, &albedo_with_emission_b);
+
+        emission_throughput_r = blendv(&zero, &emission_throughput_r, &mask_is_emissive);
+        emission_throughput_g = blendv(&zero, &emission_throughput_g, &mask_is_emissive);
+        emission_throughput_b = blendv(&zero, &emission_throughput_b, &mask_is_emissive);
+
+        // Lambertian
+
+        __vec4f lambertian_throughput_r = mul_(&albedo_r, &throughput_r);
+        __vec4f lambertian_throughput_g = mul_(&albedo_g, &throughput_g);
+        __vec4f lambertian_throughput_b = mul_(&albedo_b, &throughput_b);
+
+        // Specular
+
+        __vec4f specular_throughput_r = mul_(&throughput_r, &albedo_r);
+        __vec4f specular_throughput_g = mul_(&throughput_g, &albedo_g);
+        __vec4f specular_throughput_b = mul_(&throughput_b, &albedo_b);
 
         // Which bounce
 
@@ -488,31 +487,25 @@ void fray_sampling(fScene *scene, fRay *r, const float *background_color, fRGB *
         throughput_b = blendv(&throughput_b, &specular_throughput_b, &mask_is_specular);
 
         // if some ray are not active anymore because they hitted a light source
-        mask_is_not_active_and_emissive = and_(&mask_is_active, &mask_is_emissive);
-
-        __vec4f accum_rad_r = blendv(&zero, &radiance_emissive_r, &mask_is_not_active_and_emissive);
-        __vec4f accum_rad_g = blendv(&zero, &radiance_emissive_g, &mask_is_not_active_and_emissive);
-        __vec4f accum_rad_b = blendv(&zero, &radiance_emissive_b, &mask_is_not_active_and_emissive);
-
-        radiance_r = add_(&radiance_r, &accum_rad_r);
-        radiance_g = add_(&radiance_g, &accum_rad_g);
-        radiance_b = add_(&radiance_b, &accum_rad_b);
-
         mask_is_active = blendv(&mask_is_active, &zero, &mask_is_emissive);
 
-        current_ray_ori_x = offset_origin_x;
-        current_ray_ori_y = offset_origin_y;
-        current_ray_ori_z = offset_origin_z;
+        throughput_r = and_(&throughput_r, &mask_is_active);
+        throughput_g = and_(&throughput_g, &mask_is_active);
+        throughput_b = and_(&throughput_b, &mask_is_active);
 
-        current_ray_dir_x = new_bounce_x;
-        current_ray_dir_y = new_bounce_y;
-        current_ray_dir_z = new_bounce_z;
+        radiance_r = add_(&radiance_r, &emission_throughput_r);
+        radiance_g = add_(&radiance_g, &emission_throughput_g);
+        radiance_b = add_(&radiance_b, &emission_throughput_b);
 
-        if (fuse(&mask_is_active) == 0)
-        {
-            break;
-        }
+        current_ray_ori_x = blendv(&current_ray_ori_x, &offset_origin_x, &mask_is_active);
+        current_ray_ori_y = blendv(&current_ray_ori_y, &offset_origin_y, &mask_is_active);
+        current_ray_ori_z = blendv(&current_ray_ori_z, &offset_origin_z, &mask_is_active);
+
+        current_ray_dir_x = blendv(&current_ray_dir_x, &new_bounce_x, &mask_is_active);
+        current_ray_dir_y = blendv(&current_ray_dir_y, &new_bounce_y, &mask_is_active);
+        current_ray_dir_z = blendv(&current_ray_dir_z, &new_bounce_z, &mask_is_active);
     }
+
     store(radiance->r, &radiance_r);
     store(radiance->g, &radiance_g);
     store(radiance->b, &radiance_b);
@@ -530,8 +523,6 @@ void fpath_tracing(fScene *scene, size_t n_sample, size_t n_bounce, size_t width
     fRay batch_ray;
     set_fray(&batch_ray, 4);
 
-    unsigned int seed = time(NULL);
-
     for (uint64_t y = 0; y < height; ++y)
     {
         const __vec4f y_s = _mm_set1_ps(y);
@@ -541,7 +532,7 @@ void fpath_tracing(fScene *scene, size_t n_sample, size_t n_bounce, size_t width
             trace_ray_simd(&scene->cam, &scene->inv_w, &scene->inv_h, &scene->aspr_, &x_s, &y_s, &scene->fov, &batch_ray);
 
             float accumulate_r[4] = {0}, accumulate_g[4] = {0}, accumulate_b[4] = {0};
-
+            unsigned int seed = (y * width + x);
             for (uint64_t s = 0; s < n_sample; ++s)
             {
                 fray_sampling(scene, &batch_ray, background_color, &batch_radiance, &batch_hit, n_bounce, &seed);
@@ -561,6 +552,13 @@ void fpath_tracing(fScene *scene, size_t n_sample, size_t n_bounce, size_t width
             }
 
             put_pixel(img, y, x, &batch_radiance);
+
+            for (int i = 0; i < 4; i++)
+            {
+                batch_radiance.r[i] = 0;
+                batch_radiance.g[i] = 0;
+                batch_radiance.b[i] = 0;
+            }
         }
     }
 
@@ -620,13 +618,116 @@ void fBenchmark_mouse(fScene *scene, size_t width, size_t height)
     const float red[3] = {1.0f, 0.0f, 0.0};
     const float green[3] = {0.0f, 1.0f, 0.0};
     const float blue[3] = {0.0f, 0.0f, 1.0};
-    const float white_light[3] = {10.0f, 10.0f, 10.0f};
     const float color_0[3] = {0.9019f, 0.9019f, 0.9019f};
     const float orange[3] = {0.92f, 0.92f, 0.92f};
 
     add_fQuad(&scene->quads, min, dy, dz, color_0, 0.9, Lambertian);
     add_fQuad(&scene->quads, max, mdy, mdz, color_0, 0.9, Lambertian);
     add_fQuad(&scene->quads, min, dx, dz, color_0, 0.9, Lambertian);
-    add_fQuad(&scene->quads, max, mdx, mdz, white_light, 10.0f, Emissive);
+    add_fQuad(&scene->quads, max, mdx, mdz, white, 10.0f, Emissive);
     add_fQuad(&scene->quads, min, dx, dy, color_0, 0.9, Lambertian);
+}
+
+void fBenchmark_huge(fScene *scene, size_t width, size_t height)
+{
+
+    float position[3] = {0.0f, 0.0f, 1.0};
+    fMaterial_t mat[3] = {Lambertian, Emissive, Specular};
+
+    int amount = 2500;
+    int amount_s = (int)sqrtf((float)amount);
+
+    int dist = 10;
+    float ymax = dist * tanf(25.f * M_PI / 180.0f);
+
+    float xmax = ymax * width / height;
+
+    const float color[3] = {1.0f, 1.0f, 1.0f};
+
+    set_fScene(scene, position, 50.f, 0, 0, (amount_s * amount_s) / 2, 5, width, height);
+
+    for (int i = 0; i < amount_s; ++i)
+    {
+        for (int j = 0; j < amount_s; ++j)
+        {
+
+            float u = (float)i / (amount_s - 1);
+            float v = (float)j / (amount_s - 1);
+
+            float x = -xmax + u * 2.f * xmax;
+            float y = -ymax + v * 2.f * ymax;
+
+            if (j % 2 == 0)
+            {
+                float coord[3] = {x, y, -dist};
+                add_fSphere(&scene->spheres, coord, color, 0.075, 3, mat[i % 3 - 1]);
+            }
+        }
+    }
+
+    const float min[3] = {-10.0f, -6.0f, -10.0f};
+    const float max[3] = {10.0f, 6.0f, 10.0f};
+
+    const float dx[3] = {max[0] - min[0], 0.0f, 0.0f};
+    const float dy[3] = {0.0f, max[1] - min[1], 0.0f};
+    const float dz[3] = {0.0f, 0.0f, max[2] - min[2]};
+
+    const float mdx[3] = {-max[0] + min[0], 0.0f, 0.0f};
+    const float mdy[3] = {0.0f, -max[1] + min[1], 0.0f};
+    const float mdz[3] = {0.0f, 0.0f, -max[2] + min[2]};
+
+    const float red[3] = {1.0f, 0.0f, 0.0};
+    const float green[3] = {0.0f, 1.0f, 0.0};
+    const float blue[3] = {0.0f, 0.0f, 1.0};
+    const float white[3] = {10.0f, 10.0f, 10.0f};
+    const float color_0[3] = {0.9019f, 0.9019f, 0.9019f};
+    const float orange[3] = {0.92f, 0.92f, 0.92f};
+
+    add_fQuad(&scene->quads, min, dy, dz, color_0, 0.0, Lambertian);
+    add_fQuad(&scene->quads, max, mdy, mdz, color_0, 0.0, Lambertian);
+
+    add_fQuad(&scene->quads, min, dx, dz, color_0, 0.0, Lambertian);
+    add_fQuad(&scene->quads, max, mdx, mdz, white, 0.7f, Emissive);
+
+    add_fQuad(&scene->quads, min, dx, dy, color_0, 0.0, Lambertian);
+    add_fQuad(&scene->quads, max, mdx, mdy, color_0, 0.0, Lambertian);
+}
+
+void fBenchmark_1(fScene *scene, size_t width, size_t height)
+{
+    const float position[3] = {0.0f, 0.0f, 1.1};
+    const float head[3] = {0, 0, -1.5};
+
+    const float min[3] = {-10.0f, -6.0f, -10.0f};
+    const float max[3] = {10.0f, 6.0f, 10.0f};
+
+    const float dx[3] = {max[0] - min[0], 0.0f, 0.0f};
+    const float dy[3] = {0.0f, max[1] - min[1], 0.0f};
+    const float dz[3] = {0.0f, 0.0f, max[2] - min[2]};
+
+    const float mdx[3] = {-max[0] + min[0], 0.0f, 0.0f};
+    const float mdy[3] = {0.0f, -max[1] + min[1], 0.0f};
+    const float mdz[3] = {0.0f, 0.0f, -max[2] + min[2]};
+
+    const float red[3] = {1.0f, 0.0f, 0.0};
+    const float green[3] = {0.0f, 1.0f, 0.0};
+    const float blue[3] = {0.0f, 0.0f, 1.0};
+    const float white_light[3] = {5.0f, 5.0f, 5.0f};
+    const float white[3] = {1.0f, 1.0f, 1.0f};
+
+    const float color_0[3] = {0.9019f, 0.9019f, 0.9019f};
+    const float orange[3] = {0.92f, 0.92f, 0.92f};
+
+    set_fScene(scene, position, 50.f, 10, 0, 1, 6, width, height);
+
+    add_fQuad(&scene->quads, min, dy, dz, color_0, 0.0, Lambertian);
+    add_fQuad(&scene->quads, max, mdy, mdz, color_0, 0.0, Lambertian);
+
+    add_fQuad(&scene->quads, min, dx, dz, color_0, 0.0, Lambertian);
+    add_fQuad(&scene->quads, max, mdx, mdz, white, 0.7f, Emissive);
+
+    add_fQuad(&scene->quads, min, dx, dy, color_0, 0.0, Lambertian);
+    add_fQuad(&scene->quads, max, mdx, mdy, color_0, 0.0, Lambertian);
+
+    add_fSphere(&scene->spheres, head, white, 0.5f, 0.0, Specular);
 }

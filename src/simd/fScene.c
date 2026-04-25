@@ -9,17 +9,17 @@ void set_fSphere(fSphere *sph, uint64_t c)
 
     sph->coord = (float *)(aligned_alloc(16, 3 * sph->capacity * sizeof(float)));
     sph->x = sph->coord;
-    sph->y = sph->coord + sph->capacity;
+    sph->y = sph->x + sph->capacity;
     sph->z = sph->y + sph->capacity;
 
-    sph->color = (float *)(aligned_alloc(16, 3 * sph->capacity * sizeof(float)));
-    sph->r = sph->color;
-    sph->g = sph->color + sph->capacity;
+    sph->albedo = (float *)(aligned_alloc(16, 3 * sph->capacity * sizeof(float)));
+    sph->r = sph->albedo;
+    sph->g = sph->r + sph->capacity;
     sph->b = sph->g + sph->capacity;
 
     sph->radius = (float *)(aligned_alloc(16, sph->capacity * sizeof(float)));
 
-    sph->albedo = (float *)(aligned_alloc(16, sph->capacity * sizeof(float)));
+    sph->emission_power = (float *)(aligned_alloc(16, sph->capacity * sizeof(float)));
     sph->type = (float *)(aligned_alloc(16, sph->capacity * sizeof(float)));
 
     __vec4f rad = set1(0.5f);
@@ -36,7 +36,7 @@ void set_fSphere(fSphere *sph, uint64_t c)
         store(sph->g + step, &zero);
         store(sph->b + step, &zero);
 
-        store(sph->albedo + step, &zero);
+        store(sph->emission_power + step, &zero);
         store(sph->type + step, &zero);
 
         store(sph->radius + step, &rad);
@@ -48,7 +48,7 @@ void intersect_fsphere(fSphere *sph,
                        const __vec4f *dir_x, const __vec4f *dir_y, const __vec4f *dir_z,
                        __vec4f *n_x_min, __vec4f *n_y_min, __vec4f *n_z_min,
                        __vec4f *color_r_min, __vec4f *color_g_min, __vec4f *color_b_min,
-                       __vec4f *albedo_min, __vec4f *type_min,
+                       __vec4f *emissive_power_min, __vec4f *type_min,
                        __vec4f *tmin, __vec4f *hit_mask)
 {
 
@@ -97,9 +97,10 @@ void intersect_fsphere(fSphere *sph,
 
         const __vec4f minus_h = sub_(&zero, &h);
         const __vec4f minus_h_sqrt_delta = sub_(&minus_h, &sqrt_delta);
+        const __vec4f plus_h_sqrt_delta = add_(&minus_h, &sqrt_delta);
 
         const __vec4f t1 = mul_(&minus_h_sqrt_delta, &over_a);
-        const __vec4f t2 = mul_(&minus_h_sqrt_delta, &over_a);
+        const __vec4f t2 = mul_(&plus_h_sqrt_delta, &over_a);
 
         const __vec4f test0 = greater(&t1, &epsilon); // t10 > eps t11 > eps t12 > eps t13 > eps
         const __vec4f test1 = greater(&t2, &epsilon); // t20 > eps t21 > eps t22 > eps t23 > eps
@@ -128,9 +129,9 @@ void intersect_fsphere(fSphere *sph,
         const __vec4f hit_point_y = fmadd(dir_y, tmin, origin_y);
         const __vec4f hit_point_z = fmadd(dir_z, tmin, origin_z);
 
-        const __vec4f default_nx = sub_(&hit_point_x, &center_x_min);
-        const __vec4f default_ny = sub_(&hit_point_y, &center_y_min);
-        const __vec4f default_nz = sub_(&hit_point_z, &center_z_min);
+        __vec4f default_nx = sub_(&hit_point_x, &center_x_min);
+        __vec4f default_ny = sub_(&hit_point_y, &center_y_min);
+        __vec4f default_nz = sub_(&hit_point_z, &center_z_min);
 
         *n_x_min = blendv(n_x_min, &default_nx, &mask0);
         *n_y_min = blendv(n_y_min, &default_ny, &mask0);
@@ -144,10 +145,10 @@ void intersect_fsphere(fSphere *sph,
         *color_g_min = blendv(color_g_min, &default_g, &mask0);
         *color_b_min = blendv(color_b_min, &default_b, &mask0);
 
-        const __vec4f default_albedo = set1(sph->albedo[i]);
+        const __vec4f default_emission_power = set1(sph->emission_power[i]);
         const __vec4f default_type = set1(sph->type[i]);
 
-        *albedo_min = blendv(albedo_min, &default_albedo, &mask0);
+        *emissive_power_min = blendv(emissive_power_min, &default_emission_power, &mask0);
         *type_min = blendv(type_min, &default_type, &mask0);
     }
 };
@@ -155,9 +156,9 @@ void intersect_fsphere(fSphere *sph,
 void free_fSphere(fSphere *sph)
 {
     free(sph->coord);
-    free(sph->color);
-    free(sph->radius);
     free(sph->albedo);
+    free(sph->radius);
+    free(sph->emission_power);
     free(sph->type);
 }
 
@@ -194,12 +195,12 @@ void set_fQuad(fQuad *q, uint64_t c)
     q->wy = q->wx + q->capacity;
     q->wz = q->wy + q->capacity;
 
-    q->color = (float *)(aligned_alloc(16, 3 * q->capacity * sizeof(float)));
-    q->r = q->color;
+    q->albedo = (float *)(aligned_alloc(16, 3 * q->capacity * sizeof(float)));
+    q->r = q->albedo;
     q->g = q->r + q->capacity;
     q->b = q->g + q->capacity;
 
-    q->albedo = (float *)(aligned_alloc(16, q->capacity * sizeof(float)));
+    q->emission_power = (float *)(aligned_alloc(16, q->capacity * sizeof(float)));
     q->type = (float *)(aligned_alloc(16, q->capacity * sizeof(float)));
 
     for (uint64_t i = 0; i < q->chunked_size; ++i)
@@ -232,7 +233,7 @@ void set_fQuad(fQuad *q, uint64_t c)
         store(q->g + step, &zero);
         store(q->b + step, &zero);
 
-        store(q->albedo + step, &zero);
+        store(q->emission_power + step, &zero);
         store(q->type + step, &zero);
     }
 };
@@ -242,7 +243,7 @@ void intersect_fquad(fQuad *q,
                      const __vec4f *dir_x, const __vec4f *dir_y, const __vec4f *dir_z,
                      __vec4f *n_x_min, __vec4f *n_y_min, __vec4f *n_z_min,
                      __vec4f *color_r_min, __vec4f *color_g_min, __vec4f *color_b_min,
-                     __vec4f *albedo_min, __vec4f *type_min,
+                     __vec4f *emissive_power_min, __vec4f *type_min,
                      __vec4f *tmin, __vec4f *hit_mask)
 {
 
@@ -354,11 +355,11 @@ void intersect_fquad(fQuad *q,
         *color_g_min = blendv(color_g_min, &default_g, &mask);
         *color_b_min = blendv(color_b_min, &default_b, &mask);
 
-        const __vec4f default_albedo = set1(q->albedo[i]);
+        const __vec4f default_emission_power = set1(q->emission_power[i]);
         const __vec4f default_type = set1(q->type[i]);
 
-        *albedo_min = blendv(albedo_min, &default_albedo, &mask0);
-        *type_min = blendv(type_min, &default_type, &mask0);
+        *emissive_power_min = blendv(emissive_power_min, &default_emission_power, &mask);
+        *type_min = blendv(type_min, &default_type, &mask);
     }
 }
 
@@ -373,9 +374,9 @@ void free_fQuad(fQuad *q)
 
     free(q->w);
 
-    free(q->color);
-
     free(q->albedo);
+
+    free(q->emission_power);
     free(q->type);
 }
 
@@ -388,21 +389,21 @@ void intersect_in_scene_f(fScene *scene, const __vec4f *origin_x, const __vec4f 
     __vec4f color_g_min = zero;
     __vec4f color_b_min = zero;
 
-    __vec4f albedo_min = zero;
+    __vec4f emissive_power_min = zero;
     __vec4f type_min = zero;
 
     __vec4f hit_mask = zero;
 
-    __vec4f n_x_min = max_limit;
-    __vec4f n_y_min = max_limit;
-    __vec4f n_z_min = max_limit;
+    __vec4f n_x_min = zero;
+    __vec4f n_y_min = zero;
+    __vec4f n_z_min = zero;
 
     intersect_fquad(&scene->quads, origin_x,
                     origin_y, origin_z,
                     dir_x, dir_y, dir_z,
                     &n_x_min, &n_y_min, &n_z_min,
                     &color_r_min, &color_g_min, &color_b_min,
-                    &albedo_min, &type_min,
+                    &emissive_power_min, &type_min,
                     &tmin, &hit_mask);
 
     intersect_fsphere(&scene->spheres, origin_x,
@@ -410,7 +411,7 @@ void intersect_in_scene_f(fScene *scene, const __vec4f *origin_x, const __vec4f 
                       dir_x, dir_y, dir_z,
                       &n_x_min, &n_y_min, &n_z_min,
                       &color_r_min, &color_g_min, &color_b_min,
-                      &albedo_min, &type_min,
+                      &emissive_power_min, &type_min,
                       &tmin, &hit_mask);
 
     store(hits->isHitting, &hit_mask);
@@ -423,19 +424,21 @@ void intersect_in_scene_f(fScene *scene, const __vec4f *origin_x, const __vec4f 
     store(hits->hpy, &hit_point_y);
     store(hits->hpz, &hit_point_z);
 
+    norm_(&n_x_min, &n_y_min, &n_z_min, &n_x_min, &n_y_min, &n_z_min);
+
     store(hits->hnx, &n_x_min);
     store(hits->hny, &n_y_min);
     store(hits->hnz, &n_z_min);
 
-    store(hits->hcr, &color_r_min);
-    store(hits->hcg, &color_g_min);
-    store(hits->hcb, &color_b_min);
+    store(hits->har, &color_r_min);
+    store(hits->hag, &color_g_min);
+    store(hits->hab, &color_b_min);
 
-    store(hits->albedo, &albedo_min);
-    store(hits->type, &type_min);
+    store(hits->hit_emissive_power, &emissive_power_min);
+    store(hits->hit_type, &type_min);
 }
 
-void add_fSphere(fSphere *sph, const float *coord, const float *color, const float radius, float albedo, const float type)
+void add_fSphere(fSphere *sph, const float *coord, const float *color, const float radius, float emission_power, const float type)
 {
     sph->x[sph->size] = coord[0];
     sph->y[sph->size] = coord[1];
@@ -447,13 +450,13 @@ void add_fSphere(fSphere *sph, const float *coord, const float *color, const flo
 
     sph->radius[sph->size] = radius;
 
-    sph->albedo[sph->size] = albedo;
+    sph->emission_power[sph->size] = emission_power;
     sph->type[sph->size] = type;
 
     sph->size++;
 }
 
-void add_fSphere_(fSphere *sph, float x, float y, float z, float r, float g, float b, const float radius, float albedo, const float type)
+void add_fSphere_(fSphere *sph, float x, float y, float z, float r, float g, float b, const float radius, float emission_power, const float type)
 {
     sph->r[sph->size] = r;
     sph->g[sph->size] = g;
@@ -465,13 +468,13 @@ void add_fSphere_(fSphere *sph, float x, float y, float z, float r, float g, flo
 
     sph->radius[sph->size] = radius;
 
-    sph->albedo[sph->size] = albedo;
+    sph->emission_power[sph->size] = emission_power;
     sph->type[sph->size] = type;
 
     sph->size++;
 }
 
-void add_fQuad(fQuad *q, const float *Q, const float *u, const float *v, const float *c, float albedo, float type)
+void add_fQuad(fQuad *q, const float *Q, const float *u, const float *v, const float *c, float emission_power, float type)
 {
     q->r[q->size] = c[0];
     q->g[q->size] = c[1];
@@ -489,7 +492,7 @@ void add_fQuad(fQuad *q, const float *Q, const float *u, const float *v, const f
     q->vy[q->size] = v[1];
     q->vz[q->size] = v[2];
 
-    q->albedo[q->size] = albedo;
+    q->emission_power[q->size] = emission_power;
     q->type[q->size] = type;
 
     float normal[3];
@@ -525,6 +528,64 @@ void add_fQuad(fQuad *q, const float *Q, const float *u, const float *v, const f
     q->wz[q->size] = w_[2];
 
     q->size++;
+}
+
+void add_cornel_box(fQuad *q, const float width, const float height, const float depth, const float *position, float emission_power, float type)
+{
+    const float min[3] = {(-width / 2.0f) + position[0], (-height / 2.0f) + position[1], (-depth / 2.0f) + position[2]};
+    const float max[3] = {(width / 2.0f) + position[0], (height / 2.0f) + position[1], (depth / 2.0f) + position[2]};
+
+    const float dx[3] = {max[0] - min[0], 0.0f, 0.0f};
+    const float dy[3] = {0.0f, max[1] - min[1], 0.0f};
+    const float dz[3] = {0.0f, 0.0f, max[2] - min[2]};
+
+    const float mdx[3] = {-max[0] + min[0], 0.0f, 0.0f};
+    const float mdy[3] = {0.0f, -max[1] + min[1], 0.0f};
+    const float mdz[3] = {0.0f, 0.0f, -max[2] + min[2]};
+
+    const float red[3] = {1.0f, 0.0f, 0.0};
+    const float green[3] = {0.0f, 1.0f, 0.0};
+    const float blue[3] = {0.0f, 0.0f, 1.0};
+    const float white_light[3] = {10.0f, 10.0f, 10.0f};
+    const float color_0[3] = {0.9019f, 0.9019f, 0.9019f};
+    const float orange[3] = {0.92f, 0.92f, 0.92f};
+
+    add_fQuad(q, min, dy, dz, color_0, emission_power, type);
+    add_fQuad(q, max, mdy, mdz, color_0, emission_power, type);
+    add_fQuad(q, min, dx, dz, color_0, emission_power, type);
+    add_fQuad(q, max, mdx, mdz, white_light, 10.0f, Emissive);
+    add_fQuad(q, min, dx, dy, color_0, emission_power, type);
+}
+
+void add_fSquare(fQuad *q, const float width, const float height, const float depth, const float *position, const float *color, float emission_power, float type)
+{
+
+    const float min[3] = {(-width / 2.0f) + position[0], (-height / 2.0f) + position[1], (-depth / 2.0f) + position[2]};
+    const float max[3] = {(width / 2.0f) + position[0], (height / 2.0f) + position[1], (depth / 2.0f) + position[2]};
+
+    const float dx[3] = {max[0] - min[0], 0.0f, 0.0f};
+    const float dy[3] = {0.0f, max[1] - min[1], 0.0f};
+    const float dz[3] = {0.0f, 0.0f, max[2] - min[2]};
+
+    const float mdx[3] = {-max[0] + min[0], 0.0f, 0.0f};
+    const float mdy[3] = {0.0f, -max[1] + min[1], 0.0f};
+    const float mdz[3] = {0.0f, 0.0f, -max[2] + min[2]};
+
+    const float red[3] = {1.0f, 0.0f, 0.0};
+    const float green[3] = {0.0f, 1.0f, 0.0};
+    const float blue[3] = {0.0f, 0.0f, 1.0};
+    const float white_light[3] = {10.0f, 10.0f, 10.0f};
+    const float color_0[3] = {0.9019f, 0.9019f, 0.9019f};
+    const float orange[3] = {0.92f, 0.92f, 0.92f};
+
+    add_fQuad(q, min, dy, dz, color, emission_power, type);
+    add_fQuad(q, max, mdy, mdz, color, emission_power, type);
+
+    add_fQuad(q, min, dx, dz, color, emission_power, type);
+    add_fQuad(q, max, mdx, mdz, color, emission_power, type);
+
+    add_fQuad(q, min, dx, dy, color, emission_power, type);
+    add_fQuad(q, max, mdx, mdy, color, emission_power, type);
 }
 
 void set_fScene(fScene *scene, const float *cam_position, float degree, float pitch, float yaw, size_t sphere_capacity, size_t quad_capacity, size_t width, size_t height)

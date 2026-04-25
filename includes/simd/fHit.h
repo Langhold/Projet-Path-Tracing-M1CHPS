@@ -15,14 +15,14 @@ typedef struct fHit
     __attribute__((aligned(16))) float *hny;
     __attribute__((aligned(16))) float *hnz;
 
-    __attribute__((aligned(16))) float *hit_color;
-    __attribute__((aligned(16))) float *hcr;
-    __attribute__((aligned(16))) float *hcg;
-    __attribute__((aligned(16))) float *hcb;
+    __attribute__((aligned(16))) float *hit_albedo;
+    __attribute__((aligned(16))) float *har;
+    __attribute__((aligned(16))) float *hag;
+    __attribute__((aligned(16))) float *hab;
 
     __attribute__((aligned(16))) float *isHitting;
-    __attribute__((aligned(16))) float *albedo;
-    __attribute__((aligned(16))) float *type;
+    __attribute__((aligned(16))) float *hit_emissive_power;
+    __attribute__((aligned(16))) float *hit_type;
 
     uint64_t size;
     uint64_t capacity;
