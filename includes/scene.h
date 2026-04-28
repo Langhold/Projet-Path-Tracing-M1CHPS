@@ -1,16 +1,13 @@
-//
-//  scene.h
-//  Projet PPN
-//
-//  Created by Nolwen Dolléans on 13/11/2025.
-//
-
 #ifndef scene_h
 #define scene_h
 
 #include <stdint.h>
 #include "image.h"
 #include "ray.h"
+
+
+#define NULL_AABB (AABB) {{ {  FLT_MAX,  FLT_MAX,  FLT_MAX } },{ { -FLT_MAX, -FLT_MAX, -FLT_MAX }}}
+
 
 typedef enum PRIM_TYPE
 {
@@ -76,13 +73,44 @@ typedef struct Primitive
 	float albedo;
 } Primitive;
 
-typedef struct Scene
-{
-	Primitive **objects;
-	Vector *background_color;
+typedef struct Scene{
+	Primitive ** objects;
+	Primitive ** lights;
+	Vector * background_color;
 	size_t size_objects;
+	size_t size_lights;
 	Camera camera;
 } Scene;
+
+typedef struct object_tree_t{
+	AABB box;
+	Primitive** objects;
+	int objects_count;
+	
+	struct object_tree_t* right;
+	struct object_tree_t* left;
+} object_tree_t;
+
+
+typedef struct Vertex{
+	Vector position;
+	Vector direction;
+	Vector normal;
+	Vector throughput;
+	Vector wo;
+	Primitive *object;
+	int is_light;
+	float pdf_fwd;
+	float pdf_rev;
+}Vertex;
+
+typedef struct Large_BVH_t{
+	AABB box;
+	int K;
+	struct object_tree_t** clusters;
+	
+} Large_BVH_t;
+
 
 /**
  * @brief Free scene
@@ -163,7 +191,20 @@ Vector get_normal_vector_sphere(const Vector *point, const Vector *center);
  * @brief Compute the sphere normal vector at a point
  * @return pointer to the normal vector
  */
-Vector get_normal_vector_box(int *face, int is_intern);
+Vector get_normal_vector_box(int face, int is_intern);
+
+object_tree_t* initialize_root_tree(Scene* S);
+object_tree_t* initialize_root_tree_v2(Scene* S);
+void free_tree_objects(object_tree_t** root);
+int intersect_in_clusters(Large_BVH_t* const tree, const Ray* r, float* closest_t, Primitive** intersected_object, int* is_intern, int* face);
+Large_BVH_t* initialize_tree_clustering(const Scene* S, unsigned int* seed, const int K);
+
+int intersect_in_tree(object_tree_t* const tree, const Ray* r, float* closest_t, Primitive** intersected_object, int* is_intern, int* face);
+
+Ray random_Ray_demi_sphere_cosine_weighted(const Vector * origin, const Vector * normal, unsigned int* seed);
+
+void trace_light_ray(size_t size_lights, Primitive ** light, Vertex * light_path, unsigned int* seed);
+void free_clusters(Large_BVH_t** root);
 
 static const float inv255 = 1 / 255.0f;
 

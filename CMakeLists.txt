@@ -1,9 +1,50 @@
 cmake_minimum_required(VERSION 3.15)
 
 project(ppm LANGUAGES C)
+
 set(CMAKE_C_STANDARD 11)
 
+# --------------------------------------------------
+# MPI
+# --------------------------------------------------
+
 find_package(MPI REQUIRED)
+
+# --------------------------------------------------
+# OpenMP
+# --------------------------------------------------
+
+find_package(OpenMP)
+
+if(OpenMP_C_FOUND)
+
+    message(STATUS "OpenMP found")
+
+else()
+
+    if(APPLE)
+
+        message(STATUS "Using Homebrew libomp")
+
+        execute_process(
+            COMMAND brew --prefix libomp
+            OUTPUT_VARIABLE LIBOMP_PREFIX
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+
+        add_compile_options(-Xpreprocessor -fopenmp)
+        include_directories(${LIBOMP_PREFIX}/include)
+        link_directories(${LIBOMP_PREFIX}/lib)
+
+
+    endif()
+
+        set(OpenMP_LIBRARIES omp)
+endif()
+
+# --------------------------------------------------
+# LIBRARY
+# --------------------------------------------------
 
 add_library(LibPathTracing
     src/image.c
@@ -47,12 +88,24 @@ target_link_libraries(simd PRIVATE LibPathTracing)
 target_compile_options(ppm PRIVATE ${COMMON_COMPILE_FLAGS})
 target_compile_options(simd PRIVATE ${SIMD_COMPILE_FLAGS})
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_options(ppm PRIVATE -Wall -Wextra -g -DDEBUG)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    target_compile_options(ppm PRIVATE -Wall -Wextra -O3 -march=native)
+endif()
+
+
+
+# --------------------------------------------------
+# TESTS
+# --------------------------------------------------
+
 add_executable(test_runner
-                            test/test_runner.c 
-                            test/test_vector.c 
-                            test/test_ray.c
-                            test/test_tools.c
-                            test/test_scene.c
+               test/test_runner.c
+               test/test_vector.c
+               test/test_ray.c
+               test/test_tools.c
+               test/test_scene.c
 )
 target_compile_options(test_runner PRIVATE ${COMMON_COMPILE_FLAGS})
 

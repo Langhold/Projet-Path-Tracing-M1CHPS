@@ -15,7 +15,7 @@ do
 
     # Run MPI program and capture perf metrics
     perf_output=$(BOUNCES=2 perf stat -x, -e instructions,cycles,cache-misses,cache-references \
-                  mpirun -np 8 ./ppm 32 800 600 "$s" 1>/dev/null 2>&1)
+                  mpirun -np 8 ./ppm 800 600 "$s" 1>/dev/null 2>&1)
 
     # Parse metrics, remove commas
     instructions=$(echo "$perf_output" | awk -F, '/instructions/ {gsub(/,/,""); print $1}')

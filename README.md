@@ -7,8 +7,8 @@ A path tracer using Monte Carlo for image rendering written in C.
 ### Build
 
 ```bash
-cmake -B build
-make -C build
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build
 ```
 
 ### Run
@@ -18,8 +18,7 @@ mkdir -p image
 mkdir -p performance
 mkdir -p performance/measures
 
-export BOUNCES=number_of_bounces #(optional; = 26 by default)
-./build/ppm width height amount_of_sample
+./build/ppm <CONFIG>.txt 
 ```
 
 ## Experiments
@@ -51,7 +50,7 @@ Build the project in Release mode:
 
 ```bash
 cmake -B build -DCMAKE_BUILD_TYPE=Release
-make -C build
+cmake --build build
 ```
 
 - Image resolution: WxH
@@ -84,7 +83,7 @@ clock_gettime(CLOCK_MONOTONIC, &end);
 Runtime measurements are exported to:
 
 ```code
-performance/measures/runtime_by_samplings.csv
+performance/measures/measures.csv
 ```
 
 All runtimes are stored in seconds.
@@ -92,31 +91,37 @@ All runtimes are stored in seconds.
 Run the experiment:
 
 ```bash
-export OMP_NUM_THREADS=M
-export BOUNCES=b
-mpirun -n O ./build/ppm W H N
+export OMP_NUM_THREADS=O
+mpirun -n M ./build/ppm config.txt
+```
+With config.txt:
+```bash
+width = W
+height = H
+samples = N
+bounces = B
+output_filename = performance/measures/measures.csv
+benchmark = medium
 ```
 
 By default, the executable generates:
+   - one rendered image
+   - one runtime measurement
+To perform multiple measurements during a single execution, use:
+ ```bash
+ print rate = <NUMBER OF IMAGE AND RUNTIME MEASURES RATE>
+ ```
+where print rate specifies how many measurements are taken between 1 and <print rate> samples.
 
-- one rendered image
-- one runtime measurement
-  To perform multiple measurements during a single execution, use:
-
-```bash
-mpirun -n O ./build/ppm W H N "number_of_measures"
-```
-
-where number_of_measures specifies how many measurements are taken between 1 and N samples.
-
-To generate only the final image instead of all intermediate images, use "no_image" option.
+To generate only the final image instead of all intermediate images, use "only last image" option.
 
 Example:
 
 ```bash
-export OMP_NUM_THREADS=8
-export BOUNCES=10
-mpirun -n 4 ./build/ppm 800 600 1000 100 no_image
+#Only the final image will be print
+only last image = 1
+#You can create the same images multiple times using n_measures to refine your measurements
+n_measures = 5
 ```
 
 ####
@@ -132,23 +137,8 @@ lscpu | grep "sse"
 
 Also, make sure to install Sleef library, for compatibility with intrinsics function like powf and absf.
 
-```bash
-sudo apt-get install libmpfr-dev libssl-dev libfftw3-dev
-cmake -S . -B build/ -DCMAKE_INSTALL_PREFIX=./install
-cmake --build build/ --clean-first -j `nproc`
-ctest --test-dir build/ -j `nproc`
-cmake --install build/
-```
 
-### Build
+### Protocol 2: The convergence speed and the mean error
 
-```bash
-./script/build.sh
-```
 
-### Run
 
-```bash
-
-./script/run.sh
-```

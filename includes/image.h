@@ -28,7 +28,7 @@ typedef struct Image_32bit
  * @param width Longueur
  * @param height Hauteur
  */
-Image_32bit *create_image_32bit(const size_t width, const size_t height, const size_t samples);
+Image_32bit* create_image_32bit(const size_t width, const size_t height);
 
 /**
  * @brief

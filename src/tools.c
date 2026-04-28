@@ -5,9 +5,9 @@ int mpi_size = 1;
 
 void *malloc_check(const size_t size)
 {
-    void *data = malloc(size);
-
-    if (data == NULL)
+    void* data = malloc(size);
+	
+    if(data == NULL)
     {
         fprintf(stderr, "Failed to alloc memory.\n");
         exit(EXIT_FAILURE);
