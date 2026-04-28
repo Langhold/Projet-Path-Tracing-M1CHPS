@@ -1,0 +1,10 @@
+width = 800
+height = 600
+samples = 2000
+bounces = 26
+n_measures = 5
+print rate = 500
+only last image = 1
+output_measures = cluster_measures/runtime_vs_samples/medium/measures/naive.csv
+benchmark = medium
+implementation = naive

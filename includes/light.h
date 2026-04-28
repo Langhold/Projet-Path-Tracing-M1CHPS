@@ -24,6 +24,11 @@ void ray_sampling_t(Ray* const r, object_tree_t* const scene, int dmax, Vertex *
 
 void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length, Vertex *light_path, int light_path_length, Large_BVH_t* const tree);
 
+
+
+void path_trace(const int x1, const int y1, const int local_y, const int width, Scene const * S, const size_t bounces, float* color_buffer, unsigned int* seed);
+void path_trace_tree(const int x1, const int y1, const int local_y, const int width, Scene const * S, const size_t bounces, Vector* color_buffer, unsigned int* seed, object_tree_t* const tree);
+void path_trace_clusters(const int x1, const int y1, const int local_y, const int width, Scene const * S, const size_t bounces, Vector* color_buffer, unsigned int* seed, Large_BVH_t* const tree);
 /**
  * @brief Trace 3D ray from the camera with Path Tracing with N samples
  * @param pixel_x input: index x of the pixel

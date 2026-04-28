@@ -206,10 +206,11 @@ static int bsdf_sample(const BDPT_Vertex* v, const Vector* wi,
 			*is_delta = 1;
 			*pdf_solid = 0.f; /* delta */
 			/* throughput *= albedo (couleur preservee, pas de teinte ajoutee) */
-			f_times_cos->Data[0] = v->obj->albedo;
+			/*f_times_cos->Data[0] = v->obj->albedo;
 			f_times_cos->Data[1] = v->obj->albedo;
-			f_times_cos->Data[2] = v->obj->albedo;
-			return 1;
+			f_times_cos->Data[2] = v->obj->albedo;*/
+			
+			return 2;
 		}
 	}
 	return 0;
@@ -433,9 +434,12 @@ static int random_walk(Large_BVH_t* tree, const Scene* S,
 		float pdf_solid_out = 0.f;
 		int is_delta = 0;
 		Vector wi_dir = ray.direction; /* arrivee sur la surface */
-		if (!bsdf_sample(v, &wi_dir, &wo, &f_cos, &pdf_solid_out, &is_delta, seed)) {
+		int bsdf = bsdf_sample(v, &wi_dir, &wo, &f_cos, &pdf_solid_out, &is_delta, seed);
+		if (bsdf == 0) {
 			return n;
 		}
+		else if (bsdf == 2)
+			--bounces;
 		v->delta = is_delta;
 
 		/* Mise a jour du throughput : beta *= f_r * cos / pdf_solid.

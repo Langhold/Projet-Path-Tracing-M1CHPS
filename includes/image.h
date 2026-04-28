@@ -69,7 +69,7 @@ void write_pixel_color_32bit(FILE* img, const uint32_t color);
  * @brief Ecrit un pixel sur une image
  * @param img Fichier image
  */
-void write_image_file_32bit(Image_32bit *const img, const size_t current_samples);
+void write_image_file_32bit(Image_32bit *const img, const size_t current_samples, const char * path);
 
 /**
  * @brief Remplit les pixel d'une couleur

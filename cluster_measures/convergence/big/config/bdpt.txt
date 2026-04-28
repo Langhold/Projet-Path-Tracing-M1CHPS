@@ -1,0 +1,12 @@
+width = 800
+height = 600
+samples = 2000
+bounces = 26
+n_measures = 1
+print rate = 10
+only last image = 0
+output_measures = cluster_measures/convergence/big/measures/bdpt.csv
+output_filename = cluster_measures/convergence/big/measures/bdpt
+benchmark = big
+implementation = bdpt
+

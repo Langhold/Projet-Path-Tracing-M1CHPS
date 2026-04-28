@@ -2,7 +2,8 @@
 
 
 
-static const char* default_output_filename = "performance/measures/measures.csv";
+static const char* default_output_measures = "performance/measures/measures.csv";
+static const char* default_output_filename = "image/Image";
 
 void setup_default_values(pt_config_t* config) {
   // Simulation parameters
@@ -10,10 +11,13 @@ void setup_default_values(pt_config_t* config) {
 	config->width      		= 800;
 	config->height     		= 600;
 	config->output_filename = default_output_filename;
+	config->output_measures = default_output_measures;
 	config->n_measures 	 	= 1;
 	config->bounces 	 	= 26;
     config->benchmark 		= &benchmark1;
 	config->benchmark_name 	= "mickey";
+    config->implem	 		= cluster;
+	config->implem_name 	= "cluster";
 	config->can_print 		= 0;
 	config->print_rate 		= 1;
 }
@@ -58,6 +62,8 @@ void load_config(pt_config_t* config, const char* filename) {
 	  config->n_measures = intValue;
 	} else if (sscanf(buffer, "output_filename = %s\n", buffer2) == 1) {
 	  config->output_filename = strdup(buffer2);
+	} else if (sscanf(buffer, "output_measures = %s\n", buffer2) == 1) {
+	  config->output_measures = strdup(buffer2);
 	} else if (sscanf(buffer, "benchmark = %s\n", buffer2) == 1) {
 	  if(strcmp(buffer2, "medium") == 0){
 		config->benchmark = &benchmark_medium;
@@ -68,6 +74,26 @@ void load_config(pt_config_t* config, const char* filename) {
 	  } else if(strcmp(buffer2, "big") == 0){
 		config->benchmark = &benchmark_big;
 		config->benchmark_name = "big";
+	  } else {
+		config->benchmark = &benchmark1;
+		config->benchmark_name = "mickey";
+	  }
+	} else if (sscanf(buffer, "implementation = %s\n", buffer2) == 1) {
+	  if(strcmp(buffer2, "naive") == 0){
+		config->implem = naive;
+		config->implem_name = "naive";
+	  } else if(strcmp(buffer2, "tree") == 0){
+		  config->implem = trees;
+		  config->implem_name = "tree";
+	  } else if(strcmp(buffer2, "cluster") == 0){
+		  config->implem = cluster;
+		  config->implem_name = "cluster";
+	  } else if(strcmp(buffer2, "SIMD") == 0){
+		  config->implem = SIMD;
+		  config->implem_name = "SIMD";
+	  } else if(strcmp(buffer2, "BDPT") == 0){
+		  config->implem = bdpt;
+		  config->implem_name = "BDPT";
 	  } else {
 		config->benchmark = &benchmark1;
 		config->benchmark_name = "mickey";
@@ -105,9 +131,10 @@ void print_config(pt_config_t* config) {
 	" ├%-20s %d\n"
 	" └%-20s %s\n"
 	" -──────────────────────────────\n"
-	" %-20s\n"
+	" SIMULATION PARAMETERS\n"
 	" ┬──────────────────────────────\n"
-	" └%s\n",
+	" ├%-20s %s\n"
+	" └%-20s %s\n",
 	"WIDTH",config->width,
 	"HEIGHT",config->height,
 	"SAMPLES",config->samples,
@@ -115,6 +142,7 @@ void print_config(pt_config_t* config) {
 	"PRINT RATE",config->print_rate,
 	"MEASURES",config->n_measures,
 	"OUTPUT FILE",config->output_filename,
-	"BENCHMARK",config->benchmark_name
+	"BENCHMARK",config->benchmark_name,
+	"IMPLEMENTATION",config->implem_name
   );
 }

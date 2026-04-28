@@ -49,12 +49,12 @@ void clear_frame_color_32bit(Image_32bit *const img, const uint8_t r, const uint
     memset(img->buffer, color, img->height * img->width * sizeof(uint32_t));
 }
 
-void write_image_file_32bit(Image_32bit *const img, const size_t current_samples)
+void write_image_file_32bit(Image_32bit *const img, const size_t current_samples, const char* path_file)
 {
 	if (mpi_rank != 0) return;
 
 	char path[100];
-	sprintf(path, "image/image_32bit%ld.ppm", current_samples);
+	sprintf(path, "%s%ld.ppm", path_file, current_samples);
 	
 	FILE *file = fopen(path, "w");
 	
