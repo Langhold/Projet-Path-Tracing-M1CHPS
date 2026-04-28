@@ -5,6 +5,14 @@
 
 #include "light.h"
 
+typedef enum {
+	naive,
+	SIMD,
+	trees,
+	cluster,
+	bdpt
+} Implem_t;
+
 struct Scene;
 
 /// @brief Configuration of the problem to solve.
@@ -23,10 +31,14 @@ typedef struct pt_config_t {
   int n_measures;
   /// Output file.
   const char* output_filename;
+  const char* output_measures;
   /// Kind of benchmark.
   void (*benchmark)(struct Scene*, size_t, size_t);
   /// Output file.
   const char* benchmark_name;
+	
+  Implem_t implem;
+  const char* implem_name;
   /// If user want only final image.
   int can_print;
 } pt_config_t;
