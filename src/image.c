@@ -1,7 +1,7 @@
 #include "image.h"
 #include "vector.h"
 
-Image_32bit* create_image_32bit(const size_t width, const size_t height, const size_t samples)
+Image_32bit* create_image_32bit(const size_t width, const size_t height)
 {
     Image_32bit* img = (Image_32bit*)malloc(sizeof(Image_32bit));
     if(img == NULL)

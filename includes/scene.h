@@ -98,8 +98,8 @@ typedef struct Vertex{
 	Vector wo;
 	Primitive *object;
 	int is_light;
-	float pdf_pos;
-	float pdf_dir;
+	float pdf_fwd;
+	float pdf_rev;
 }Vertex;
 
 typedef struct Large_BVH_t{
