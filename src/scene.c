@@ -13,10 +13,14 @@ void free_scene(Scene* S){
 	
 }
 
-void free_scene_objects(Scene * S){
-	for (size_t i = 0; i<S->size_objects; ++i) {
-		if(S->objects[i]) free(S->objects[i]->object);
-		if(S->objects[i]) free(S->objects[i]);
+void free_scene_objects(Scene *S)
+{
+	for (size_t i = 0; i < S->size_objects; ++i)
+	{
+		if (S->objects[i])
+			free(S->objects[i]->object);
+		if (S->objects[i])
+			free(S->objects[i]);
 	}
 }
 
@@ -41,14 +45,16 @@ void create_scene_ext(size_t n_objects, const Vector * backgroundColor, Scene * 
 	s->size_lights = 0;
 }
 
-void create_primitive_ext(void * shape, PRIM_TYPE type, float x, float y, float z, material_t m_type, float albedo, Vector *color, Primitive *prim){
+void create_primitive_ext(void *shape, PRIM_TYPE type, float x, float y, float z, material_t m_type, float albedo, Vector *color, Primitive *prim)
+{
 	prim->type = type;
 	prim->m_type = m_type;
 	create_vector_ext(&prim->position, x, y, z);
 	prim->albedo = albedo;
 	prim->color = *color;
-	for (size_t i = 0; i < 3; ++i) {
-		prim->color.Data[i] = color->Data[i]*inv255;
+	for (size_t i = 0; i < 3; ++i)
+	{
+		prim->color.Data[i] = color->Data[i] * inv255;
 	}
 	prim->object = shape;
 }
@@ -69,7 +75,7 @@ void add_primitive(Primitive * object, Scene * s){
 	exit(EXIT_FAILURE);
 }
 
-void create_sphere(Primitive* prim, const float radius, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color)
+void create_sphere(Primitive *prim, const float radius, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color)
 {
 	Sphere * sph = malloc(sizeof(Sphere));
 	if (!sph) {
@@ -77,29 +83,29 @@ void create_sphere(Primitive* prim, const float radius, const float x, const flo
 		exit(1);
 	}
 	sph->radius = radius;
-	
+
 	prim->type = SPHERE;
 	prim->m_type = m_type;
 	create_vector_ext(&prim->position, x, y, z);
 	prim->albedo = albedo;
 	prim->color = *color;
-	for (size_t i = 0; i < 3; ++i) {
-		prim->color.Data[i] = color->Data[i]*inv255;
+	for (size_t i = 0; i < 3; ++i)
+	{
+		prim->color.Data[i] = color->Data[i] * inv255;
 	}
-	prim->object = (void *) sph;
-	
+	prim->object = (void *)sph;
 }
 
-void create_box(Primitive* prim, const float width, const float height, const float length, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color, const float pitch, const float yaw)
+void create_box(Primitive *prim, const float width, const float height, const float length, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color, const float pitch, const float yaw)
 {
-	OBB* box = malloc(sizeof(OBB));
-	
+	OBB *box = malloc(sizeof(OBB));
+
 	create_vector_ext(&box->center, x, y, z);
 
 	float cosA, sinA, cosB, sinB;
 	Vector up;
-	const float alpha=radian(pitch);
-	const float beta=radian(yaw);
+	const float alpha = radian(pitch);
+	const float beta = radian(yaw);
 	sinA = sinf(alpha);
 	cosA = cosf(alpha);
 	sinB = sinf(beta);
@@ -112,25 +118,26 @@ void create_box(Primitive* prim, const float width, const float height, const fl
 	else up = (Vector){{1.0f, 0.0f, 0.0f}};
 	
 	cross_ext(&box->obb_direction, &up, &(box->obb_right));
-	norm_ext(&(box->obb_right),&(box->obb_right));
-	
+	norm_ext(&(box->obb_right), &(box->obb_right));
+
 	cross_ext(&(box->obb_right), &box->obb_direction, &(box->obb_up));
 	norm_ext(&box->obb_up, &box->obb_up);
 
-	create_vector_ext(&box->size, width*0.5, height*0.5, length*0.5);
-	
+	create_vector_ext(&box->size, width * 0.5, height * 0.5, length * 0.5);
+
 	prim->type = BOX;
 	prim->m_type = m_type;
 	create_vector_ext(&prim->position, x, y, z);
 	prim->albedo = albedo;
 	prim->color = *color;
-	for (size_t i = 0; i < 3; ++i) {
-		prim->color.Data[i] = color->Data[i]*inv255;
+	for (size_t i = 0; i < 3; ++i)
+	{
+		prim->color.Data[i] = color->Data[i] * inv255;
 	}
-	prim->object = (void *) box;
+	prim->object = (void *)box;
 }
 
-void create_cube(Primitive* prim, const float width, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color)
+void create_cube(Primitive *prim, const float width, const float x, const float y, const float z, material_t m_type, float albedo, Vector *color)
 {
 	AABB* box = malloc(sizeof(AABB));
 	if (!box) {
@@ -151,23 +158,23 @@ void create_cube(Primitive* prim, const float width, const float x, const float 
 	create_vector_ext(&prim->position, x, y, z);
 	prim->albedo = albedo;
 	prim->color = *color;
-	for (size_t i = 0; i < 3; ++i) {
-		prim->color.Data[i] = color->Data[i]*inv255;
+	for (size_t i = 0; i < 3; ++i)
+	{
+		prim->color.Data[i] = color->Data[i] * inv255;
 	}
-	prim->object = (void *) box;
+	prim->object = (void *)box;
 }
 
-bool intersect_sphere(Ray* const r, Vector *center, float radius, Vector *hit)
+bool intersect_sphere(Ray *const r, Vector *center, float radius, Vector *hit)
 {
 	Vector oc;
 	sub_ext(&r->position, center, &oc);
-	
 
 	const float A = dot(&r->direction, &r->direction);
 	const float B = 2.0f * dot(&r->direction, &oc);
 	const float C = dot(&oc, &oc) - radius * radius;
 
-	const float delta = B*B - 4.0f*A*C;
+	const float delta = B * B - 4.0f * A * C;
 
 	if (delta < 0.0f)
 		return false;
@@ -189,21 +196,25 @@ bool intersect_sphere(Ray* const r, Vector *center, float radius, Vector *hit)
 	return true;
 }
 
-bool intersect_box(Ray* const r, const AABB* const box, Vector *hit, int *face, int *is_intern) {
+bool intersect_box(Ray *const r, const AABB *const box, Vector *hit, int *face, int *is_intern)
+{
 
 	float tmin = -INFINITY;
 	float tmax = INFINITY;
 	int enterAxis = -1;
 	int exitAxis = -1;
 
-	for (int i = 0; i < 3; ++i) {
+	for (int i = 0; i < 3; ++i)
+	{
 		float *origin = &r->position.Data[i];
 		float *direction = &r->direction.Data[i];
 		float minA = box->bmin.Data[i];
 		float maxA = box->bmax.Data[i];
 
-		if (fabsf(*direction) < EPS) {
-			if (*origin < minA || *origin > maxA) return false;
+		if (fabsf(*direction) < EPS)
+		{
+			if (*origin < minA || *origin > maxA)
+				return false;
 			continue;
 		}
 
@@ -211,35 +222,41 @@ bool intersect_box(Ray* const r, const AABB* const box, Vector *hit, int *face, 
 		float t1 = (minA - *origin) * invD;
 		float t2 = (maxA - *origin) * invD;
 		int axisEnterCandidate = i;
-		int axisExitCandidate  = i;
+		int axisExitCandidate = i;
 
 		float low = fminf(t1, t2);
 		float high = fmaxf(t1, t2);
-		
-		if (low > tmin) {
+
+		if (low > tmin)
+		{
 			tmin = low;
 			enterAxis = axisEnterCandidate;
 		}
-		if (high < tmax) {
+		if (high < tmax)
+		{
 			tmax = high;
-			exitAxis  = axisExitCandidate;
+			exitAxis = axisExitCandidate;
 		}
-		
-		if (tmin > tmax) return false;
+
+		if (tmin > tmax)
+			return false;
 	}
 
 	float tHit;
 
 	// Si l'origine est à l'intérieur de la box
-	if (tmin < EPS && tmax > EPS) {
+	if (tmin < EPS && tmax > EPS)
+	{
 		tHit = tmax;
 		if (is_intern) *is_intern = 1;
 	}
-	else if (tmin > EPS) {
+	else if (tmin > EPS)
+	{
 		tHit = tmin;
 		if (is_intern) *is_intern = 0;
 	}
-	else {
+	else
+	{
 		return false;
 	}
 
@@ -252,11 +269,12 @@ bool intersect_box(Ray* const r, const AABB* const box, Vector *hit, int *face, 
 		case 1: *face = (dir > 0) ? BOTTOM : UP; break;
 		case 2: *face = (dir > 0) ? BACK : FRONT; break;
 	}
-	
+
 	return true;
 }
 
-bool intersect_obb(Ray* const r, const OBB* const box, Vector *hit, int *face, int *is_intern) {
+bool intersect_obb(Ray *const r, const OBB *const box, Vector *hit, int *face, int *is_intern)
+{
 
 	Vector o;
 	sub_ext(&r->position, &box->center, &o);
@@ -301,10 +319,11 @@ bool intersect_obb(Ray* const r, const OBB* const box, Vector *hit, int *face, i
 	return true;
 }
 
-Vector get_normal_vector_sphere(const Vector * point, const Vector * center){
+Vector get_normal_vector_sphere(const Vector *point, const Vector *center)
+{
 	Vector n;
 	sub_ext(point, center, &n);
-	norm_ext(&n,&n);
+	norm_ext(&n, &n);
 	return n;
 }
 
@@ -328,35 +347,39 @@ Vector get_normal_vector_box(int face, int is_intern){
 	return n;
 }
 
-
-bool intersect_in_scene(struct Ray* r, const Scene* const S, int *object, Vector *hit, Vector *n){
-	if(S->objects == NULL) return false;
+bool intersect_in_scene(struct Ray *r, const Scene *const S, int *object, Vector *hit, Vector *n)
+{
+	if (S->objects == NULL)
+		return false;
 	int object_index = -1;
-	
+
 	const Vector *origin = &r->position;
 	Vector best_hit;
 	double closest_t = 1e30;
-	
-	for (size_t i = 0; i < S->size_objects; ++i) {
-		if(S->objects[i] == NULL) continue;
-		
-		switch (S->objects[i]->type) {
-			case SPHERE:{
-				const Sphere *sp = (Sphere *)S->objects[i]->object;
-				
-				if (!intersect_sphere(r,&S->objects[i]->position, sp->radius, hit))
-					continue;
-				Vector diff;
-				sub_ext(hit, origin, &diff);
-				double t2 = dot(&diff, &diff);
-				
-				if (t2 < closest_t) {
-					closest_t = t2;
-					object_index = (int)i;
-					best_hit = *hit;
-					*n = get_normal_vector_sphere(hit, &S->objects[i]->position);
-				}
-				break;
+
+	for (size_t i = 0; i < S->size_objects; ++i)
+	{
+		if (S->objects[i] == NULL)
+			continue;
+
+		switch (S->objects[i]->type)
+		{
+		case SPHERE:
+		{
+			const Sphere *sp = (Sphere *)S->objects[i]->object;
+
+			if (!intersect_sphere(r, &S->objects[i]->position, sp->radius, hit))
+				continue;
+			Vector diff;
+			sub_ext(hit, origin, &diff);
+			double t2 = dot(&diff, &diff);
+
+			if (t2 < closest_t)
+			{
+				closest_t = t2;
+				object_index = (int)i;
+				best_hit = *hit;
+				*n = get_normal_vector_sphere(hit, &S->objects[i]->position);
 			}
 				
 			case BBOX: {
@@ -379,41 +402,60 @@ bool intersect_in_scene(struct Ray* r, const Scene* const S, int *object, Vector
 				}
 				break;
 			}
-			case BOX: {
-				OBB *box = (OBB *)S->objects[i]->object;
-				int face;
-				int is_intern;
+			break;
+		}
+		case BOX:
+		{
+			OBB *box = (OBB *)S->objects[i]->object;
+			int face;
+			int is_intern;
 
-				if (!intersect_obb(r, box, hit, &face, &is_intern))
-					continue;
+			if (!intersect_obb(r, box, hit, &face, &is_intern))
+				continue;
 
-				Vector diff;
-				sub_ext(hit, origin, &diff);
-				double t2 = dot(&diff, &diff);
+			Vector diff;
+			sub_ext(hit, origin, &diff);
+			double t2 = dot(&diff, &diff);
 
-				Vector normal;
-				if (t2 < closest_t) {
-					closest_t = t2;
-					object_index = (int) i;
-					best_hit = *hit;
-					switch (face) {
-					case MIN:    normal = box->obb_right;   mul_ext(&normal, -1, &normal); break;
-					case MAX:    normal = box->obb_right;   break;
-					case BOTTOM: normal = box->obb_up;      mul_ext(&normal, -1, &normal); break;
-					case UP:     normal = box->obb_up;      break;
-					case BACK:   normal = box->obb_direction; mul_ext(&normal, -1, &normal); break;
-					case FRONT:  normal = box->obb_direction; break;
+			Vector normal;
+			if (t2 < closest_t)
+			{
+				closest_t = t2;
+				object_index = (int)i;
+				best_hit = *hit;
+				switch (face)
+				{
+				case MIN:
+					normal = box->obb_right;
+					mul_ext(&normal, -1, &normal);
+					break;
+				case MAX:
+					normal = box->obb_right;
+					break;
+				case BOTTOM:
+					normal = box->obb_up;
+					mul_ext(&normal, -1, &normal);
+					break;
+				case UP:
+					normal = box->obb_up;
+					break;
+				case BACK:
+					normal = box->obb_direction;
+					mul_ext(&normal, -1, &normal);
+					break;
+				case FRONT:
+					normal = box->obb_direction;
+					break;
 				}
 
 				if (is_intern)
 					mul_ext(&normal, -1.0f, &normal);
 
 				*n = normal;
-				}
-				break;
 			}
+			break;
 		}
-		
+		}
 	}
 
 	if (object_index == -1)

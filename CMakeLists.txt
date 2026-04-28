@@ -53,42 +53,40 @@ add_library(LibPathTracing
     src/tools.c
     src/vector.c
     src/light.c
-    src/benchmarks.c
-    src/bdpt.c
-    src/config.c
+
+    src/simd/fSimd.c
+    src/simd/fHit.c
+    src/simd/fColor.c
+    src/simd/fImage.c
+    src/simd/fRay.c
+    src/simd/fScene.c
+    src/simd/fLight.c
+)
+
+
+set(COMMON_COMPILE_FLAGS
+    $<$<CONFIG:Debug>:-Wall -Wextra -g -O0 -fno-inline -fno-omit-frame-pointer>
+    $<$<CONFIG:Release>:-O3 -march=native -Wno-all>
+)
+
+set(SIMD_COMPILE_FLAGS -Werror -Wall -Wextra -O3 -march=native -g3)
+
+set_source_files_properties(src/simd/fSimd.c PROPERTIES
+    COMPILE_OPTIONS "${SIMD_COMPILE_FLAGS}"
 )
 
 target_include_directories(LibPathTracing PUBLIC ${PROJECT_SOURCE_DIR}/includes)
 
-
-
-if(APPLE)
-	target_link_libraries(LibPathTracing
-		m
-		MPI::MPI_C
-		${OpenMP_LIBRARIES}
-	)
-	target_compile_options(LibPathTracing PRIVATE
-    -Wall -Wextra -lc
-	)
-else()
-	target_link_libraries(LibPathTracing
-		m
-		MPI::MPI_C
-		OpenMP::OpenMP_C
-	)
-	target_compile_options(LibPathTracing PRIVATE
-    -Wall -Wextra -lc -fopenmp
-	)
-endif()
-
-# --------------------------------------------------
-# EXECUTABLE
-# --------------------------------------------------
+target_link_libraries(LibPathTracing m sleef)
 
 add_executable(ppm src/ppm.c)
+add_executable(simd main.c)
 
-target_link_libraries(ppm PRIVATE LibPathTracing)
+target_link_libraries(ppm PRIVATE LibPathTracing MPI::MPI_C)
+target_link_libraries(simd PRIVATE LibPathTracing)
+
+target_compile_options(ppm PRIVATE ${COMMON_COMPILE_FLAGS})
+target_compile_options(simd PRIVATE ${SIMD_COMPILE_FLAGS})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_options(ppm PRIVATE -Wall -Wextra -g -DDEBUG)

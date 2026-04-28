@@ -1,10 +1,7 @@
 #ifndef IMAGE_H
 #define IMAGE_H
 
-
 #include "vector.h"
-
-
 #define RED 0x0F00
 #define GRN 0x00F0
 #define BLU 0x000F
@@ -19,10 +16,10 @@
  */
 typedef struct Image_32bit
 {
-    size_t      width;
-    size_t      height;
-    uint32_t*   buffer;
-}Image_32bit;
+    size_t width;
+    size_t height;
+    uint32_t *buffer;
+} Image_32bit;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +37,7 @@ Image_32bit* create_image_32bit(const size_t width, const size_t height);
  * @param r La partie rouge de la couleur
  * @param g La partie verte de la couleur
  * @param b La partie bleu de la couleur
- * @param a La partie Alpha 
+ * @param a La partie Alpha
  * @return une couleur en 32 bit
  */
 uint32_t get_color_32bit(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
@@ -55,15 +52,14 @@ uint32_t get_color_32bit(const uint8_t r, const uint8_t g, const uint8_t b, cons
  * @param b La partie bleu de la couleur
  * @param a La partie Alpha
  */
-void put_color_at_32bit(Image_32bit* const img, const size_t x, const size_t y, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
+void put_color_at_32bit(Image_32bit *const img, const size_t x, const size_t y, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
 
 /**
  * @brief Ecrit un pixel sur une image
  * @param img Fichier image
  * @param color Couleur 32 bit
  */
-void write_pixel_color_32bit(FILE* img, const uint32_t color);
-
+void write_pixel_color_32bit(FILE *img, const uint32_t color);
 
 /**
  * @brief Ecrit un pixel sur une image
@@ -85,9 +81,6 @@ void clear_frame_color_32bit(Image_32bit *const img, const uint8_t r, const uint
  * @brief Libère la mémoire allouée par une image
  * @param img La mémoire allouée à liberer
  */
-void free_image_32bit(Image_32bit* img);
-
-
-
+void free_image_32bit(Image_32bit *img);
 
 #endif
