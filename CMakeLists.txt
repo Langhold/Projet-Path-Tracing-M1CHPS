@@ -46,6 +46,12 @@ endif()
 # LIBRARY
 # --------------------------------------------------
 
+set(SIMD_COMPILE_FLAGS -Werror -Wall -Wextra -O3 -march=native -g3)
+
+set_source_files_properties(src/simd/vSimd.c PROPERTIES
+    COMPILE_OPTIONS "${SIMD_COMPILE_FLAGS}"
+)
+
 add_library(LibPathTracing
     src/image.c
     src/ray.c
@@ -56,11 +62,18 @@ add_library(LibPathTracing
     src/benchmarks.c
     src/bdpt.c
     src/config.c
+
+    src/simd/vSimd.c 
+    src/simd/fImage.c 
+    src/simd/vRay.c 
+    src/simd/fScene.c 
+    src/simd/fLight.c
+
+    includes/simd/vColor.h 
+    includes/simd/vHit.h
 )
 
 target_include_directories(LibPathTracing PUBLIC ${PROJECT_SOURCE_DIR}/includes)
-
-
 
 if(APPLE)
 	target_link_libraries(LibPathTracing
