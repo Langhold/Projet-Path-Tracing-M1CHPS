@@ -290,12 +290,15 @@ void path_trace_tree(const int x1, const int y1, const int local_y, const int wi
 }
 
 
-void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Vertex * path, unsigned int* seed, int * path_length, Vector* bg_color){
-	Vector throughput = (path[0].is_light == 0) ? (Vector){{1.f, 1.f, 1.f}} : path[0].throughput;
+void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Vector * radiance, unsigned int* seed, Vector* bg_color){
+	Vector throughput = {{1.f, 1.f, 1.f}};
 	Ray current_ray = *r;
 	
-	int is_intern = 0, face = -1, start = (path->is_light == 0) ? 0 : 1;
-	for (int d = start; d<dmax; ++d) {
+	for (int i = 0; i < 3; ++i)
+			radiance->Data[i] = 0.0f;
+	
+	int is_intern = 0, face = -1;
+	for (int d = 0; d<dmax; ++d) {
 		Vector n;
 		Vector hit;
 		float t = FLT_MAX;
@@ -303,12 +306,11 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Ver
 		
 		if (!intersect_in_clusters(scene, &current_ray, &t, &obj, &is_intern, &face) || !obj) {
 			for (int i = 0; i < 3; ++i) {
-				path[d].throughput.Data[i] *= bg_color->Data[i];
+				radiance->Data[i] += throughput.Data[i] * bg_color->Data[i];
 			}
 			return;
 		}
-		*path_length = d+1;	
-
+		
 		linear_ext(&current_ray.position, &current_ray.direction, t, &hit);
 		compute_normal(obj, &n, is_intern, face, &hit);
 		
@@ -317,25 +319,19 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Ver
 		}
 		const float albedo = obj->albedo;
 		
+		
 		Vector offset_origin;
 		Vector n_eps;
 		mul_ext(&n, EPS, &n_eps);
 		add_ext(&hit, &n_eps, &offset_origin);
 		
+		
+		
+		
 		switch (obj->m_type){
 			case Emissive:{
-				if (path[d].is_light == 0) {
-					path[d].position = hit;
-					path[d].direction = current_ray.direction;
-					path[d].throughput.Data[0] = throughput.Data[0] * obj->color.Data[0] * obj->albedo;
-					path[d].throughput.Data[1] = throughput.Data[1] * obj->color.Data[1] * obj->albedo;
-					path[d].throughput.Data[2] = throughput.Data[2] * obj->color.Data[2] * obj->albedo;
-					path[d].normal = n;
-					path[d].object = obj;
-					path[d].wo = path[d].normal;
-				}
-				else {
-					(*path_length)--;
+				for (int i = 0; i < 3; ++i){
+					radiance->Data[i] += throughput.Data[i] * obj->color.Data[i] * albedo;
 				}
 				return;
 			}
@@ -346,31 +342,21 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Ver
 				for (int i = 0; i < 3; ++i){
 					throughput.Data[i] *= obj->color.Data[i] * albedo;
 				}
-
+				current_ray = r_new;
+				
+				
 				if (d > 10) {
 					if (russian_roulette(&throughput, seed)) {
-						(*path_length)--;
 						return;
 					}
 				}
-				path[d].direction = current_ray.direction;
-				path[d].wo = r_new.direction;
-
-				path[d].position = hit;
-				path[d].throughput = throughput;
-				path[d].normal = n;
-				norm_ext(&path[d].normal, &path[d].normal);
-				path[d].object = obj;
-
-
-				current_ray = r_new;
-				
+				 
 				break;
 			}
-				
 			case Specular:{
 				float dotn = dot(&current_ray.direction, &n);
 				if (dotn > 0.f) abort();
+				
 				
 				Vector wo;
 				wo.Data[0] = current_ray.direction.Data[0] - 2.0f * dotn * n.Data[0];
@@ -388,27 +374,19 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Ver
 					throughput.Data[i] *= albedo;
 				}
 				
-				path[d].direction = current_ray.direction;
-				path[d].wo = r_new.direction;
-
-				path[d].position = r_new.position;
-				path[d].throughput.Data[0] = throughput.Data[0];
-				path[d].throughput.Data[1] = throughput.Data[1];
-				path[d].throughput.Data[2] = throughput.Data[2];
-				path[d].normal = n;
-				norm_ext(&path[d].normal, &path[d].normal);
-				path[d].object = obj;
-
-				current_ray = r_new;
 				if (d > 10) {
 					if (russian_roulette(&throughput, seed)) {
 						return;
 					}
 				}
 				
+				current_ray = r_new;
 				break;
 			}
 		}
+	}
+	for (int i = 0; i < 3; ++i){
+			radiance->Data[i] = 0.0f;
 	}
 }
 
