@@ -115,7 +115,7 @@ void compute_naive(pt_config_t* config)
 
 	Scene scene;
 	config->benchmark(&scene, width, height);
-	Image_32bit* image = create_image_32bit(width, height, smpls);
+	Image_32bit* image = create_image_32bit(width, height);
 
 	const int per_t_height = config->height / mpi_size;
 	float*    local_color_buffer  = malloc(width * per_t_height * 3 * sizeof(float));
@@ -236,7 +236,7 @@ void compute_simd(pt_config_t* config)
 
 	Scene scene;
 	config->benchmark(&scene, width, height);
-	Image_32bit* image = create_image_32bit(width, height, smpls);
+	Image_32bit* image = create_image_32bit(width, height);
 
 	const int per_t_height = config->height / mpi_size;
 	float*    local_color_buffer  = malloc(width * per_t_height * 3 * sizeof(float));
@@ -352,7 +352,7 @@ void compute_tree(pt_config_t* config)
 	config->benchmark(&scene, width, height);
 
 	object_tree_t* tree  = initialize_root_tree_v2(&scene);
-	Image_32bit*   image = create_image_32bit(width, height, smpls);
+	Image_32bit*   image = create_image_32bit(width, height);
 
 	const int per_t_height = config->height / mpi_size;
 	float*    local_color_buffer  = malloc(width * per_t_height * 3 * sizeof(float));
@@ -477,7 +477,7 @@ void compute_clusters(pt_config_t* config)
 
 	const int     K     = 4;
 	Large_BVH_t*  tree  = initialize_tree_clustering(&scene, &seed, K);
-	Image_32bit*  image = create_image_32bit(width, height, smpls);
+	Image_32bit*  image = create_image_32bit(width, height);
 
 	const int per_t_height = config->height / mpi_size;
 	float*    local_color_buffer  = malloc(width * per_t_height * 3 * sizeof(float));
@@ -602,7 +602,7 @@ void compute_bdpt(pt_config_t* config)
 
 	const int     K     = 4;
 	Large_BVH_t*  tree  = initialize_tree_clustering(&scene, &seed, K);
-	Image_32bit*  image = create_image_32bit(width, height, smpls);
+	Image_32bit*  image = create_image_32bit(width, height);
 
 	const int per_t_height = config->height / mpi_size;
 	float*    local_color_buffer  = malloc(width * per_t_height * 3 * sizeof(float));
@@ -639,7 +639,7 @@ void compute_bdpt(pt_config_t* config)
 
 						for (size_t i = 0; i < print_rate; ++i) {
 							path_trace_t(x1, y1, &scene, bounces,
-										 &pixel_color, &seed_per_threads, tree, 1);
+										 &pixel_color, &seed_per_threads, tree);
 						}
 
 						local_color_buffer[(local_y * width + x1) * 3 + 0] += pixel_color.Data[0];
