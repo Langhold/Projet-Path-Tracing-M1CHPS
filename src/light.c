@@ -635,37 +635,33 @@ void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length,
 	return;
 }
 
-
-void ray_sampling_clusters_bdpt(Ray* const r, Large_BVH_t* const scene, int dmax,
-								Vertex* path, unsigned int* seed, int* path_length,
-								Vector* bg_color)
-{
+void ray_sampling_clusters_bdpt(Ray* const r, Large_BVH_t* const scene, int dmax, Vertex * path, unsigned int* seed, int * path_length, Vector* bg_color){
 	Vector throughput = (path[0].is_light == 0) ? (Vector){{1.f, 1.f, 1.f}} : path[0].throughput;
 	Ray current_ray = *r;
-
+	
 	int is_intern = 0, face = -1, start = (path->is_light == 0) ? 0 : 1;
-	for (int d = start; d < dmax; ++d) {
+	for (int d = start; d<dmax; ++d) {
 		Vector n;
 		Vector hit;
 		float t = FLT_MAX;
 		Primitive* obj = NULL;
-
+		
 		if (!intersect_in_clusters(scene, &current_ray, &t, &obj, &is_intern, &face) || !obj) {
 			for (int i = 0; i < 3; ++i) {
 				path[d].throughput.Data[i] *= bg_color->Data[i];
 			}
 			return;
 		}
-		*path_length = d + 1;
+		*path_length = d+1;
 
 		linear_ext(&current_ray.position, &current_ray.direction, t, &hit);
 		compute_normal(obj, &n, is_intern, face, &hit);
-
+		
 		if (dot(&n, &current_ray.direction) > 0.0f) {
 			mul_ext(&n, -1.0f, &n);
 		}
 		const float albedo = obj->albedo;
-
+		
 		Vector offset_origin;
 		Vector n_eps;
 		mul_ext(&n, EPS, &n_eps);
@@ -708,27 +704,9 @@ void ray_sampling_clusters_bdpt(Ray* const r, Large_BVH_t* const scene, int dmax
 				path[d].position = hit;
 				path[d].throughput = throughput;
 				path[d].normal = n;
+				norm_ext(&path[d].normal, &path[d].normal);
 				path[d].object = obj;
-				path[d].wo = path[d].normal;
-			}
-			else {
-				(*path_length)--;
-			}
-			return;
-		}
 
-		case Lambertian: {
-			Ray r_new = random_Ray_demi_sphere_cosine_weighted(&offset_origin, &n, seed);
-			for (int i = 0; i < 3; ++i) {
-				throughput.Data[i] *= obj->color.Data[i] * albedo;
-			}
-			path[d].direction  = current_ray.direction;
-			path[d].wo         = r_new.direction;
-			path[d].position   = r_new.position;
-			path[d].throughput = throughput;
-			path[d].normal     = n;
-			norm_ext(&path[d].normal, &path[d].normal);
-			path[d].object = obj;
 
 				current_ray = r_new;
 				
@@ -758,48 +736,27 @@ void ray_sampling_clusters_bdpt(Ray* const r, Large_BVH_t* const scene, int dmax
 				path[d].direction = current_ray.direction;
 				path[d].wo = r_new.direction;
 
-		case Specular: {
-			float dotn = dot(&current_ray.direction, &n);
-			if (dotn > 0.f) abort();
+				path[d].position = r_new.position;
+				path[d].throughput.Data[0] = throughput.Data[0];
+				path[d].throughput.Data[1] = throughput.Data[1];
+				path[d].throughput.Data[2] = throughput.Data[2];
+				path[d].normal = n;
+				norm_ext(&path[d].normal, &path[d].normal);
+				path[d].object = obj;
 
-			Vector wo;
-			wo.Data[0] = current_ray.direction.Data[0] - 2.0f * dotn * n.Data[0];
-			wo.Data[1] = current_ray.direction.Data[1] - 2.0f * dotn * n.Data[1];
-			wo.Data[2] = current_ray.direction.Data[2] - 2.0f * dotn * n.Data[2];
-
-			norm_ext(&wo, &wo);
-
-			Ray r_new;
-			r_new.direction = wo;
-			r_new.position  = offset_origin;
-
-			for (int i = 0; i < 3; ++i) {
-				throughput.Data[i] *= albedo;
+				current_ray = r_new;
+				if (d > 10) {
+					if (russian_roulette(&throughput, seed)) {
+						return;
+					}
+				}
+				
+				break;
 			}
-			/*
-			path[d].direction = current_ray.direction;
-			path[d].wo = r_new.direction;*/
-
-			/*path[d].position = r_new.position;
-			path[d].throughput.Data[0] = throughput.Data[0];
-			path[d].throughput.Data[1] = throughput.Data[1];
-			path[d].throughput.Data[2] = throughput.Data[2];
-			path[d].normal = n;
-			norm_ext(&path[d].normal, &path[d].normal);
-			path[d].object = obj;*/
-			d--;
-			current_ray = r_new;
-			/*if (d > 10) {
-			if (russian_roulette(&throughput, seed)) {
-			return;
-			}
-			}*/
-
-			break;
-		}
 		}
 	}
 }
+
 
 void path_trace_t(const int x1, const int y1, Scene const * S, const size_t bounces, Vector * pixel_color, unsigned int* seed, Large_BVH_t* const tree){
 	if (S->size_lights > 0) {
@@ -807,28 +764,22 @@ void path_trace_t(const int x1, const int y1, Scene const * S, const size_t boun
 
 		Vertex camera_path[bounces];
 		Vertex light_path[bounces];
-		for (size_t d = 0; d < bounces; ++d) {
+		for (size_t d=0; d<bounces; ++d) {
 			camera_path[d].is_light = 0;
-			light_path[d].is_light  = 1;
+			light_path[d].is_light = 1;
 		}
 
 		trace_ray(x1, y1, &S->camera, &ray);
 		trace_light_ray(S->size_lights, S->lights, light_path, seed);
 
-		for (size_t i = 0; i < 3; ++i) {
-			light_ray.direction.Data[i] = light_path[0].direction.Data[i];
-			light_ray.position.Data[i]  = light_path[0].position.Data[i];
+		for (size_t i=0; i<3; ++i) {
+			light_ray.direction.Data[i] = light_path[0].direction.Data[i] ;
+			light_ray.position.Data[i] = light_path[0].position.Data[i] ;
 		}
-
+		
 		int camera_path_length = 0, light_path_length = 0;
-		ray_sampling_clusters_bdpt(&ray,       tree, (int)bounces, camera_path, seed,
-								   &camera_path_length, S->background_color);
-		ray_sampling_clusters_bdpt(&light_ray, tree, (int)bounces, light_path,  seed,
-								   &light_path_length,  S->background_color);
-
-		Vector color = {{0.0f, 0.0f, 0.0f}};
-		compute_vertex(&color, camera_path, camera_path_length,
-							   light_path,  light_path_length, tree);
+		ray_sampling_clusters_bdpt(&ray, tree, (int)bounces, camera_path, seed, &camera_path_length, S->background_color);
+		ray_sampling_clusters_bdpt(&light_ray, tree, (int)bounces, light_path, seed, &light_path_length, S->background_color);
 
 		camera_path[0].pdf_fwd = compute_pdf(1.0f, &camera_path[0].normal, &S->camera.position, &camera_path[0].position);
 
@@ -844,14 +795,14 @@ void path_trace_t(const int x1, const int y1, Scene const * S, const size_t boun
 	else {
 		Ray ray;
 		trace_ray(x1, y1, &S->camera, &ray);
-
+		
 		Vector radiance;
 		ray_sampling_clusters_no_light(&ray, tree, (int)bounces, &radiance, seed, S->background_color);
 		
 		pixel_color->Data[0] += radiance.Data[0];
 		pixel_color->Data[1] += radiance.Data[1];
 		pixel_color->Data[2] += radiance.Data[2];
-
+		
 		return;
 	}
 }
