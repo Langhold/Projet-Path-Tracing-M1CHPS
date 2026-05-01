@@ -443,10 +443,8 @@ void add_fQuad(fQuad *q, const float *Q, const float *u, const float *v, const f
     q->type[q->size] = type;
 
     float normal[3];
-    float normal_2;
 
     float normal_norm[3];
-    float Q_n[3];
     float w_[3];
 
     normal[0] = u[1] * v[2] - u[2] * v[1];
@@ -490,17 +488,13 @@ void add_cornel_box(fQuad *q, const float width, const float height, const float
     const float mdy[3] = {0.0f, -max[1] + min[1], 0.0f};
     const float mdz[3] = {0.0f, 0.0f, -max[2] + min[2]};
 
-    const float red[3] = {1.0f, 0.0f, 0.0};
-    const float green[3] = {0.0f, 1.0f, 0.0};
-    const float blue[3] = {0.0f, 0.0f, 1.0};
     const float white_light[3] = {10.0f, 10.0f, 10.0f};
     const float color_0[3] = {0.9019f, 0.9019f, 0.9019f};
-    const float orange[3] = {0.92f, 0.92f, 0.92f};
 
     add_fQuad(q, min, dy, dz, color_0, emission_power, type);
     add_fQuad(q, max, mdy, mdz, color_0, emission_power, type);
     add_fQuad(q, min, dx, dz, color_0, emission_power, type);
-    add_fQuad(q, max, mdx, mdz, white_light, 10.0f, Emissive);
+    add_fQuad(q, max, mdx, mdz, white_light, 10.0f, vEmissive);
     add_fQuad(q, min, dx, dy, color_0, emission_power, type);
 }
 
@@ -518,12 +512,63 @@ void add_fSquare(fQuad *q, const float width, const float height, const float de
     const float mdy[3] = {0.0f, -max[1] + min[1], 0.0f};
     const float mdz[3] = {0.0f, 0.0f, -max[2] + min[2]};
 
-    const float red[3] = {1.0f, 0.0f, 0.0};
-    const float green[3] = {0.0f, 1.0f, 0.0};
-    const float blue[3] = {0.0f, 0.0f, 1.0};
-    const float white_light[3] = {10.0f, 10.0f, 10.0f};
-    const float color_0[3] = {0.9019f, 0.9019f, 0.9019f};
-    const float orange[3] = {0.92f, 0.92f, 0.92f};
+    add_fQuad(q, min, dy, dz, color, emission_power, type);
+    add_fQuad(q, max, mdy, mdz, color, emission_power, type);
+
+    add_fQuad(q, min, dx, dz, color, emission_power, type);
+    add_fQuad(q, max, mdx, mdz, color, emission_power, type);
+
+    add_fQuad(q, min, dx, dy, color, emission_power, type);
+    add_fQuad(q, max, mdx, mdy, color, emission_power, type);
+}
+
+void rotate(float point[3], float pitch, float yaw)
+{
+    float px = point[0];
+    float py = cosf(pitch) * point[1] - sinf(pitch) * point[2];
+    float pz = sinf(pitch) * point[1] + cosf(pitch) * point[2];
+
+    float yx = cosf(yaw) * px + sinf(yaw) * pz;
+    float yy = py;
+    float yz = -sinf(yaw) * px + cosf(yaw) * pz;
+
+    point[0] = yx;
+    point[1] = yy;
+    point[2] = yz;
+}
+
+void translate(float *point, const float *positions)
+{
+    point[0] += positions[0];
+    point[1] += positions[1];
+    point[2] += positions[2];
+}
+
+void add_fSquare_with_rotation(fQuad *q, const float width, const float height, const float depth, const float *position, const float *color, float emission_power, float type, float pitch, float yaw)
+{
+
+    float min[3] = {(-width / 2.0f), (-height / 2.0f), (-depth / 2.0f)};
+    float max[3] = {(width / 2.0f), (height / 2.0f), (depth / 2.0f)};
+
+    float dx[3] = {width * 0.5f, 0.0f, 0.0f};
+    float dy[3] = {0.0f, height * 0.5f, 0.0f};
+    float dz[3] = {0.0f, 0.0f, depth * 0.5f};
+
+    float mdx[3] = {-dx[0], 0.0f, 0.0f};
+    float mdy[3] = {0.0f, -dy[1], 0.0f};
+    float mdz[3] = {0.0f, 0.0f, -dz[2]};
+
+    rotate(dx, pitch, yaw);
+    rotate(dy, pitch, yaw);
+    rotate(dz, pitch, yaw);
+    rotate(mdx, pitch, yaw);
+    rotate(mdy, pitch, yaw);
+    rotate(mdz, pitch, yaw);
+    rotate(min, pitch, yaw);
+    rotate(max, pitch, yaw);
+
+    translate(min, position);
+    translate(max, position);
 
     add_fQuad(q, min, dy, dz, color, emission_power, type);
     add_fQuad(q, max, mdy, mdz, color, emission_power, type);
@@ -535,7 +580,7 @@ void add_fSquare(fQuad *q, const float width, const float height, const float de
     add_fQuad(q, max, mdx, mdy, color, emission_power, type);
 }
 
-void set_fScene(fScene *scene, const float *cam_position, float degree, float pitch, float yaw, size_t sphere_capacity, size_t quad_capacity, size_t width, size_t height)
+void set_fScene(fScene *scene, const float *background_color, const float *cam_position, float degree, float pitch, float yaw, size_t sphere_capacity, size_t quad_capacity, size_t width, size_t height)
 {
 
     vcreate_camera(&scene->cam, cam_position[0], cam_position[1], cam_position[2], pitch, yaw);
@@ -548,6 +593,9 @@ void set_fScene(fScene *scene, const float *cam_position, float degree, float pi
     scene->aspr_ = set1(aspr);
     scene->inv_w = set1(inv_width);
     scene->inv_h = set1(inv_height);
+    scene->background_color_r = set1(background_color[0]);
+    scene->background_color_g = set1(background_color[1]);
+    scene->background_color_b = set1(background_color[2]);
 
     set_fSphere(&scene->spheres, sphere_capacity);
     set_fQuad(&scene->quads, quad_capacity);

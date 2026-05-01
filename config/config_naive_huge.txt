@@ -1,0 +1,14 @@
+width = 800
+height = 600
+samples = 500
+bounces = 10
+n_measures = 5
+
+print rate = 10
+only last image = 1
+
+output_filename = performance/images/naive/image_huge_naive
+output_measures = performance/measures/naive/measures_huge.csv
+vbenchmark = huge
+
+implementation = naive

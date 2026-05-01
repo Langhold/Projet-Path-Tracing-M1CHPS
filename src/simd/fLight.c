@@ -257,7 +257,7 @@ void vrandom_Ray_demi_sphere_cosine_weighted(__vec4f *dir_x, __vec4f *dir_y, __v
     *dir_z = add_(dir_z, &norm_z);
 }
 
-void vray_sampling(fScene *scene, vRay *packed_ray, vHit *packed_hit, vRGB *packed_radiance, const float *background_color, int dmax, unsigned int *seed)
+void vray_sampling(fScene *scene, vRay *packed_ray, vHit *packed_hit, vRGB *packed_radiance, int dmax, unsigned int *seed)
 {
     __vec4f throughput_r = one;
     __vec4f throughput_g = one;
@@ -265,21 +265,15 @@ void vray_sampling(fScene *scene, vRay *packed_ray, vHit *packed_hit, vRGB *pack
 
     vRay current_packed_ray = *packed_ray;
 
-    __vec4f background_color_r = set1(background_color[0]);
-    __vec4f background_color_g = set1(background_color[1]);
-    __vec4f background_color_b = set1(background_color[2]);
-
     __vec4f radiance_r = set1(0.0f);
     __vec4f radiance_g = set1(0.0f);
     __vec4f radiance_b = set1(0.0f);
 
-    __vec4f mask_emissive = set1(Emissive);
-    __vec4f mask_lambertian = set1(Lambertian);
-    __vec4f mask_specular = set1(Specular);
+    __vec4f mask_emissive = set1(vEmissive);
+    __vec4f mask_lambertian = set1(vLambertian);
+    __vec4f mask_specular = set1(vSpecular);
 
     __vec4f mask_is_active = set1(-1);
-    __vec4f mask_is_not_active_and_emissive = set1(0.0f);
-    __vec4f zero_nine = set1(0.9f);
 
     for (int d = 0; d < dmax; ++d)
     {
@@ -289,9 +283,9 @@ void vray_sampling(fScene *scene, vRay *packed_ray, vHit *packed_hit, vRGB *pack
 
         // if ray active and hit miss
         __vec4f mask_is_miss = andnot_(&mask_is_hitting, &mask_is_active);
-        __vec4f color_is_miss_r = mul_(&background_color_r, &mask_is_miss);
-        __vec4f color_is_miss_g = mul_(&background_color_g, &mask_is_miss);
-        __vec4f color_is_miss_b = mul_(&background_color_b, &mask_is_miss);
+        __vec4f color_is_miss_r = mul_(&scene->background_color_r, &mask_is_miss);
+        __vec4f color_is_miss_g = mul_(&scene->background_color_g, &mask_is_miss);
+        __vec4f color_is_miss_b = mul_(&scene->background_color_b, &mask_is_miss);
 
         color_is_miss_r = mul_(&throughput_r, &color_is_miss_r);
         color_is_miss_g = mul_(&throughput_g, &color_is_miss_g);
@@ -446,8 +440,6 @@ void vpath_tracing(fScene *scene, size_t n_sample, size_t n_bounce, size_t width
     clear_hit(&packed_hit);
     clear_ray(&packed_ray);
 
-    const float background_color[3] = {0.1, 0.1, 0.5};
-
     __vec4f inv_n = set1(1.0f / n_sample);
 
     for (uint64_t y = 0; y < height; ++y)
@@ -461,12 +453,11 @@ void vpath_tracing(fScene *scene, size_t n_sample, size_t n_bounce, size_t width
             unsigned int seed = (y * width + x);
             for (uint64_t s = 0; s < n_sample; ++s)
             {
-                vray_sampling(scene, &packed_ray, &packed_hit, &packed_radiance, background_color, n_bounce, &seed);
+                vray_sampling(scene, &packed_ray, &packed_hit, &packed_radiance, n_bounce, &seed);
                 vadd_(&packed_accumulated_radiance, &packed_radiance);
             }
 
             vscale_(&packed_accumulated_radiance, &inv_n);
-
             put_pixel(img, y, x, &packed_accumulated_radiance);
 
             clear_rgb(&packed_radiance);
@@ -477,9 +468,6 @@ void vpath_tracing(fScene *scene, size_t n_sample, size_t n_bounce, size_t width
 
 void vpath_tracing_omp(fScene *scene, size_t n_sample, size_t n_bounce, size_t width, size_t height, fImage *img)
 {
-
-    const float background_color[3] = {0.1, 0.1, 0.5};
-
     __vec4f inv_n = set1(1.0f / n_sample);
 
 #pragma omp parallel for schedule(dynamic, 4)
@@ -505,7 +493,7 @@ void vpath_tracing_omp(fScene *scene, size_t n_sample, size_t n_bounce, size_t w
             unsigned int seed = (y * width + x);
             for (uint64_t s = 0; s < n_sample; ++s)
             {
-                vray_sampling(scene, &packed_ray, &packed_hit, &packed_radiance, background_color, n_bounce, &seed);
+                vray_sampling(scene, &packed_ray, &packed_hit, &packed_radiance, n_bounce, &seed);
                 vadd_(&packed_accumulated_radiance, &packed_radiance);
             }
 

@@ -1,4 +1,12 @@
 build
 image/*
+performance/images/simd/*
+performance/measures/simd/*
+performance/images/bdpt/*
+performance/measures/bdpt/*
+performance/images/tree/*
+performance/measures/tree/*
+performance/images/naive/*
+performance/measures/naive/*
 *.ppm
 *.trace

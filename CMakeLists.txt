@@ -68,6 +68,7 @@ add_library(LibPathTracing
     src/simd/vRay.c 
     src/simd/fScene.c 
     src/simd/fLight.c
+    src/simd/vbenchmark.c
 
     includes/simd/vColor.h 
     includes/simd/vHit.h
@@ -89,6 +90,7 @@ else()
 		m
 		MPI::MPI_C
 		OpenMP::OpenMP_C
+        sleef
 	)
 	target_compile_options(LibPathTracing PRIVATE
     -Wall -Wextra -lc -fopenmp
@@ -104,7 +106,7 @@ add_executable(ppm src/ppm.c)
 target_link_libraries(ppm PRIVATE LibPathTracing)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(ppm PRIVATE -Wall -Wextra -g -DDEBUG)
+    target_compile_options(ppm PRIVATE -Wall -Wextra -g3 -DDEBUG)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_options(ppm PRIVATE -Wall -Wextra -O3 -march=native)
 endif()

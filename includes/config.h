@@ -4,19 +4,22 @@
 #include <string.h>
 
 #include "light.h"
+#include <simd/fLight.h>
 
-typedef enum {
-	naive,
-	SIMD,
-	trees,
-	cluster,
-	bdpt
+typedef enum
+{
+  naive,
+  SIMD,
+  trees,
+  cluster,
+  bdpt
 } Implem_t;
 
 struct Scene;
 
 /// @brief Configuration of the problem to solve.
-typedef struct pt_config_t {
+typedef struct pt_config_t
+{
   /// Number of samples.
   size_t samples;
   /// Number of .
@@ -30,15 +33,19 @@ typedef struct pt_config_t {
   /// Derived flow parameter.
   int n_measures;
   /// Output file.
-  const char* output_filename;
-  const char* output_measures;
+  const char *output_filename;
+  const char *output_measures;
   /// Kind of benchmark.
-  void (*benchmark)(struct Scene*, size_t, size_t);
+  void (*benchmark)(struct Scene *, size_t, size_t);
+
+  /// For simd
+  void (*vbenchmark)(fScene *, size_t, size_t);
+
   /// Output file.
-  const char* benchmark_name;
-	
+  const char *benchmark_name;
+
   Implem_t implem;
-  const char* implem_name;
+  const char *implem_name;
   /// If user want only final image.
   int can_print;
 } pt_config_t;
@@ -48,10 +55,10 @@ typedef struct pt_config_t {
 
 /// @brief Load the configuration from a file.
 /// @param filename Path of the config file.
-void load_config(pt_config_t* config, const char* filename);
+void load_config(pt_config_t *config, const char *filename);
 
 /// @brief Pretty-print of the configuration.
-void print_config(pt_config_t* config);
+void print_config(pt_config_t *config);
 
 /// @brief Default values in case the user did not define everything in the config file.
-void setup_default_values(pt_config_t* config);
+void setup_default_values(pt_config_t *config);

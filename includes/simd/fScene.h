@@ -7,9 +7,9 @@
 
 typedef enum
 {
-    Lambertian,
-    Specular,
-    Emissive
+    vLambertian,
+    vSpecular,
+    vEmissive
 } fMaterial_t;
 
 typedef struct fSphere
@@ -104,11 +104,17 @@ typedef struct fScene
     __vec4f aspr_;
     __vec4f inv_w;
     __vec4f inv_h;
+
+    __vec4f background_color_r;
+    __vec4f background_color_g;
+    __vec4f background_color_b;
+
 } fScene;
 
-void set_fScene(fScene *scene, const float *cam_position, float degree, float pitch, float yaw, size_t sphere_capacity, size_t quad_capacity, size_t width, size_t height);
+void set_fScene(fScene *scene, const float *background_color, const float *cam_position, float degree, float pitch, float yaw, size_t sphere_capacity, size_t quad_capacity, size_t width, size_t height);
 
 void add_fSquare(fQuad *q, const float width, const float height, const float depth, const float *position, const float *albedo, float emission_power, float type);
+void add_fSquare_with_rotation(fQuad *q, const float width, const float height, const float depth, const float *position, const float *color, float emission_power, float type, float pitch, float yaw);
 void add_cornel_box(fQuad *q, const float width, const float height, const float depth, const float *position, float emission_power, float type);
 
 void vintersect_in_scene(fScene *scene, const vRay *packed_ray, vHit *packed_hit);

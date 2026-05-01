@@ -1,5 +1,4 @@
-#ifndef IMAGE_H
-#define IMAGE_H
+#pragma once
 
 #include <simd/vSimd.h>
 #include <simd/vColor.h>
@@ -30,9 +29,9 @@ typedef struct fImage
 void set_fImage(fImage *img, uint64_t w, uint64_t h);
 
 void put_pixel(fImage *img, uint64_t y, uint64_t x, const vRGB *color);
+void put_pixel_buffer(float *local_r, float *local_g, float *local_b, size_t width, uint64_t y, uint64_t x, const vRGB *color);
 
 void create_file(fImage *img);
+void create_sampled_file(fImage *img, const size_t current_samples, const char *path_file);
 
 void free_fImage(fImage *img);
-
-#endif
