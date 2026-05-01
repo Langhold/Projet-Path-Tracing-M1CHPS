@@ -3,10 +3,8 @@ height = 600
 samples = 1000
 bounces = 10
 n_measures = 5
-
 print rate = 10
 only last image = 1
-
 output_filename = performance/measures/measures.csv
-
-benchmark = medium
+benchmark = mickey
+implementation = cluster
