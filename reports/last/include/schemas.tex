@@ -1,0 +1,437 @@
+%Nous définissons ici chacunes des figures, appelées comme des fonctions dans les autres documents.
+
+\newcommand{\Grilleblank}{
+    \draw[thick] (0,0) rectangle (5,7);
+    \draw[step=1cm] (0,0) grid (5,7);
+    \foreach \x in {0,...,4}
+        \foreach \y in {0,...,6}
+            \fill(\x+0.5, \y+0.5) circle(2pt);
+    \fill(2.5, 3.5) circle(2pt) node[fill opacity=0, text opacity=1, above] {$\mathbf{C}$};
+}
+
+\newcommand{\distanceq}{
+    \begin{center}
+    \begin{tikzpicture}[baseline=(midpoint)]
+    \coordinate (midpoint) at (0,1);
+    \draw[step=1cm] (0,0) grid (2,2);
+    \fill(0.5, 0.5) circle(2pt) node[below] at (0.5,0.58) {$P_{i,j+1}$};
+    \fill(0.5, 1.5) circle(2pt) node[above] at (0.5,1.42) {$P_{i,j}$};
+    \fill(1.5, 1.5) circle(2pt) node[above] at (1.5,1.42) {$P_{i+1,j}$};
+    \fill(1.5, 0.5) circle(2pt);
+    \draw[<->, red, thick] (0.5,0.5) -- (0.5,1.5);
+    \draw[<->, red, thick] (0.5,1.5) -- (1.5,1.5);
+    \end{tikzpicture}
+
+    \small Nous trouvons que cette distance est égale à $\dfrac{2\, tan(\dfrac{\theta}{2})}{w-1}$
+    \end{center}
+}
+
+\newcommand{\screenrepresentation}{
+    \begin{center}
+    \hspace*{-1.5cm}
+    \tdplotsetmaincoords{110}{55}
+    \begin{tikzpicture}[scale=4, tdplot_main_coords]
+    \tikzset{fortext/.style={
+        fill=white, fill opacity=0.5, text opacity=1, rounded corners
+    }}
+    %axis
+    \filldraw[red] (0,0,0) circle(1pt) node[anchor=north east] {$\mathbf{E}$};
+    \draw[->, red, very thick] (0,0,0) -- (1,0,0) node[black, anchor=west] {$\mathbf{C}$};
+    \draw[->, red, very thick] (0,0,0) -- (0,1,0) node[anchor=south] {$\vec{r}$};
+    \draw[->, red, very thick] (0,0,0) -- (0,0,1) node[anchor=north east] {$\vec{u}$};
+    %camera
+    \coordinate (A) at (-0.8, -0.15, -0.15);
+    \coordinate (B) at (-0.8, -0.15, 0.15);
+    \coordinate (C) at (-0.8,  0.15, 0.15);
+    \coordinate (D) at (-0.8,  0.15, -0.15);
+    \coordinate (E) at (0, -0.15,  -0.15);
+    \coordinate (F) at (0, -0.15,  0.15);
+    \coordinate (G) at (0,  0.15,  0.15);
+    \coordinate (H) at (0,  0.15, -0.15);
+
+    \draw (A) -- (B) -- (C) -- (D) -- cycle;
+    \draw (E) -- (F) -- (G) -- (H) -- cycle;
+    \draw (A) node[below] {camera} -- (E);
+    \draw (B) -- (F);
+    \draw (C) -- (G);
+    \draw (D) -- (H);
+
+    %ray vectors
+    \pgfmathsetmacro{\qx}{1/(3*sqrt(3))}; %la valeur de qx est egale a celle de qy ici
+    \foreach \i in {1,...,7} {
+        \foreach \j in {1,...,5} {
+            \draw[gray, ->] (0,0,0) -- 
+            (1,{(\j-1)*(\qx)-(2*\qx)},{(\i-1)*(\qx)-(3*\qx)});
+            \draw[fill] (1,{(\j-1)*(\qx)-(2*\qx)},{(\i-1)*(\qx)-(3*\qx)}) circle [radius=0.4pt];
+        }
+    }
+
+    %Grille
+    \path (1,-{(5/2)*\qx},-{(7/2)*\qx}) coordinate (start);
+    \foreach \i in {0,...,5} {
+        \draw[thick] ($(start)+(0,{\i*\qx},0)$) -- ($(start)+(0,{\i*\qx},{(7*\qx)})$) ;
+    }
+    \foreach \i in {0,...,7} {
+        \draw[thick] ($(start)+(0,0,{\i*\qx})$) -- ($(start)+(0,{(5*\qx)},{\i*\qx})$) ;
+    }
+
+    \end{tikzpicture}
+    \captionof{figure}{Écran dans $\mathbb{R}^3$ par rapport à la caméra}
+    \small $(w,h)=(5,7)$ et $\theta=\dfrac{\pi}{3}$
+    \label{fig:screenrepresentation}
+    \end{center}
+}
+
+\newcommand{\stretched}{
+    \begin{center}
+    \hspace*{-2cm}
+    \begin{tikzpicture}[scale=1.5]
+        \draw (0,0) rectangle (2,3);
+        \draw[<->, very thick] (0.25,-0.2) -- (1.75,-0.2) node[below, midway] {width};
+        \draw[<->, very thick] (-0.2,0.75) -- (-0.2,2.25) node[left, midway] {height};
+        \draw (0,1.5) -- (2,1.5);
+        \draw (0.5,0) -- (0.5,3);
+        \draw (1,0) -- (1,3);
+        \draw (1.5,0) -- (1.5,3);
+        \foreach \x in {0.25,0.75,1.25,1.75} {
+            \draw[fill] (\x,0.75) circle (1pt);
+            \draw[fill] (\x,2.25) circle (1pt);
+        }
+    \end{tikzpicture}
+    \captionof{figure}{Écran avant de résoudre le problème lié à l'aspect ratio}
+    \small $(w,h)=(4,2)$
+    \label{fig:stretched}
+    \end{center}
+}
+
+\newcommand{\unstretched}{
+    \begin{center}
+    \hspace*{-2cm}
+    \begin{tikzpicture}[scale=1.5]
+        \draw (0,0) rectangle (6,3);
+        \draw[<->, very thick] (0.75,-0.2) -- (5.75,-0.2) node[below, midway] {width};
+        \draw[<->, very thick] (-0.2,0.75) -- (-0.2,2.25) node[left, midway] {height};
+        \draw (0,1.5) -- (6,1.5);
+        \draw (1.5,0) -- (1.5,3);
+        \draw (3,0) -- (3,3);
+        \draw (4.5,0) -- (4.5,3);
+        \foreach \x in {0.75,2.25,3.75,5.25} {
+            \draw[fill] (\x,0.75) circle (1pt);
+            \draw[fill] (\x,2.25) circle (1pt);
+        }
+    \end{tikzpicture}
+    \captionof{figure}{Écran avant de résoudre le problème lié à l'aspect ratio}
+    \small $(w,h)=(4,2)$
+    \label{fig:unstretched}
+    \end{center}
+}
+
+\newcommand{\triangles}{
+    \begin{center}
+    \tdplotsetmaincoords{110}{55}
+    \begin{tikzpicture}[scale=4, tdplot_main_coords]
+    \tikzset{fortext/.style={
+        fill=white, fill opacity=0.5, text opacity=1, rounded corners
+    }}
+    \pgfmathsetmacro{\qx}{1/(3*sqrt(3))};
+
+    %camera
+    \coordinate (A) at (-0.8, -0.15, -0.15);
+    \coordinate (B) at (-0.8, -0.15, 0.15);
+    \coordinate (C) at (-0.8,  0.15, 0.15);
+    \coordinate (D) at (-0.8,  0.15, -0.15);
+    \coordinate (E) at (0, -0.15,  -0.15);
+    \coordinate (F) at (0, -0.15,  0.15);
+    \coordinate (G) at (0,  0.15,  0.15);
+    \coordinate (H) at (0,  0.15, -0.15);
+
+    \draw (A) -- (B) -- (C) -- (D) -- cycle;
+    \draw (E) -- (F) -- (G) -- (H) -- cycle;
+    \draw (A) node[below, fortext] {camera} -- (E);
+    \draw (B) -- (F);
+    \draw (C) -- (G);
+    \draw (D) -- (H);
+
+    %Grille
+    \draw[<->, very thick] ($(start)+(0,{5*\qx+0.05},0)$) -- ($(start)+(0,{5*\qx+0.05},{7*\qx})$) node[right, midway, fortext] {height};
+
+    \path (1,-{(5/2)*\qx},-{(7/2)*\qx}) coordinate (start);
+    \foreach \i in {0,...,5} {
+        \draw[thick] ($(start)+(0,{\i*\qx},0)$) -- ($(start)+(0,{\i*\qx},{(7*\qx)})$) ;
+    }
+    \foreach \i in {0,...,7} {
+        \draw[thick] ($(start)+(0,0,{\i*\qx})$) -- ($(start)+(0,{(5*\qx)},{\i*\qx})$) ;
+    }
+
+    %triangles
+    \shadedraw[right color=orange!80!white, left color=gray, draw=orange!50!black, fill opacity=0.6] (0,0,0) -- (1,0,0) -- (1,0,{3*\qx}) -- cycle;
+    \draw[<->, very thick, blue!80!black] (1,0,0) -- (1,0,{3*\qx}) node[right, midway, fortext] {$tan(\dfrac{\theta}{2})$};
+    \shadedraw[right color=green!80!white, left color=gray, draw=green!50!black, fill opacity=0.6] (0,0,0) -- (1,0,0) -- (1,0,-{3*\qx}) -- cycle;
+    \draw[<->, very thick, blue!80!white] (1,0,0) -- (1,0,-{3*\qx}) node[right, pos=0.4, fortext] {$tan(\dfrac{\theta}{2})$};
+
+    %axis
+    \filldraw[red] (0,0,0) circle(1pt) node[anchor=north east, fortext] {$\mathbf{E}$};
+    \draw[->, red, very thick] (0,0,0) -- (1,0,0) node[black, anchor=west, fortext] {$\mathbf{C}$};
+    \draw[->, red, very thick] (0,0,0) -- (0,1,0) node[anchor=south, fortext] {$\vec{r}$};
+    \draw[->, red, very thick] (0,0,0) -- (0,0,1) node[anchor=north east, fortext] {$\vec{u}$};
+    \draw[fill] (1,0,0) circle [radius=0.4pt];
+
+    \end{tikzpicture}
+    \captionof{figure}{La hauteur de l'écran déterminée par la FOV est $2\,tan(\dfrac{\theta}{2})$}
+    \small Vrai $\forall (w,h) \in \mathbb{R} \; \text{et} \; \forall \theta \in [0,\pi]$
+    \end{center}
+}
+
+\newcommand{\paritee}{
+    \node[right] at (-0.2,0.25) {Cas 1: w pair, h pair};
+    \draw[step=1] (0,0) grid (4,-2);
+    \foreach \x in {0.5,1.5,2.5,3.5} {
+        \draw[fill] (\x,-0.5) circle (1pt);
+        \draw[fill] (\x,-1.5) circle (1pt);
+    }
+    \draw[fill, purple] (2,-1) node[below] {$\mathbf{C}$} circle (1.5pt);
+    \node[above] at (0.5,-0.6) {$P_{0,0}$};
+
+    \begin{scope}[shift={(5.5,0)}]
+        \node[right] at (-0.2,0.25) {Cas 2: w pair, h impair};
+        \draw[step=1] (0,0) grid (4,-3);
+        \foreach \x in {0.5,1.5,2.5,3.5} {
+            \draw[fill] (\x,-0.5) circle (1pt);
+            \draw[fill] (\x,-1.5) circle (1pt);
+            \draw[fill] (\x,-2.5) circle (1pt);
+        }
+        \draw[fill, purple] (2,-1.5) node[below] {$\mathbf{C}$} circle (1.5pt);
+        \node[above] at (0.5,-0.6) {$P_{0,0}$};
+    \end{scope}
+
+    \begin{scope}[shift={(0,-4.5)}]
+        \node[right] at (-0.2,0.25) {Cas 3: w impair, h pair};
+        \draw[step=1] (0,0) grid (3,-4);
+        \foreach \x in {0.5,1.5,2.5} {
+            \draw[fill] (\x,-0.5) circle (1pt);
+            \draw[fill] (\x,-1.5) circle (1pt);
+            \draw[fill] (\x,-2.5) circle (1pt);
+            \draw[fill] (\x,-3.5) circle (1pt);
+        }
+        \draw[fill, purple] (1.5,-2) node[below] {$\mathbf{C}$} circle (1.5pt);
+        \node[above] at (0.5,-0.6) {$P_{0,0}$};
+    \end{scope}
+
+    \begin{scope}[shift={(5.5,-4.5)}]
+        \node[right] at (-0.2,0.25) {Cas 4: w impair, h impair};
+        \draw[step=1] (0,0) grid (4,-4);
+        \foreach \x in {0.5,1.5,2.5,3.5} {
+            \draw[fill] (\x,-0.5) circle (1pt);
+            \draw[fill] (\x,-1.5) circle (1pt);
+            \draw[fill] (\x,-2.5) circle (1pt);
+            \draw[fill] (\x,-3.5) circle (1pt);
+        }
+        \draw[fill, purple] (2,-2) node[below] {$\mathbf{C}$} circle (1.5pt);
+        \node[above] at (0.5,-0.6) {$P_{0,0}$};
+    \end{scope}
+}
+
+\newcommand{\cubeblank}{
+\begin{center}
+\begin{tikzpicture}[baseline, scale=3]
+    \coordinate (A1) at (0, 0, 0);
+    \coordinate (A2) at (0, 1, 0);
+    \coordinate (A3) at (1, 1, 0);
+    \coordinate (A4) at (1, 0, 0);
+
+    \coordinate (B1) at (0, 0, -1);
+    \coordinate (B2) at (0, 1, -1);
+    \coordinate (B3) at (1, 1, -1);
+    \coordinate (B4) at (1, 0, -1);
+
+    \draw[very thick] (A1) -- (A2);
+    \draw[very thick] (A2) -- (A3);
+    \draw[very thick] (A3) -- (A4);
+    \draw[very thick] (A4) -- (A1);
+
+    \draw[dashed] (A1) -- (B1);
+    \draw[dashed] (B1) -- (B2);
+    \draw[very thick] (A2) -- (B2);
+    \draw[very thick] (B2) -- (B3);
+    \draw[very thick] (A3) -- (B3);
+    \draw[very thick] (A4) -- (B4);
+    \draw[very thick] (B4) -- (B3);
+    \draw[dashed] (B1) -- (B4);
+
+    \node[right] at (A3) {$Bmax$};
+    \node[above] at (B1) {$Bmin$};
+
+\end{tikzpicture}
+\captionof{figure}{AABB en fonction de $B_{min}$ et $B_{max}$}
+\end{center}
+}
+
+\newcommand{\intersection}{
+    \begin{center}
+    \begin{tikzpicture}[baseline, scale=3]
+
+    \coordinate (xBmin) at (0.3,0);
+    \coordinate (xBmin_l) at (0.3,1.8);
+    \coordinate (xBmax) at (1.5,0);
+    \coordinate (xBmax_l) at (1.5,1.8);
+
+    \coordinate (yBmin) at (0,0.6);
+    \coordinate (yBmin_l) at (1.6,0.6);
+    \coordinate (yBmax) at (0,1.5);
+    \coordinate (yBmax_l) at (1.6,1.5);
+
+    \coordinate (Bmin) at (0.3,0.6);
+    \coordinate (Bmax) at (1.5,1.5);
+
+
+    \coordinate (o) at (1.8, 1.95);
+    \coordinate (d) at (0.2, 0.35);
+
+    \coordinate (ytbmax) at (1.5, 1.65);
+    \coordinate (xtbmax) at (1.35, 1.5);
+
+    \coordinate (ytbmin) at (0.3, 0.45);
+    \coordinate (xtbmin) at (0.45, 0.6);
+
+    \coordinate (x) at (2, 0);
+    \coordinate (y) at (0, 2);
+    \coordinate (origin) at (0, 0);
+
+    \draw[red,line width=2pt, ->] (origin) -- (x) node[above] {$\vec{x}$};
+    \draw[green,line width=2pt, ->] (origin) -- (y) node[left,xshift=-6pt, overlay] {$\vec{y}$};
+
+    \draw[thick] (xBmin) -- (xBmin_l);
+    \draw[thick] (xBmax) -- (xBmax_l);
+    \draw[thick] (yBmin) -- (yBmin_l);
+    \draw[thick] (yBmax) -- (yBmax_l);
+    \draw[thick] (o) -- (d) node[midway, above, sloped]{$o + dt$};
+
+    \node[below] at (xBmin) {$xBmin$};
+    \node[below] at (xBmax) {$xBmax$};
+
+    \node[below] at (xBmin) {$xBmin$};
+    \node[below] at (xBmax) {$xBmax$};
+
+    \node[above,xshift=1pt,rotate=90] at (yBmin) {$yBmin$};
+    \node[above,xshift=1pt,rotate=90] at (yBmax) {$yBmax$};
+
+    \fill (Bmin) circle (1pt) node[above] {$B_{\min}$};
+    \fill (Bmax) circle (1pt) node[above,right] {$B_{\max}$};
+
+    \fill (ytbmax) circle (1pt) node[above,right] {$tyB_{\max}$};
+    \fill (xtbmax) circle (1pt) node[above,left] {$txB_{\max}$};
+
+    \fill (ytbmin) circle (1pt) node[above,right] {$tyB_{\min}$};
+    \fill (xtbmin) circle (1pt) node[above,right] {$txB_{\min}$};
+
+    \end{tikzpicture}
+    \captionof{figure}{Points d'intersection entre un rayon $o+dt$ et l'AABB}
+    \end{center}
+}
+
+\newcommand{\nointersection}{
+    \begin{center}
+    \begin{tikzpicture}[baseline, scale=3]
+
+    \coordinate (xBmin) at (0.3,0);
+    \coordinate (xBmin_l) at (0.3,1.8);
+    \coordinate (xBmax) at (1.5,0);
+    \coordinate (xBmax_l) at (1.5,1.8);
+
+    \coordinate (yBmin) at (0,0.6);
+    \coordinate (yBmin_l) at (1.6,0.6);
+    \coordinate (yBmax) at (0,1.5);
+    \coordinate (yBmax_l) at (1.6,1.5);
+
+    \coordinate (Bmin) at (0.3,0.6);
+    \coordinate (Bmax) at (1.5,1.5);
+
+
+    \coordinate (o) at (0.4, 1.7);
+    \coordinate (d) at (0.1, 1.4);
+
+    \coordinate (o1) at (1.65, 0.65);
+    \coordinate (d1) at (1.45, 0.40);
+
+    \coordinate (ytbmax) at (0.3, 1.6);
+    \coordinate (xtbmax) at (0.19, 1.5);
+
+    \coordinate (ytbmin) at (1.5, 0.45);
+    \coordinate (xtbmin) at (1.6, 0.6);
+
+    \coordinate (x) at (2, 0);
+    \coordinate (y) at (0, 2);
+    \coordinate (origin) at (0, 0);
+
+    \draw[red,line width=2pt, ->] (origin) -- (x) node[above] {$\vec{x}$};
+    \draw[green,line width=2pt, ->] (origin) -- (y) node[left,xshift=-6pt, overlay] {$\vec{y}$};
+
+    \draw[thick] (xBmin) -- (xBmin_l);
+    \draw[thick] (xBmax) -- (xBmax_l);
+    \draw[thick] (yBmin) -- (yBmin_l);
+    \draw[thick] (yBmax) -- (yBmax_l);
+    \draw[thick] (o) -- (d) node[midway, above, sloped]{$o + dt$};
+    \draw[thick] (o1) -- (d1) node[midway, above, sloped]{$o + dt$};
+
+    \node[below] at (xBmin) {$xBmin$};
+    \node[below] at (xBmax) {$xBmax$};
+
+    \node[below] at (xBmin) {$xBmin$};
+    \node[below] at (xBmax) {$xBmax$};
+
+    \node[above,xshift=1pt,rotate=90] at (yBmin) {$yBmin$};
+    \node[above,xshift=1pt,rotate=90] at (yBmax) {$yBmax$};
+
+    \fill (Bmin) circle (1pt) node[above] {$B_{\min}$};
+    \fill (Bmax) circle (1pt) node[above,right] {$B_{\max}$};
+
+    \fill (ytbmax) circle (1pt) node[below,right] {$txB_{\min}$};
+    \fill (xtbmax) circle (1pt) node[below,yshift=-3pt,right] {$tyB_{\max}$};
+
+    \fill (ytbmin) circle (1pt) node[above,right] {$txB_{\max}$};
+    \fill (xtbmin) circle (1pt) node[above,right] {$tyB_{\min}$};
+    
+    \end{tikzpicture}
+    \captionof{figure}{Représentation des points n'intersectant pas l'AABB}
+    \end{center}
+}
+
+\newcommand{\bounce}{
+	\begin{center}
+    \begin{tikzpicture}[baseline, scale=3]
+	\draw[thick](-2,0) -- (2,0);
+	\draw[thick](-2,0) -- (2,0);
+	
+	\node[right] at (1, 1.8) {$\Omega$};
+	\node[above] at (-1.05, 1.15) {$\overrightarrow{\omega_o}$};
+	\node[below] at (0,-0.05) {$x$};
+	\node[above] at (0,2) {$\overrightarrow{n}$};
+	\draw[thick](0,0) -- (-1.414,1.414);
+	\draw[thick, ->, red](-1,1) -- (-1.414,1.414);
+	
+	
+	\node[above] at (0.95,1.05) {$\overrightarrow{\omega_i}$};
+	\node[right] at (1.414,1.414) {$L_i\left(x,\omega_i\right)$};
+	\node[above] at (0.2,0.45) {$\theta_i$};
+	\draw[thick](1.414,1.414) -- (0,0);
+	\draw[thick, ->, red](1.414,1.414) -- (1,1);
+	
+	\draw[thick](1.732,1) -- (0,0);
+	\draw[thick, ->, red](1.732,1) -- (1.22,0.71);
+	\node[above] at (1.22,0.75) {$\overrightarrow{\omega_i'}$};
+	\node[right] at (1.732,1) {$L_i'\left(x,\omega_i'\right)$};
+	\node[above] at (0.4,0.76) {$\theta_i'$};
+	\draw[dashed, ->](0,0.75) arc (90:30:0.75);
+	
+	
+	\node[left] at (-1.414,1.414) {$L_o\left(x,\omega_o\right)$};
+	\node[left] at (-0.5,0.5) {$L_e\left(x,\omega_o\right)$};
+	
+	\draw[dashed, ->](0,0) -- (0,2);
+	\draw[dashed](2,0) arc (0:180:2);
+	
+	\draw[dashed, ->](0,0.5) arc (90:45:0.5);
+	
+	\end{tikzpicture}
+	\end{center}
+}

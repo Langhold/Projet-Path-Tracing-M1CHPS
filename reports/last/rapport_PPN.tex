@@ -1,0 +1,111 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[a4paper,margin=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{etoolbox}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{mathbbol}
+\usepackage{geometry}
+
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{flafter}
+
+ \geometry{
+ a4paper,
+ left=14mm,
+ right=15mm,
+ bottom=25mm,
+ top=20mm
+ }
+
+\usepackage{tikz, pgfplots}
+\usepackage{tikz-3dplot}
+\pgfplotsset{compat=1.15}
+\usetikzlibrary{calc}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{intersections}
+\usetikzlibrary{shapes}
+
+\usepackage{chngcntr}
+\counterwithin{figure}{section}
+
+\captionsetup{justification=centering}
+
+\input{include/schemas.tex}
+\setlength{\parindent}{0pt}
+\newcommand{\bdptbounce}{
+    \begin{center}
+    \begin{tikzpicture}[baseline, scale=2.5]
+
+    \draw[thick, gray, fill=gray](-1,-1) node[below, color=black]{camera} -- (0,0) -- (-0.5,0.5) -- (-1.5,-0.5) -- cycle;
+    \draw[thick, blue, fill=blue](-0.2, 1.7) circle (0.7);
+    \draw[thick, blue, fill=blue](2.1, 2.1) circle (0.5);
+    \draw[thick, blue, fill=blue](4.3,1.5) circle (0.5);
+    \draw[thick, black](-0.25,0.25) -- (0.3,1.2);
+    \draw[thick, black](0.3,1.2) -- (2.2, 1.6);
+    \draw[thick, black](2.2, 1.6) -- (3.8,1.5);
+    \draw[thick, red](0.2,1.1) -- (0.4,1.3);
+    \draw[thick, red](0.2,1.3) -- (0.4,1.1);
+    \draw[thick, red](2.3, 1.5) -- (2.1,1.7);
+    \draw[thick, red](2.1, 1.5) -- (2.3,1.7);
+    \draw[thick, red](3.7,1.6) -- (3.9,1.4);
+    \draw[thick, red](3.9,1.6) -- (3.7,1.4);
+
+    \draw[thick, yellow, fill=yellow](3.7,-0.7) circle (0.7) node[below, color=black]{light source};
+    \draw[thick, blue, fill=blue](2.0,-1.05) circle (0.4);
+    \draw[thick, blue, fill=blue](1.01,-0.3) circle (0.3);
+    \draw[thick, black](3.025,-0.9) -- (2.2,-0.7);
+    \draw[thick, black](2.2,-0.7) -- (1.3,-0.2);
+    \draw[thick, red](3.125,-1.0) -- (2.925,-0.8);
+    \draw[thick, red](3.125,-0.8) -- (2.925,-1.0);
+    \draw[thick, red](2.1,-0.6) -- (2.3,-0.8);
+    \draw[thick, red](2.1,-0.8) -- (2.3 ,-0.6);
+    \draw[thick, red](1.2,-0.3) -- (1.4,-0.1);
+    \draw[thick, red](1.2,-0.1) -- (1.4,-0.3);
+
+    \draw[orange, dashed](0.3,1.2) -- (3.025,-0.9);
+    \draw[orange, dashed](0.3,1.2) -- (2.2,-0.7);
+    \draw[orange, dashed](2.2, 1.6) -- (3.025,-0.9);
+    \draw[orange, dashed](2.2, 1.6) -- (2.2,-0.7);
+    \draw[orange, dashed](2.2, 1.6) -- (1.3,-0.2);
+    \draw[orange, dashed](3.8,1.5) -- (2.2,-0.7);
+    \draw[orange, dashed](3.8,1.5) -- (1.3,-0.2);
+
+    \end{tikzpicture}
+    \captionof{figure}{Connections possibles entre deux rayons}
+    \small Rebonds = 3 pour la caméra et la lumière
+    \end{center}
+}
+
+   
+   
+   
+   
+\begin{document}  
+\sloppy
+
+\input{include/pagedegarde.tex}
+\tableofcontents
+\pagebreak
+\input{include/introduction.tex}
+\input{include/previously.tex}
+\input{include/state_of_art.tex}
+\input{include/protocole.tex}
+\section{Annexes}
+\input{include/Biblio.tex}
+
+\end{document}

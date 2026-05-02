@@ -16,24 +16,44 @@ find_package(MPI REQUIRED)
 
 find_package(OpenMP)
 
+if(OpenMP_C_FOUND)
+
+    message(STATUS "OpenMP found")
+
+else()
+
+    if(APPLE)
+
+        message(STATUS "Using Homebrew libomp")
+
+        execute_process(
+            COMMAND brew --prefix libomp
+            OUTPUT_VARIABLE LIBOMP_PREFIX
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+        )
+
+        add_compile_options(-Xpreprocessor -fopenmp)
+        include_directories(${LIBOMP_PREFIX}/include)
+        link_directories(${LIBOMP_PREFIX}/lib)
+
+
+    endif()
+
+        set(OpenMP_LIBRARIES omp)
+endif()
 
 # --------------------------------------------------
 # LIBRARY
 # --------------------------------------------------
 
-
-if(CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-    set(SIMD_COMPILE_FLAGS -Werror -Wall -Wextra -O3 -g3 -march=x86-64-v3)
-else()
-        set(SIMD_COMPILE_FLAGS -Werror -Wall -Wextra -O3 -g3 -mcpu=apple-m4)
-endif()
+set(SIMD_COMPILE_FLAGS -Werror -Wall -Wextra -O3 -march=native -g3)
 
 set_source_files_properties(src/simd/vSimd.c PROPERTIES
     COMPILE_OPTIONS "${SIMD_COMPILE_FLAGS}"
 )
 
 add_library(LibPathTracing
-	src/image.c
+    src/image.c
     src/ray.c
     src/scene.c
     src/tools.c
@@ -43,14 +63,14 @@ add_library(LibPathTracing
     src/bdpt.c
     src/config.c
 
-    src/simd/vSimd.c
-    src/simd/fImage.c
-    src/simd/vRay.c
-    src/simd/fScene.c
+    src/simd/vSimd.c 
+    src/simd/fImage.c 
+    src/simd/vRay.c 
+    src/simd/fScene.c 
     src/simd/fLight.c
     src/simd/vbenchmark.c
 
-    includes/simd/vColor.h
+    includes/simd/vColor.h 
     includes/simd/vHit.h
 )
 
@@ -63,13 +83,14 @@ if(APPLE)
 		${OpenMP_LIBRARIES}
 	)
 	target_compile_options(LibPathTracing PRIVATE
-    -Wall -Wextra
+    -Wall -Wextra -lc
 	)
 else()
 	target_link_libraries(LibPathTracing
 		m
 		MPI::MPI_C
 		OpenMP::OpenMP_C
+        sleef
 	)
 	target_compile_options(LibPathTracing PRIVATE
     -Wall -Wextra -lc -fopenmp
@@ -85,14 +106,9 @@ add_executable(ppm src/ppm.c)
 target_link_libraries(ppm PRIVATE LibPathTracing)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_options(ppm PRIVATE -Wall -Wextra -g -DDEBUG)
+    target_compile_options(ppm PRIVATE -Wall -Wextra -g3 -DDEBUG)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-if(CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-    target_compile_options(ppm PRIVATE -Wall -Wextra -O3 -march=x86-64-v3)
-else()
-    target_compile_options(ppm PRIVATE -Wall -Wextra -O3 -mcpu=apple-m4)
-endif()
-
+    target_compile_options(ppm PRIVATE -Wall -Wextra -O3 -march=native)
 endif()
 
 
