@@ -40,7 +40,6 @@ add_library(LibPathTracing
     src/vector.c
     src/light.c
     src/benchmarks.c
-    src/bdpt.c
     src/config.c
 
     src/simd/vSimd.c
