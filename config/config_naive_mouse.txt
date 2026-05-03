@@ -9,6 +9,6 @@ only last image = 1
 
 output_filename = performance/images/naive/image_mouse_naive
 output_measures = performance/measures/naive/measures_mouse.csv
-vbenchmark = mouse
+benchmark = mouse
 
 implementation = naive
