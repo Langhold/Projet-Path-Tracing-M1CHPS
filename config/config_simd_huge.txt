@@ -7,7 +7,7 @@ n_measures = 5
 print rate = 10
 only last image = 1
 
-output_filename = performance/images/simd/image_mouse_huge
+output_filename = performance/images/simd/image_huge_simd
 output_measures = performance/measures/simd/measures_huge.csv
 vbenchmark = huge
 
