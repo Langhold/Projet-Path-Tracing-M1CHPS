@@ -1,6 +1,5 @@
 #include "light.h"
 #include "config.h"
-#include "bdpt.h"
 #include <simd/fImage.h>
 
 #include <time.h>
