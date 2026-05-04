@@ -1,9 +1,9 @@
 width = 800
 height = 600
-samples = 2000
+samples = 1000
 bounces = 26
 n_measures = 3
-print rate = 2000
+print rate = 1000
 only last image = 1
 output_measures = cluster_measures/strong_scaling/huge/measures/simd.csv
 output_filename = cluster_measures/strong_scaling/huge/measures/simd
