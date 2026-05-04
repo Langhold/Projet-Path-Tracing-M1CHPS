@@ -8,5 +8,5 @@ only last image = 0
 output_measures = cluster_measures/convergence/huge/measures/bdpt.csv
 output_filename = cluster_measures/convergence/huge/measures/bdpt
 benchmark = huge
-implementation = bdpt
+implementation = BDPT
 
