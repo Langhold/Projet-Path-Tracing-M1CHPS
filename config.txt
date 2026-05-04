@@ -8,4 +8,4 @@ only last image = 1
 output_measures = image_test
 output_filename = measures_test.csv
 benchmark = mickey
-implementation = clusters
+implementation = cluster
