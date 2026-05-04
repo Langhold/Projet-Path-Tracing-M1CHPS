@@ -1,11 +1,12 @@
 width = 800
 height = 600
-samples = 100
+samples = 2000
 bounces = 26
-n_measures = 1
-print rate = 10
+n_measures = 3
+print rate = 2000
 only last image = 1
 output_measures = cluster_measures/strong_scaling/huge/measures/cluster.csv
+output_filename = cluster_measures/strong_scaling/huge/measures/cluster.csv
 benchmark = huge
 implementation = cluster
 
