@@ -290,7 +290,7 @@ void path_trace_tree(const int x1, const int y1, const int local_y, const int wi
 }
 
 
-void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Vector * radiance, unsigned int* seed, Vector* bg_color){
+void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Vector * radiance, unsigned int* seed, Vector* bg_color, int rr){
 	Vector throughput = {{1.f, 1.f, 1.f}};
 	Ray current_ray = *r;
 	
@@ -345,7 +345,7 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Vec
 				current_ray = r_new;
 				
 				
-				if (d > 10) {
+				if ((d > 10) && rr) {
 					if (russian_roulette(&throughput, seed)) {
 						return;
 					}
@@ -374,7 +374,7 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Vec
 					throughput.Data[i] *= albedo;
 				}
 				
-				if (d > 10) {
+				if ((d > 10) && rr) {
 					if (russian_roulette(&throughput, seed)) {
 						return;
 					}
@@ -393,13 +393,13 @@ void ray_sampling_clusters(Ray* const r, Large_BVH_t* const scene, int dmax, Vec
 
 void path_trace_clusters(const int x1, const int y1, const int local_y, const int width,
 						 Scene const* S, const size_t bounces, Vector* color_buffer,
-						 unsigned int* seed, Large_BVH_t* const tree)
+						 unsigned int* seed, Large_BVH_t* const tree, int rr)
 {
 	 Ray ray;
 	trace_ray(x1, y1, &S->camera, &ray);
 
 	 Vector radiance;
-	ray_sampling_clusters(&ray, tree, (int)bounces, &radiance, seed, S->background_color);
+	ray_sampling_clusters(&ray, tree, (int)bounces, &radiance, seed, S->background_color, rr);
 
 	const size_t index = (local_y * width + x1) * 3;
 
@@ -411,7 +411,7 @@ void path_trace_clusters(const int x1, const int y1, const int local_y, const in
 }
 
 
-void ray_sampling_clusters_no_light(Ray* const r, Large_BVH_t* const scene, int dmax, Vector * radiance, unsigned int* seed, Vector* bg_color){
+void ray_sampling_clusters_no_light(Ray* const r, Large_BVH_t* const scene, int dmax, Vector * radiance, unsigned int* seed, Vector* bg_color, int rr){
 	Vector throughput = {{1.f, 1.f, 1.f}};
 	Ray current_ray = *r;
 	
@@ -466,7 +466,7 @@ void ray_sampling_clusters_no_light(Ray* const r, Large_BVH_t* const scene, int 
 				current_ray = r_new;
 				
 				
-				if (d > 10) {
+				if ((d > 10) && rr) {
 					if (russian_roulette(&throughput, seed)) {
 						return;
 					}
@@ -646,7 +646,7 @@ void compute_vertex(Vector * color, Vertex *camera_path, int camera_path_length,
 	return;
 }
 
-void ray_sampling_clusters_bdpt(Ray* const r, Large_BVH_t* const scene, int dmax, Vertex * path, unsigned int* seed, int * path_length, Vector* bg_color){
+void ray_sampling_clusters_bdpt(Ray* const r, Large_BVH_t* const scene, int dmax, Vertex * path, unsigned int* seed, int * path_length, Vector* bg_color, int rr){
 	Vector throughput = (path[0].is_light == 0) ? (Vector){{1.f, 1.f, 1.f}} : path[0].throughput;
 	Ray current_ray = *r;
 	
@@ -703,7 +703,7 @@ void ray_sampling_clusters_bdpt(Ray* const r, Large_BVH_t* const scene, int dmax
 					throughput.Data[i] *= obj->color.Data[i] * albedo;
 				}
 
-				if (d > 10) {
+				if ((d > 10) && rr) {
 					if (russian_roulette(&throughput, seed)) {
 						(*path_length)--;
 						return;
@@ -756,7 +756,7 @@ void ray_sampling_clusters_bdpt(Ray* const r, Large_BVH_t* const scene, int dmax
 				path[d].object = obj;
 
 				current_ray = r_new;
-				if (d > 10) {
+				if ((d > 10) && rr) {
 					if (russian_roulette(&throughput, seed)) {
 						return;
 					}
@@ -769,7 +769,7 @@ void ray_sampling_clusters_bdpt(Ray* const r, Large_BVH_t* const scene, int dmax
 }
 
 
-void path_trace_t(const int x1, const int y1, Scene const * S, const size_t bounces, Vector * pixel_color, unsigned int* seed, Large_BVH_t* const tree){
+void path_trace_t(const int x1, const int y1, Scene const * S, const size_t bounces, Vector * pixel_color, unsigned int* seed, Large_BVH_t* const tree, int rr){
 	if (S->size_lights > 0) {
 		Ray ray, light_ray;
 
@@ -789,8 +789,8 @@ void path_trace_t(const int x1, const int y1, Scene const * S, const size_t boun
 		}
 		
 		int camera_path_length = 0, light_path_length = 0;
-		ray_sampling_clusters_bdpt(&ray, tree, (int)bounces, camera_path, seed, &camera_path_length, S->background_color);
-		ray_sampling_clusters_bdpt(&light_ray, tree, (int)bounces, light_path, seed, &light_path_length, S->background_color);
+		ray_sampling_clusters_bdpt(&ray, tree, (int)bounces, camera_path, seed, &camera_path_length, S->background_color, rr);
+		ray_sampling_clusters_bdpt(&light_ray, tree, (int)bounces, light_path, seed, &light_path_length, S->background_color, rr);
 
 		camera_path[0].pdf_fwd = compute_pdf(1.0f, &camera_path[0].normal, &S->camera.position, &camera_path[0].position);
 
@@ -808,7 +808,7 @@ void path_trace_t(const int x1, const int y1, Scene const * S, const size_t boun
 		trace_ray(x1, y1, &S->camera, &ray);
 		
 		Vector radiance;
-		ray_sampling_clusters_no_light(&ray, tree, (int)bounces, &radiance, seed, S->background_color);
+		ray_sampling_clusters_no_light(&ray, tree, (int)bounces, &radiance, seed, S->background_color, rr);
 		
 		pixel_color->Data[0] += radiance.Data[0];
 		pixel_color->Data[1] += radiance.Data[1];
@@ -823,7 +823,7 @@ void path_trace_original(const int x1, const int y1, Scene const * S, const size
 	trace_ray(x1, y1, &S->camera, &ray);
 	
 	Vector radiance;
-	ray_sampling_clusters_no_light(&ray, tree, (int)bounces, &radiance, seed, S->background_color);
+	ray_sampling_clusters_no_light(&ray, tree, (int)bounces, &radiance, seed, S->background_color, 0);
 			
 	pixel_color->Data[0] += radiance.Data[0];
 	pixel_color->Data[1] += radiance.Data[1];
