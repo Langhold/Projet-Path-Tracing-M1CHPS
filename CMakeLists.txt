@@ -18,9 +18,23 @@ find_package(OpenMP)
 
 
 # --------------------------------------------------
+# SLEEF
+# --------------------------------------------------
+find_path(SLEEF_INCLUDE_DIR sleef.h PATHS "$ENV{HOME}/sleef/include")
+find_library(SLEEF_LIBRARY sleef PATHS "$ENV{HOME}/sleef/lib64")
+
+if(SLEEF_INCLUDE_DIR AND SLEEF_LIBRARY)
+    include_directories(${SLEEF_INCLUDE_DIR})
+    target_link_libraries(ppn ${SLEEF_LIBRARY})
+    message(STATUS "SLEEF found: ${SLEEF_LIBRARY}")
+else()
+    message(FATAL_ERROR "SLEEF not found")
+endif()
+
+
+# --------------------------------------------------
 # LIBRARY
 # --------------------------------------------------
-
 
 if(CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
     set(SIMD_COMPILE_FLAGS -Werror -Wall -Wextra -O3 -g3 -march=x86-64-v3 -lsleef)
@@ -69,7 +83,7 @@ else()
 		m
 		MPI::MPI_C
 		OpenMP::OpenMP_C
-		sleef
+		SLEEF::sleef
 	)
 	target_compile_options(LibPathTracing PRIVATE
     -Wall -Wextra -lc -fopenmp
