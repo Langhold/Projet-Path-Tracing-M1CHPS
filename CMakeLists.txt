@@ -69,6 +69,7 @@ else()
 		m
 		MPI::MPI_C
 		OpenMP::OpenMP_C
+		sleef
 	)
 	target_compile_options(LibPathTracing PRIVATE
     -Wall -Wextra -lc -fopenmp
