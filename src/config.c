@@ -144,6 +144,11 @@ void load_config(pt_config_t *config, const char *filename)
 				config->implem = trees;
 				config->implem_name = "tree";
 			}
+			else if (strcmp(buffer2, "russian") == 0)
+			{
+				config->implem = russian;
+				config->implem_name = "naive with russian roulette";
+			}
 			else if (strcmp(buffer2, "cluster") == 0)
 			{
 				config->implem = cluster;
@@ -192,7 +197,8 @@ void print_config(pt_config_t *config)
 		" ├%-20s %d\n"
 		" ├%-20s %d\n"
 		" ├%-20s %zu\n"
-		" └%-20s %d\n"
+		" ├%-20s %d\n"
+		" └%-20s %s\n"
 		" -──────────────────────────────\n"
 		" MEASURE PARAMETERS\n"
 		" ┬──────────────────────────────\n"
@@ -208,9 +214,12 @@ void print_config(pt_config_t *config)
 		"HEIGHT", config->height,
 		"SAMPLES", config->samples,
 		"BOUNCES", config->bounces,
+		"OUTPUT IMAGE", config->output_filename,
+		
 		"PRINT RATE", config->print_rate,
 		"MEASURES", config->n_measures,
-		"OUTPUT FILE", config->output_filename,
+		"OUTPUT MEASURES FILE", config->output_measures,
+		
 		"BENCHMARK", config->benchmark_name,
 		"IMPLEMENTATION", config->implem_name);
 }
