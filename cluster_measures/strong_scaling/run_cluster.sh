@@ -6,4 +6,5 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 
+echo "Running with $npc CPUs..."
 srun ./build/ppm "cluster_measures/strong_scaling/huge/config/cluster.txt"
