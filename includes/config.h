@@ -13,7 +13,8 @@ typedef enum
   SIMD,
   trees,
   cluster,
-  bdpt
+  bdpt,
+  bdpt_no_rr
 } Implem_t;
 
 struct Scene;
