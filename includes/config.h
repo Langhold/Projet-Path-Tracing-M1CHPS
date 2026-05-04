@@ -8,6 +8,7 @@
 
 typedef enum
 {
+  russian,
   naive,
   SIMD,
   trees,
