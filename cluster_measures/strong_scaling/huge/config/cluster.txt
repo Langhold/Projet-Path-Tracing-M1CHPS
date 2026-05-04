@@ -6,7 +6,7 @@ n_measures = 3
 print rate = 2000
 only last image = 1
 output_measures = cluster_measures/strong_scaling/huge/measures/cluster.csv
-output_filename = cluster_measures/strong_scaling/huge/measures/cluster.csv
+output_filename = cluster_measures/strong_scaling/huge/measures/cluster
 benchmark = huge
 implementation = cluster
 
