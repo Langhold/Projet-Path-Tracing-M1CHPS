@@ -25,7 +25,7 @@ find_library(SLEEF_LIBRARY sleef PATHS "$ENV{HOME}/sleef/lib64")
 
 if(SLEEF_INCLUDE_DIR AND SLEEF_LIBRARY)
     include_directories(${SLEEF_INCLUDE_DIR})
-    target_link_libraries(ppn ${SLEEF_LIBRARY})
+    target_link_libraries(ppm ${SLEEF_LIBRARY})
     message(STATUS "SLEEF found: ${SLEEF_LIBRARY}")
 else()
     message(FATAL_ERROR "SLEEF not found")
