@@ -11,6 +11,6 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release
 
 cmake --build build
 
-sbatch --nodes 1 --ntasks-per-node 1 --cpus-per-task 1 ./build/ppn config.txt
+sbatch --nodes 1 --ntasks-per-node 1 --cpus-per-task 1 ./build/ppm config.txt
 
  
