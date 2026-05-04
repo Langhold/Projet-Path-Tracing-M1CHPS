@@ -147,7 +147,7 @@ void load_config(pt_config_t *config, const char *filename)
 			else if (strcmp(buffer2, "russian") == 0)
 			{
 				config->implem = russian;
-				config->implem_name = "naive with russian roulette";
+				config->implem_name = "clusters with russian roulette";
 			}
 			else if (strcmp(buffer2, "cluster") == 0)
 			{
@@ -163,6 +163,11 @@ void load_config(pt_config_t *config, const char *filename)
 			{
 				config->implem = bdpt;
 				config->implem_name = "BDPT";
+			}
+			else if (strcmp(buffer2, "BDPT_no_rr") == 0)
+			{
+				config->implem = bdpt_no_rr;
+				config->implem_name = "BDPT without russian roullette";
 			}
 			else
 			{
