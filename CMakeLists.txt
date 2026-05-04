@@ -23,7 +23,7 @@ find_package(OpenMP)
 
 
 if(CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-    set(SIMD_COMPILE_FLAGS -Werror -Wall -Wextra -O3 -g3 -march=x86-64-v3)
+    set(SIMD_COMPILE_FLAGS -Werror -Wall -Wextra -O3 -g3 -march=x86-64-v3 -lsleef)
 else()
         set(SIMD_COMPILE_FLAGS -Werror -Wall -Wextra -O3 -g3 -mcpu=apple-m4)
 endif()
