@@ -1,0 +1,11 @@
+width = 800
+height = 600
+samples = 100
+bounces = 26
+n_measures = 1
+print rate = 100
+only last image = 1
+output_measures = image_test
+output_filename = measures_test.csv
+benchmark = mickey
+implementation = clusters
