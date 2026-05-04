@@ -86,7 +86,7 @@ else()
 		m
 		MPI::MPI_C
 		OpenMP::OpenMP_C
-		SLEEF::sleef
+		${SLEEF_LIBRARY}
 	)
 	target_compile_options(LibPathTracing PRIVATE
     -Wall -Wextra -lc -fopenmp
