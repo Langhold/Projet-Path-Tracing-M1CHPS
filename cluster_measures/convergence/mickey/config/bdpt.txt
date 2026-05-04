@@ -8,5 +8,5 @@ only last image = 0
 output_measures = cluster_measures/convergence/mickey/measures/bdpt.csv
 output_filename = cluster_measures/convergence/mickey/measures/bdpt
 benchmark = mickey
-implementation = bdpt
+implementation = BDPT
 
