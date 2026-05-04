@@ -17,19 +17,6 @@ find_package(MPI REQUIRED)
 find_package(OpenMP)
 
 
-# --------------------------------------------------
-# SLEEF
-# --------------------------------------------------
-find_path(SLEEF_INCLUDE_DIR sleef.h PATHS "$ENV{HOME}/sleef/include")
-find_library(SLEEF_LIBRARY sleef PATHS "$ENV{HOME}/sleef/lib64")
-
-if(SLEEF_INCLUDE_DIR AND SLEEF_LIBRARY)
-    include_directories(${SLEEF_INCLUDE_DIR})
-    target_link_libraries(ppm ${SLEEF_LIBRARY})
-    message(STATUS "SLEEF found: ${SLEEF_LIBRARY}")
-else()
-    message(FATAL_ERROR "SLEEF not found")
-endif()
 
 
 # --------------------------------------------------
@@ -68,6 +55,22 @@ add_library(LibPathTracing
 )
 
 target_include_directories(LibPathTracing PUBLIC ${PROJECT_SOURCE_DIR}/includes)
+
+
+# --------------------------------------------------
+# SLEEF
+# --------------------------------------------------
+find_path(SLEEF_INCLUDE_DIR sleef.h PATHS "$ENV{HOME}/sleef/include")
+find_library(SLEEF_LIBRARY sleef PATHS "$ENV{HOME}/sleef/lib64")
+
+if(SLEEF_INCLUDE_DIR AND SLEEF_LIBRARY)
+    include_directories(${SLEEF_INCLUDE_DIR})
+    target_link_libraries(LibPathTracing ${SLEEF_LIBRARY})
+    message(STATUS "SLEEF found: ${SLEEF_LIBRARY}")
+else()
+    message(FATAL_ERROR "SLEEF not found")
+endif()
+
 
 if(APPLE)
 	target_link_libraries(LibPathTracing
