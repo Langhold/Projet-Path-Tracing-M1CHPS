@@ -103,7 +103,7 @@ void load_config(pt_config_t *config, const char *filename)
 				config->benchmark = &benchmark_big;
 				config->benchmark_name = "big";
 			}
-			else
+			else if (strcmp(buffer2, "mouse") == 0)
 			{
 				config->benchmark = &benchmark1;
 				config->benchmark_name = "mickey";
@@ -126,7 +126,7 @@ void load_config(pt_config_t *config, const char *filename)
 				config->vbenchmark = &vbenchmark_big;
 				config->benchmark_name = "big";
 			}
-			else
+			else if (strcmp(buffer2, "mouse") == 0)
 			{
 				config->vbenchmark = &vbenchmark1;
 				config->benchmark_name = "mickey";

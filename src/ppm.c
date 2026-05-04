@@ -17,16 +17,16 @@ static inline void color_float_to_int(float *const local_color_buffer,
 									  const int idx,
 									  float const inv_samples)
 {
-	static float gamma_inv = 1.f / 2.2f;
 
 	float r = local_color_buffer[idx_rgb] * inv_samples;
 	float g = local_color_buffer[idx_rgb + 1] * inv_samples;
 	float b = local_color_buffer[idx_rgb + 2] * inv_samples;
 
-	/* r = r / (1.f + r);  g = g / (1.f + g);  b = b / (1.f + b); */
-	/* r = powf(r, gamma_inv); */
-	/* g = powf(g, gamma_inv); */
-	/* b = powf(b, gamma_inv); */
+	// static float gamma_inv = 1.f / 2.2f;
+	// r = r / (1.f + r);  g = g / (1.f + g);  b = b / (1.f + b);
+	// r = powf(r, gamma_inv);
+	// g = powf(g, gamma_inv);
+	// b = powf(b, gamma_inv);
 
 	if (r > 255.f)
 		r = 255.f;
@@ -129,10 +129,6 @@ void compute_naive(pt_config_t *config)
 	float *local_color_buffer = malloc(width * per_t_height * 3 * sizeof(float));
 	uint32_t *local_pixels_buffer = calloc(width * per_t_height, sizeof(uint32_t));
 
-#pragma omp parallel for schedule(static)
-	for (int i = 0; i < width * per_t_height * 3; i++)
-		local_color_buffer[i] = 0.0f;
-
 	int start = per_t_height * mpi_rank;
 	int end = per_t_height * (mpi_rank + 1);
 
@@ -146,6 +142,10 @@ void compute_naive(pt_config_t *config)
 
 #pragma omp parallel
 		{
+#pragma omp for schedule(static)
+			for (int i = 0; i < width * per_t_height * 3; ++i)
+				local_color_buffer[i] = 0.0f;
+
 			Vector pixel_color;
 			unsigned int seed_per_threads = time(NULL) ^ getpid() ^ omp_get_thread_num();
 
@@ -202,7 +202,7 @@ void compute_naive(pt_config_t *config)
 								MPI_Gather(local_pixels_buffer, width * per_t_height, MPI_INT32_T,
 										   image->buffer, width * per_t_height, MPI_INT32_T,
 										   0, MPI_COMM_WORLD);
-								write_image_file_32bit(image, p, config->output_filename);
+								write_image_file_32bit(image, p, m, config->output_filename);
 								printf("image_32bit%zu written\n", p);
 							}
 							clock_gettime(CLOCK_MONOTONIC, &t0);
@@ -222,7 +222,7 @@ void compute_naive(pt_config_t *config)
 						print_time(&t0, &t1, 0, config, mpi_size);
 						memcpy(image->buffer, local_pixels_buffer,
 							   width * per_t_height * sizeof(uint32_t));
-						write_image_file_32bit(image, p, config->output_filename);
+						write_image_file_32bit(image, p, m, config->output_filename);
 						clock_gettime(CLOCK_MONOTONIC, &t0);
 					}
 				}
@@ -273,12 +273,6 @@ void compute_simd(pt_config_t *config)
 	float *local_g = local_r + capacity;
 	float *local_b = local_g + capacity;
 
-#pragma omp parallel for schedule(static)
-	for (int i = 0; i < 3 * capacity; i++)
-	{
-		local_color_buffer[i] = 0.0f;
-	}
-
 	int start = per_t_height * mpi_rank;
 	int end = per_t_height * (mpi_rank + 1);
 
@@ -292,7 +286,11 @@ void compute_simd(pt_config_t *config)
 
 #pragma omp parallel
 		{
-
+#pragma omp for schedule(static)
+			for (int i = 0; i < 3 * capacity; i++)
+			{
+				local_color_buffer[i] = 0.0f;
+			}
 			for (size_t p = print_rate; p <= smpls; p += print_rate)
 			{
 				__vec4f inv_psample = set1(1.0f / p);
@@ -420,10 +418,6 @@ void compute_tree(pt_config_t *config)
 	float *local_color_buffer = malloc(width * per_t_height * 3 * sizeof(float));
 	uint32_t *local_pixels_buffer = calloc(width * per_t_height, sizeof(uint32_t));
 
-#pragma omp parallel for schedule(static)
-	for (int i = 0; i < width * per_t_height * 3; i++)
-		local_color_buffer[i] = 0.0f;
-
 	int start = per_t_height * mpi_rank;
 	int end = per_t_height * (mpi_rank + 1);
 
@@ -437,6 +431,10 @@ void compute_tree(pt_config_t *config)
 
 #pragma omp parallel
 		{
+#pragma omp for schedule(static)
+			for (int i = 0; i < width * per_t_height * 3; i++)
+				local_color_buffer[i] = 0.0f;
+
 			Vector pixel_color;
 			unsigned int seed_per_threads = time(NULL) ^ getpid() ^ omp_get_thread_num();
 
@@ -493,7 +491,7 @@ void compute_tree(pt_config_t *config)
 								MPI_Gather(local_pixels_buffer, width * per_t_height, MPI_INT32_T,
 										   image->buffer, width * per_t_height, MPI_INT32_T,
 										   0, MPI_COMM_WORLD);
-								write_image_file_32bit(image, p, config->output_filename);
+								write_image_file_32bit(image, p, m, config->output_filename);
 								printf("image_32bit%zu written\n", p);
 							}
 							clock_gettime(CLOCK_MONOTONIC, &t0);
@@ -513,7 +511,7 @@ void compute_tree(pt_config_t *config)
 						print_time(&t0, &t1, 0, config, mpi_size);
 						memcpy(image->buffer, local_pixels_buffer,
 							   width * per_t_height * sizeof(uint32_t));
-						write_image_file_32bit(image, p, config->output_filename);
+						write_image_file_32bit(image, p, m, config->output_filename);
 						clock_gettime(CLOCK_MONOTONIC, &t0);
 					}
 				}
@@ -555,17 +553,13 @@ void compute_clusters(pt_config_t *config)
 	Scene scene;
 	config->benchmark(&scene, width, height);
 
-	const int K = 4;
+	const int K = 5;
 	Large_BVH_t *tree = initialize_tree_clustering(&scene, &seed, K);
 	Image_32bit *image = create_image_32bit(width, height);
 
 	const int per_t_height = config->height / mpi_size;
 	float *local_color_buffer = malloc(width * per_t_height * 3 * sizeof(float));
 	uint32_t *local_pixels_buffer = calloc(width * per_t_height, sizeof(uint32_t));
-
-#pragma omp parallel for schedule(static)
-	for (int i = 0; i < width * per_t_height * 3; i++)
-		local_color_buffer[i] = 0.0f;
 
 	int start = per_t_height * mpi_rank;
 	int end = per_t_height * (mpi_rank + 1);
@@ -580,6 +574,10 @@ void compute_clusters(pt_config_t *config)
 
 #pragma omp parallel
 		{
+#pragma omp for schedule(static)
+			for (int i = 0; i < width * per_t_height * 3; i++)
+				local_color_buffer[i] = 0.0f;
+
 			Vector pixel_color;
 			unsigned int seed_per_threads = time(NULL) ^ getpid() ^ omp_get_thread_num();
 
@@ -636,7 +634,7 @@ void compute_clusters(pt_config_t *config)
 								MPI_Gather(local_pixels_buffer, width * per_t_height, MPI_INT32_T,
 										   image->buffer, width * per_t_height, MPI_INT32_T,
 										   0, MPI_COMM_WORLD);
-								write_image_file_32bit(image, p, config->output_filename);
+								write_image_file_32bit(image, p, m, config->output_filename);
 								printf("image_32bit%zu written\n", p);
 							}
 							clock_gettime(CLOCK_MONOTONIC, &t0);
@@ -656,7 +654,7 @@ void compute_clusters(pt_config_t *config)
 						print_time(&t0, &t1, 0, config, mpi_size);
 						memcpy(image->buffer, local_pixels_buffer,
 							   width * per_t_height * sizeof(uint32_t));
-						write_image_file_32bit(image, p, config->output_filename);
+						write_image_file_32bit(image, p, m, config->output_filename);
 						clock_gettime(CLOCK_MONOTONIC, &t0);
 					}
 				}
@@ -698,17 +696,13 @@ void compute_bdpt(pt_config_t *config)
 	Scene scene;
 	config->benchmark(&scene, width, height);
 
-	const int K = 4;
+	const int K = 5;
 	Large_BVH_t *tree = initialize_tree_clustering(&scene, &seed, K);
 	Image_32bit *image = create_image_32bit(width, height);
 
 	const int per_t_height = config->height / mpi_size;
 	float *local_color_buffer = malloc(width * per_t_height * 3 * sizeof(float));
 	uint32_t *local_pixels_buffer = calloc(width * per_t_height, sizeof(uint32_t));
-
-#pragma omp parallel for schedule(static)
-	for (int i = 0; i < width * per_t_height * 3; i++)
-		local_color_buffer[i] = 0.0f;
 
 	int start = per_t_height * mpi_rank;
 	int end = per_t_height * (mpi_rank + 1);
@@ -723,6 +717,9 @@ void compute_bdpt(pt_config_t *config)
 
 #pragma omp parallel
 		{
+#pragma omp for schedule(static)
+			for (int i = 0; i < width * per_t_height * 3; i++)
+				local_color_buffer[i] = 0.0f;
 			Vector pixel_color;
 			unsigned int seed_per_threads = time(NULL) ^ getpid() ^ omp_get_thread_num();
 
@@ -779,7 +776,7 @@ void compute_bdpt(pt_config_t *config)
 								MPI_Gather(local_pixels_buffer, width * per_t_height, MPI_INT32_T,
 										   image->buffer, width * per_t_height, MPI_INT32_T,
 										   0, MPI_COMM_WORLD);
-								write_image_file_32bit(image, p, config->output_filename);
+								write_image_file_32bit(image, p, m, config->output_filename);
 								printf("image_32bit%zu written\n", p);
 							}
 							clock_gettime(CLOCK_MONOTONIC, &t0);
@@ -799,7 +796,7 @@ void compute_bdpt(pt_config_t *config)
 						print_time(&t0, &t1, 0, config, mpi_size);
 						memcpy(image->buffer, local_pixels_buffer,
 							   width * per_t_height * sizeof(uint32_t));
-						write_image_file_32bit(image, p, config->output_filename);
+						write_image_file_32bit(image, p, m, config->output_filename);
 						clock_gettime(CLOCK_MONOTONIC, &t0);
 					}
 				}
