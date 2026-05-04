@@ -26,7 +26,7 @@ int get_bounces(void)
 }
 
 
-void ray_sampling(Ray* r, const Scene* S, int dmax, Vector* radiance, unsigned int* seed)
+void ray_sampling(Ray* r, const Scene* S, int dmax, Vector* radiance, unsigned int* seed, int rr)
 {
 	Vector throughput = {{1.f, 1.f, 1.f}};
 	Ray current_ray = *r;
@@ -79,7 +79,7 @@ void ray_sampling(Ray* r, const Scene* S, int dmax, Vector* radiance, unsigned i
 			}
 			current_ray = r_new;
 
-			if (d > 10) {
+			if ((d > 10) && rr) {
 				if (russian_roulette(&throughput, seed)) {
 					return;
 				}
@@ -105,7 +105,7 @@ void ray_sampling(Ray* r, const Scene* S, int dmax, Vector* radiance, unsigned i
 				throughput.Data[i] *= 0.9f;
 			}
 
-			if (d > 10) {
+			if ((d > 10) && rr) {
 				if (russian_roulette(&throughput, seed)) {
 					return;
 				}
@@ -122,14 +122,14 @@ void ray_sampling(Ray* r, const Scene* S, int dmax, Vector* radiance, unsigned i
 }
 
 
-void path_trace(const int x1, const int y1, const int local_y, const int width, Scene const * S, const size_t bounces, float* color_buffer, unsigned int* seed)
+void path_trace(const int x1, const int y1, const int local_y, const int width, Scene const * S, const size_t bounces, float* color_buffer, unsigned int* seed, int rr)
 {
 	
 	Ray ray;
 	trace_ray(x1, y1, &S->camera, &ray);
 	
 	Vector radiance;
-	ray_sampling(&ray, S, (int)bounces, &radiance, seed);
+	ray_sampling(&ray, S, (int)bounces, &radiance, seed, rr);
 	
 	size_t index = (local_y * width + x1) * 3;
 	
