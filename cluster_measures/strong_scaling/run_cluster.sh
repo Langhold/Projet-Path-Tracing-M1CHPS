@@ -4,5 +4,6 @@
 #SBATCH --error=cluster_measures/strong_scaling/cluster_slurm-%j.err
 #SBATCH --time=00:05:00
 #SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
 
 srun ./build/ppm "cluster_measures/strong_scaling/huge/config/cluster.txt"
