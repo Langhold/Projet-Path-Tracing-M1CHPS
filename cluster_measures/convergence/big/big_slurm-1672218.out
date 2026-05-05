@@ -1,0 +1,128 @@
+Running 16 process...
+Running 8 threads...
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/convergence/big/measures/cluster
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             1
+ └OUTPUT MEASURES FILE cluster_measures/convergence/big/measures/cluster.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            big
+ └IMPLEMENTATION       cluster
+1 measure on 1
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/convergence/big/measures/bdpt
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             1
+ └OUTPUT MEASURES FILE cluster_measures/convergence/big/measures/bdpt.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            big
+ └IMPLEMENTATION       BDPT
+1 measure on 1
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/convergence/big/measures/bdpt_no_rr
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             1
+ └OUTPUT MEASURES FILE cluster_measures/convergence/big/measures/bdpt_no_rr.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            big
+ └IMPLEMENTATION       BDPT without russian roullette
+1 measure on 1
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written

@@ -8,5 +8,5 @@ only last image = 1
 output_measures = cluster_measures/strong_scaling/huge/measures/cluster.csv
 output_filename = cluster_measures/strong_scaling/huge/measures/cluster
 benchmark = huge
-implementation = russian
+implementation = cluster
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=strong_scaling_ppn
-#SBATCH --output=cluster_measures/strong_scaling/cluster_slurm-%j_cluster.out
-#SBATCH --error=cluster_measures/strong_scaling/cluster_slurm-%j.err
-#SBATCH --time=00:10:00
+#SBATCH --output=cluster_measures/strong_scaling/huge/cluster_slurm-%j_cluster.out
+#SBATCH --error=cluster_measures/strong_scaling/huge/cluster_slurm-%j.err
+#SBATCH --time=01:00:00
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 

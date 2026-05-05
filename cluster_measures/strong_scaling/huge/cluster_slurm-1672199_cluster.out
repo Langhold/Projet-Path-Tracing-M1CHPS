@@ -1,0 +1,28 @@
+Running with 128 CPUs...
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              1000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/strong_scaling/huge/measures/cluster
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           1000
+ ├MEASURES             3
+ └OUTPUT MEASURES FILE cluster_measures/strong_scaling/huge/measures/cluster.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            huge
+ └IMPLEMENTATION       cluster
+1 measure on 3
+image_32bit1000 written
+2 measure on 3
+image_32bit1000 written
+3 measure on 3
+image_32bit1000 written
