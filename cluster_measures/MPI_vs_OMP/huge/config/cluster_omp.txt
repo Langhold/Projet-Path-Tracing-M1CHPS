@@ -2,10 +2,10 @@ width = 800
 height = 600
 samples = 2000
 bounces = 26
-n_measures = 5
-print rate = 500
+n_measures = 1
+print rate = 100
 only last image = 1
 output_measures = cluster_measures/MPI_vs_OMP/huge/measures/cluster_omp.csv
+output_filename = cluster_measures/MPI_vs_OMP/huge/measures/cluster_omp
 benchmark = huge
 implementation = cluster
-

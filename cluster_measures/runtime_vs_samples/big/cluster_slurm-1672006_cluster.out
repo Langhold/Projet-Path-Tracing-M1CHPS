@@ -1,0 +1,356 @@
+Running naive.txt
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/runtime_vs_samples/big/measures/naive
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             3
+ └OUTPUT MEASURES FILE cluster_measures/runtime_vs_samples/big/measures/naive.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            big
+ └IMPLEMENTATION       naive
+1 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+2 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+3 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+Running tree.txt
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/runtime_vs_samples/big/measures/tree
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             3
+ └OUTPUT MEASURES FILE cluster_measures/runtime_vs_samples/big/measures/tree.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            big
+ └IMPLEMENTATION       tree
+1 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+2 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+3 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+Running cluster.txt
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/runtime_vs_samples/big/measures/cluster
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             3
+ └OUTPUT MEASURES FILE cluster_measures/runtime_vs_samples/big/measures/cluster.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            big
+ └IMPLEMENTATION       cluster
+1 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+2 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+3 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+Running simd.txt
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/runtime_vs_samples/big/measures/simd
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             3
+ └OUTPUT MEASURES FILE cluster_measures/runtime_vs_samples/big/measures/simd.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            big
+ └IMPLEMENTATION       SIMD
+1 measure on 3
+Running bdpt.txt
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/runtime_vs_samples/big/measures/bdpt
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             3
+ └OUTPUT MEASURES FILE cluster_measures/runtime_vs_samples/big/measures/bdpt.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            big
+ └IMPLEMENTATION       BDPT
+1 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+2 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written
+image_32bit1400 written
+image_32bit1500 written
+image_32bit1600 written
+image_32bit1700 written
+image_32bit1800 written
+image_32bit1900 written
+image_32bit2000 written
+3 measure on 3
+image_32bit100 written
+image_32bit200 written
+image_32bit300 written
+image_32bit400 written
+image_32bit500 written
+image_32bit600 written
+image_32bit700 written
+image_32bit800 written
+image_32bit900 written
+image_32bit1000 written
+image_32bit1100 written
+image_32bit1200 written
+image_32bit1300 written

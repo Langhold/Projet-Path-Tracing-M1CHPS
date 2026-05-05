@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 
 echo "Job started on $(hostname) at $(date)"

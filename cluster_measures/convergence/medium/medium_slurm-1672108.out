@@ -1,0 +1,71 @@
+Running 16 process...
+Running 8 threads...
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/convergence/medium/measures/cluster
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             1
+ └OUTPUT MEASURES FILE cluster_measures/convergence/medium/measures/cluster.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            medium
+ └IMPLEMENTATION       cluster
+1 measure on 1
+image_32bit2000 written
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/convergence/medium/measures/bdpt
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             1
+ └OUTPUT MEASURES FILE cluster_measures/convergence/medium/measures/bdpt.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            medium
+ └IMPLEMENTATION       BDPT
+1 measure on 1
+image_32bit2000 written
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/convergence/medium/measures/bdpt_no_rr
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             1
+ └OUTPUT MEASURES FILE cluster_measures/convergence/medium/measures/bdpt_no_rr.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            medium
+ └IMPLEMENTATION       BDPT without russian roullette
+1 measure on 1
+image_32bit2000 written

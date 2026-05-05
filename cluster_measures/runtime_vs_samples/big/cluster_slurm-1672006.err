@@ -1,0 +1,485 @@
+[node031:20767] *** Process received signal ***
+[node031:20767] Signal: Segmentation fault (11)
+[node031:20767] Signal code: Address not mapped (1)
+[node031:20767] Failing at address: 0xb60
+[node031:20767] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x148cb6e87cf0]
+[node031:20767] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20767] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20767] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20767] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20767] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x148cb70a6706]
+[node031:20767] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20767] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20767] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x148cb6ae9d85]
+[node031:20767] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20767] *** End of error message ***
+[node031:20768] *** Process received signal ***
+[node031:20768] Signal: Segmentation fault (11)
+[node031:20768] Signal code: Address not mapped (1)
+[node031:20768] Failing at address: 0xb60
+[node031:20768] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14aae0dbacf0]
+[node031:20768] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20768] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20768] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20768] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20768] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x14aae0fd9706]
+[node031:20768] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20768] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20768] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x14aae0a1cd85]
+[node031:20768] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20768] *** End of error message ***
+[node031:20769] *** Process received signal ***
+[node031:20769] Signal: Segmentation fault (11)
+[node031:20769] Signal code: Address not mapped (1)
+[node031:20769] Failing at address: 0xb60
+[node031:20769] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x149d20da9cf0]
+[node031:20769] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20769] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20769] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20769] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20769] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x149d20fc8706]
+[node031:20769] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20769] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20769] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x149d20a0bd85]
+[node031:20769] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20769] *** End of error message ***
+[node031:20770] *** Process received signal ***
+[node031:20770] Signal: Segmentation fault (11)
+[node031:20770] Signal code: Address not mapped (1)
+[node031:20770] Failing at address: 0xb60
+[node031:20770] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14f8ff926cf0]
+[node031:20770] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20770] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20770] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20770] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20770] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x14f8ffb45706]
+[node031:20770] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20770] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20770] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x14f8ff588d85]
+[node031:20770] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20770] *** End of error message ***
+[node031:20771] *** Process received signal ***
+[node031:20771] Signal: Segmentation fault (11)
+[node031:20771] Signal code: Address not mapped (1)
+[node031:20771] Failing at address: 0xb60
+[node031:20771] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14f28b177cf0]
+[node031:20771] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20771] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20771] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20771] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20771] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x14f28b396706]
+[node031:20771] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20771] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20771] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x14f28add9d85]
+[node031:20771] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20771] *** End of error message ***
+[node031:20772] *** Process received signal ***
+[node031:20772] Signal: Segmentation fault (11)
+[node031:20772] Signal code: Address not mapped (1)
+[node031:20772] Failing at address: 0xb60
+[node031:20772] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14eab3a1dcf0]
+[node031:20772] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20772] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20772] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20772] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20772] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x14eab3c3c706]
+[node031:20772] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20772] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20772] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x14eab367fd85]
+[node031:20772] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20772] *** End of error message ***
+[node031:20773] *** Process received signal ***
+[node031:20773] Signal: Segmentation fault (11)
+[node031:20773] Signal code: Address not mapped (1)
+[node031:20773] Failing at address: 0xb60
+[node031:20773] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1486e610dcf0]
+[node031:20773] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20773] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20773] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20773] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20773] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x1486e632c706]
+[node031:20773] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20773] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20773] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x1486e5d6fd85]
+[node031:20773] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20773] *** End of error message ***
+[node031:20774] *** Process received signal ***
+[node031:20774] Signal: Segmentation fault (11)
+[node031:20774] Signal code: Address not mapped (1)
+[node031:20774] Failing at address: 0xb60
+[node031:20774] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1489fb2c7cf0]
+[node031:20774] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20774] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20774] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20774] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20774] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x1489fb4e6706]
+[node031:20774] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20774] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20774] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x1489faf29d85]
+[node031:20774] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20774] *** End of error message ***
+[node031:20775] *** Process received signal ***
+[node031:20775] Signal: Segmentation fault (11)
+[node031:20775] Signal code: Address not mapped (1)
+[node031:20775] Failing at address: 0xb60
+[node031:20775] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x146ab6cdfcf0]
+[node031:20775] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20775] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20775] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20775] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20775] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x146ab6efe706]
+[node031:20775] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20775] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20775] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x146ab6941d85]
+[node031:20775] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20775] *** End of error message ***
+[node031:20776] *** Process received signal ***
+[node031:20776] Signal: Segmentation fault (11)
+[node031:20776] Signal code: Address not mapped (1)
+[node031:20776] Failing at address: 0xb60
+[node031:20776] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14cffa9c6cf0]
+[node031:20776] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20776] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20776] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20776] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20776] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x14cffabe5706]
+[node031:20776] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20776] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20776] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x14cffa628d85]
+[node031:20776] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20776] *** End of error message ***
+[node031:20777] *** Process received signal ***
+[node031:20777] Signal: Segmentation fault (11)
+[node031:20777] Signal code: Address not mapped (1)
+[node031:20777] Failing at address: 0xb60
+[node031:20777] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14f92b380cf0]
+[node031:20777] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20777] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20777] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20777] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20777] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x14f92b59f706]
+[node031:20777] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20777] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20777] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x14f92afe2d85]
+[node031:20777] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20777] *** End of error message ***
+[node031:20778] *** Process received signal ***
+[node031:20778] Signal: Segmentation fault (11)
+[node031:20778] Signal code: Address not mapped (1)
+[node031:20778] Failing at address: 0xb60
+[node031:20778] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x152ab9857cf0]
+[node031:20778] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20778] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20778] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20778] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20778] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x152ab9a76706]
+[node031:20778] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20778] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20778] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x152ab94b9d85]
+[node031:20778] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20778] *** End of error message ***
+[node031:20779] *** Process received signal ***
+[node031:20779] Signal: Segmentation fault (11)
+[node031:20779] Signal code: Address not mapped (1)
+[node031:20779] Failing at address: 0xb60
+[node031:20779] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1543fd457cf0]
+[node031:20779] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20779] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20779] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20779] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20779] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x1543fd676706]
+[node031:20779] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20779] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20779] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x1543fd0b9d85]
+[node031:20779] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20779] *** End of error message ***
+[node031:20780] *** Process received signal ***
+[node031:20780] Signal: Segmentation fault (11)
+[node031:20780] Signal code: Address not mapped (1)
+[node031:20780] Failing at address: 0xb60
+[node031:20780] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14df7cf06cf0]
+[node031:20780] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20780] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20780] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20780] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20780] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x14df7d125706]
+[node031:20780] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20780] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20780] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x14df7cb68d85]
+[node031:20780] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20780] *** End of error message ***
+[node031:20781] *** Process received signal ***
+[node031:20781] Signal: Segmentation fault (11)
+[node031:20781] Signal code: Address not mapped (1)
+[node031:20781] Failing at address: 0xb60
+[node031:20781] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1459c0faecf0]
+[node031:20781] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20781] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20781] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20781] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20781] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x1459c11cd706]
+[node031:20781] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20781] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20781] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x1459c0c10d85]
+[node031:20781] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20781] *** End of error message ***
+[node031:20782] *** Process received signal ***
+[node031:20782] Signal: Segmentation fault (11)
+[node031:20782] Signal code: Address not mapped (1)
+[node031:20782] Failing at address: 0xb60
+[node031:20782] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x150936573cf0]
+[node031:20782] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20782] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20782] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20782] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20782] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x150936792706]
+[node031:20782] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20782] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20782] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x1509361d5d85]
+[node031:20782] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20782] *** End of error message ***
+[node031:20783] *** Process received signal ***
+[node031:20783] Signal: Segmentation fault (11)
+[node031:20783] Signal code: Address not mapped (1)
+[node031:20783] Failing at address: 0xb60
+[node031:20783] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x148e76d94cf0]
+[node031:20783] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20783] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20783] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20783] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20783] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x148e76fb3706]
+[node031:20783] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20783] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20783] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x148e769f6d85]
+[node031:20783] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20783] *** End of error message ***
+[node031:20784] *** Process received signal ***
+[node031:20784] Signal: Segmentation fault (11)
+[node031:20784] Signal code: Address not mapped (1)
+[node031:20784] Failing at address: 0xb60
+[node031:20784] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x150f7030ccf0]
+[node031:20784] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20784] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20784] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20784] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20784] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x150f7052b706]
+[node031:20784] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20784] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20784] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x150f6ff6ed85]
+[node031:20784] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20784] *** End of error message ***
+[node031:20785] *** Process received signal ***
+[node031:20785] Signal: Segmentation fault (11)
+[node031:20785] Signal code: Address not mapped (1)
+[node031:20785] Failing at address: 0xb60
+[node031:20785] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1534c61b3cf0]
+[node031:20785] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20785] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20785] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20785] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20785] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x1534c63d2706]
+[node031:20785] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20785] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20785] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x1534c5e15d85]
+[node031:20785] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20785] *** End of error message ***
+[node031:20786] *** Process received signal ***
+[node031:20786] Signal: Segmentation fault (11)
+[node031:20786] Signal code: Address not mapped (1)
+[node031:20786] Failing at address: 0xb60
+[node031:20786] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x151480d65cf0]
+[node031:20786] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20786] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20786] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20786] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20786] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x151480f84706]
+[node031:20786] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20786] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20786] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x1514809c7d85]
+[node031:20786] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20786] *** End of error message ***
+[node031:20787] *** Process received signal ***
+[node031:20787] Signal: Segmentation fault (11)
+[node031:20787] Signal code: Address not mapped (1)
+[node031:20787] Failing at address: 0xb60
+[node031:20787] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14adc8ec3cf0]
+[node031:20787] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20787] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20787] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20787] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20787] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x14adc90e2706]
+[node031:20787] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20787] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20787] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x14adc8b25d85]
+[node031:20787] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20787] *** End of error message ***
+[node031:20788] *** Process received signal ***
+[node031:20788] Signal: Segmentation fault (11)
+[node031:20788] Signal code: Address not mapped (1)
+[node031:20788] Failing at address: 0xb60
+[node031:20788] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x148660fd5cf0]
+[node031:20788] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20788] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20788] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20788] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20788] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x1486611f4706]
+[node031:20788] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20788] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20788] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x148660c37d85]
+[node031:20788] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20788] *** End of error message ***
+[node031:20789] *** Process received signal ***
+[node031:20789] Signal: Segmentation fault (11)
+[node031:20789] Signal code: Address not mapped (1)
+[node031:20789] Failing at address: 0xb60
+[node031:20789] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1478614d6cf0]
+[node031:20789] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20789] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20789] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20789] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20789] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x1478616f5706]
+[node031:20789] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20789] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20789] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x147861138d85]
+[node031:20789] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20789] *** End of error message ***
+[node031:20790] *** Process received signal ***
+[node031:20790] Signal: Segmentation fault (11)
+[node031:20790] Signal code: Address not mapped (1)
+[node031:20790] Failing at address: 0xb60
+[node031:20790] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x15495d0c9cf0]
+[node031:20790] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20790] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20790] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20790] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20790] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x15495d2e8706]
+[node031:20790] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20790] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20790] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x15495cd2bd85]
+[node031:20790] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20790] *** End of error message ***
+[node031:20791] *** Process received signal ***
+[node031:20791] Signal: Segmentation fault (11)
+[node031:20791] Signal code: Address not mapped (1)
+[node031:20791] Failing at address: 0xb60
+[node031:20791] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1461992f5cf0]
+[node031:20791] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20791] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20791] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20791] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20791] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x146199514706]
+[node031:20791] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20791] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20791] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x146198f57d85]
+[node031:20791] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20791] *** End of error message ***
+[node031:20792] *** Process received signal ***
+[node031:20792] Signal: Segmentation fault (11)
+[node031:20792] Signal code: Address not mapped (1)
+[node031:20792] Failing at address: 0xb60
+[node031:20792] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x15465db18cf0]
+[node031:20792] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20792] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20792] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20792] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20792] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x15465dd37706]
+[node031:20792] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20792] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20792] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x15465d77ad85]
+[node031:20792] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20792] *** End of error message ***
+[node031:20793] *** Process received signal ***
+[node031:20793] Signal: Segmentation fault (11)
+[node031:20793] Signal code: Address not mapped (1)
+[node031:20793] Failing at address: 0xb60
+[node031:20793] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x153a5c340cf0]
+[node031:20793] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20793] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20793] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20793] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20793] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x153a5c55f706]
+[node031:20793] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20793] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20793] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x153a5bfa2d85]
+[node031:20793] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20793] *** End of error message ***
+[node031:20794] *** Process received signal ***
+[node031:20794] Signal: Segmentation fault (11)
+[node031:20794] Signal code: Address not mapped (1)
+[node031:20794] Failing at address: 0xb60
+[node031:20794] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x152a39792cf0]
+[node031:20794] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20794] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20794] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20794] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20794] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x152a399b1706]
+[node031:20794] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20794] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20794] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x152a393f4d85]
+[node031:20794] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20794] *** End of error message ***
+[node031:20795] *** Process received signal ***
+[node031:20795] Signal: Segmentation fault (11)
+[node031:20795] Signal code: Address not mapped (1)
+[node031:20795] Failing at address: 0xb60
+[node031:20795] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14bd454eccf0]
+[node031:20795] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20795] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20795] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20795] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20795] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x14bd4570b706]
+[node031:20795] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20795] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20795] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x14bd4514ed85]
+[node031:20795] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20795] *** End of error message ***
+[node031:20796] *** Process received signal ***
+[node031:20796] Signal: Segmentation fault (11)
+[node031:20796] Signal code: Address not mapped (1)
+[node031:20796] Failing at address: 0xb60
+[node031:20796] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14c0aa14fcf0]
+[node031:20796] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20796] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20796] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20796] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20796] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x14c0aa36e706]
+[node031:20796] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20796] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20796] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x14c0a9db1d85]
+[node031:20796] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20796] *** End of error message ***
+[node031:20797] *** Process received signal ***
+[node031:20797] Signal: Segmentation fault (11)
+[node031:20797] Signal code: Address not mapped (1)
+[node031:20797] Failing at address: 0xb60
+[node031:20797] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x149416489cf0]
+[node031:20797] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20797] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20797] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20797] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20797] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x1494166a8706]
+[node031:20797] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20797] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20797] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x1494160ebd85]
+[node031:20797] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20797] *** End of error message ***
+[node031:20798] *** Process received signal ***
+[node031:20798] Signal: Segmentation fault (11)
+[node031:20798] Signal code: Address not mapped (1)
+[node031:20798] Failing at address: 0xb60
+[node031:20798] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x146dd8c0dcf0]
+[node031:20798] [ 1] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x419ff4]
+[node031:20798] [ 2] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x41a99d]
+[node031:20798] [ 3] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x415ca5]
+[node031:20798] [ 4] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401eef]
+[node031:20798] [ 5] /lib64/libgomp.so.1(GOMP_parallel+0x46)[0x146dd8e2c706]
+[node031:20798] [ 6] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x406b4e]
+[node031:20798] [ 7] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x4019c3]
+[node031:20798] [ 8] /lib64/libc.so.6(__libc_start_main+0xe5)[0x146dd886fd85]
+[node031:20798] [ 9] /bxfs/home/m25178/m25178-1193/PPN_cluster/PPN_cluster/./build/ppm[0x401a2e]
+[node031:20798] *** End of error message ***
+srun: error: node031: tasks 0,3,6-12,15,20,23,25-26,30-31: Segmentation fault
+srun: error: node031: tasks 1-2,4-5,13-14,16-19,21-22,24,27-29: Segmentation fault (core dumped)
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** STEP 1672006.4 ON node031 CANCELLED AT 2026-05-05T19:37:17 DUE TO TIME LIMIT ***
+slurmstepd: error: *** JOB 1672006 ON node031 CANCELLED AT 2026-05-05T19:37:17 DUE TO TIME LIMIT ***

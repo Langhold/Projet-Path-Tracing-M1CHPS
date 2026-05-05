@@ -1,0 +1,25 @@
+MPI processes: 1
+OMP threads per process: 1
+Running with 1 Process and 1 CPUs...
+┌──────────────────────────────┐
+│ PATH TRACER WITH MONTE CARLO │
+└──────────────────────────────┘
+ IMAGE PARAMETERS
+ ┬──────────────────────────────
+ ├WIDTH                800
+ ├HEIGHT               600
+ ├SAMPLES              2000
+ ├BOUNCES              26
+ └OUTPUT IMAGE         cluster_measures/MPI_vs_OMP/huge/measures/cluster_omp
+ -──────────────────────────────
+ MEASURE PARAMETERS
+ ┬──────────────────────────────
+ ├PRINT RATE           100
+ ├MEASURES             1
+ └OUTPUT MEASURES FILE cluster_measures/MPI_vs_OMP/huge/measures/cluster_omp.csv
+ -──────────────────────────────
+ SIMULATION PARAMETERS
+ ┬──────────────────────────────
+ ├BENCHMARK            huge
+ └IMPLEMENTATION       cluster
+1 measure on 1

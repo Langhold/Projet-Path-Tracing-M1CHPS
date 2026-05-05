@@ -1,9 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=strong_scaling_ppn
-#SBATCH --output=cluster_measures/strong_scaling/output/naive/simd_slurm-%j.out
-#SBATCH --error=cluster_measures/strong_scaling/output/naive/simd_slurm-%j.err
-#SBATCH --time=00:10:00
+#SBATCH --job-name=convergence_ppn
+#SBATCH --output=cluster_measures/convergence/mickey/mickey_slurm-%j.out
+#SBATCH --error=cluster_measures/convergence/mickey/mickey_slurm-%j.err
+#SBATCH --time=01:00:00
 #SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
 
 npc=$SLURM_NTASKS
 ntc=${OMP_NUM_THREADS}

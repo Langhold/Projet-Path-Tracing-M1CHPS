@@ -1,0 +1,194 @@
+[node031:14453] *** Process received signal ***
+[node031:14453] Signal: Segmentation fault (11)
+[node031:14453] Signal code: Address not mapped (1)
+[node031:14453] Failing at address: (nil)
+[node031:14456] *** Process received signal ***
+[node031:14456] Signal: Segmentation fault (11)
+[node031:14456] Signal code: Address not mapped (1)
+[node031:14456] Failing at address: (nil)
+[node031:14469] *** Process received signal ***
+[node031:14469] Signal: Segmentation fault (11)
+[node031:14469] Signal code: Address not mapped (1)
+[node031:14469] Failing at address: (nil)
+[node031:14471] *** Process received signal ***
+[node031:14471] Signal: Segmentation fault (11)
+[node031:14471] Signal code: Address not mapped (1)
+[node031:14471] Failing at address: (nil)
+[node031:14451] *** Process received signal ***
+[node031:14451] Signal: Segmentation fault (11)
+[node031:14451] Signal code: Address not mapped (1)
+[node031:14451] Failing at address: (nil)
+[node031:14452] *** Process received signal ***
+[node031:14452] Signal: Segmentation fault (11)
+[node031:14452] Signal code: Address not mapped (1)
+[node031:14452] Failing at address: (nil)
+[node031:14452] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14e492df2cf0]
+[node031:14452] *** End of error message ***
+[node031:14453] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14d0ec253cf0]
+[node031:14453] *** End of error message ***
+[node031:14454] *** Process received signal ***
+[node031:14454] Signal: Segmentation fault (11)
+[node031:14454] Signal code: Address not mapped (1)
+[node031:14454] Failing at address: (nil)
+[node031:14454] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x145b84035cf0]
+[node031:14454] *** End of error message ***
+[node031:14456] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x150910afacf0]
+[node031:14456] *** End of error message ***
+[node031:14457] *** Process received signal ***
+[node031:14457] Signal: Segmentation fault (11)
+[node031:14457] Signal code: Address not mapped (1)
+[node031:14457] Failing at address: (nil)
+[node031:14458] *** Process received signal ***
+[node031:14458] Signal: Segmentation fault (11)
+[node031:14458] Signal code: Address not mapped (1)
+[node031:14458] Failing at address: (nil)
+[node031:14458] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x146fa6d13cf0]
+[node031:14458] *** End of error message ***
+[node031:14459] *** Process received signal ***
+[node031:14459] Signal: Segmentation fault (11)
+[node031:14459] Signal code: Address not mapped (1)
+[node031:14459] Failing at address: (nil)
+[node031:14459] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14db9f594cf0]
+[node031:14459] *** End of error message ***
+[node031:14460] *** Process received signal ***
+[node031:14460] Signal: Segmentation fault (11)
+[node031:14460] Signal code: Address not mapped (1)
+[node031:14460] Failing at address: (nil)
+[node031:14460] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14acc5bbecf0]
+[node031:14460] *** End of error message ***
+[node031:14461] *** Process received signal ***
+[node031:14461] Signal: Segmentation fault (11)
+[node031:14461] Signal code: Address not mapped (1)
+[node031:14461] Failing at address: (nil)
+[node031:14461] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14610a79acf0]
+[node031:14461] *** End of error message ***
+[node031:14462] *** Process received signal ***
+[node031:14462] Signal: Segmentation fault (11)
+[node031:14462] Signal code: Address not mapped (1)
+[node031:14462] Failing at address: (nil)
+[node031:14462] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14a320c45cf0]
+[node031:14462] *** End of error message ***
+[node031:14463] *** Process received signal ***
+[node031:14463] Signal: Segmentation fault (11)
+[node031:14463] Signal code: Address not mapped (1)
+[node031:14463] Failing at address: (nil)
+[node031:14463] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x150998efbcf0]
+[node031:14463] *** End of error message ***
+[node031:14464] *** Process received signal ***
+[node031:14464] Signal: Segmentation fault (11)
+[node031:14464] Signal code: Address not mapped (1)
+[node031:14464] Failing at address: (nil)
+[node031:14464] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x148267609cf0]
+[node031:14464] *** End of error message ***
+[node031:14465] *** Process received signal ***
+[node031:14465] Signal: Segmentation fault (11)
+[node031:14465] Signal code: Address not mapped (1)
+[node031:14465] Failing at address: (nil)
+[node031:14465] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x145b688a9cf0]
+[node031:14465] *** End of error message ***
+[node031:14466] *** Process received signal ***
+[node031:14466] Signal: Segmentation fault (11)
+[node031:14466] Signal code: Address not mapped (1)
+[node031:14466] Failing at address: (nil)
+[node031:14466] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1455a3e6ccf0]
+[node031:14466] *** End of error message ***
+[node031:14467] *** Process received signal ***
+[node031:14467] Signal: Segmentation fault (11)
+[node031:14467] Signal code: Address not mapped (1)
+[node031:14467] Failing at address: (nil)
+[node031:14467] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1522751f2cf0]
+[node031:14467] *** End of error message ***
+[node031:14468] *** Process received signal ***
+[node031:14468] Signal: Segmentation fault (11)
+[node031:14468] Signal code: Address not mapped (1)
+[node031:14468] Failing at address: (nil)
+[node031:14468] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1526d0a42cf0]
+[node031:14468] *** End of error message ***
+[node031:14469] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x15401a00dcf0]
+[node031:14469] *** End of error message ***
+[node031:14471] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x152deef15cf0]
+[node031:14471] *** End of error message ***
+[node031:14472] *** Process received signal ***
+[node031:14472] Signal: Segmentation fault (11)
+[node031:14472] Signal code: Address not mapped (1)
+[node031:14472] Failing at address: (nil)
+[node031:14472] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14a6ec741cf0]
+[node031:14472] *** End of error message ***
+[node031:14473] *** Process received signal ***
+[node031:14473] Signal: Segmentation fault (11)
+[node031:14473] Signal code: Address not mapped (1)
+[node031:14473] Failing at address: (nil)
+[node031:14473] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14dcfe30bcf0]
+[node031:14473] *** End of error message ***
+[node031:14474] *** Process received signal ***
+[node031:14474] Signal: Segmentation fault (11)
+[node031:14474] Signal code: Address not mapped (1)
+[node031:14474] Failing at address: (nil)
+[node031:14474] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14e855d89cf0]
+[node031:14474] *** End of error message ***
+[node031:14475] *** Process received signal ***
+[node031:14475] Signal: Segmentation fault (11)
+[node031:14475] Signal code: Address not mapped (1)
+[node031:14475] Failing at address: (nil)
+[node031:14475] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1490849f0cf0]
+[node031:14475] *** End of error message ***
+[node031:14476] *** Process received signal ***
+[node031:14476] Signal: Segmentation fault (11)
+[node031:14476] Signal code: Address not mapped (1)
+[node031:14476] Failing at address: (nil)
+[node031:14476] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x148e60d22cf0]
+[node031:14476] *** End of error message ***
+[node031:14477] *** Process received signal ***
+[node031:14477] Signal: Segmentation fault (11)
+[node031:14477] Signal code: Address not mapped (1)
+[node031:14477] Failing at address: (nil)
+[node031:14477] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x151183a4dcf0]
+[node031:14477] *** End of error message ***
+[node031:14478] *** Process received signal ***
+[node031:14478] Signal: Segmentation fault (11)
+[node031:14478] Signal code: Address not mapped (1)
+[node031:14478] Failing at address: (nil)
+[node031:14478] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1524e5fa7cf0]
+[node031:14478] *** End of error message ***
+[node031:14479] *** Process received signal ***
+[node031:14479] Signal: Segmentation fault (11)
+[node031:14479] Signal code: Address not mapped (1)
+[node031:14479] Failing at address: (nil)
+[node031:14479] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x15145f4aecf0]
+[node031:14479] *** End of error message ***
+[node031:14480] *** Process received signal ***
+[node031:14480] Signal: Segmentation fault (11)
+[node031:14480] Signal code: Address not mapped (1)
+[node031:14480] Failing at address: (nil)
+[node031:14480] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x146a785cbcf0]
+[node031:14480] *** End of error message ***
+[node031:14481] *** Process received signal ***
+[node031:14481] Signal: Segmentation fault (11)
+[node031:14481] Signal code: Address not mapped (1)
+[node031:14481] Failing at address: (nil)
+[node031:14481] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1503b2215cf0]
+[node031:14481] *** End of error message ***
+[node031:14482] *** Process received signal ***
+[node031:14482] Signal: Segmentation fault (11)
+[node031:14482] Signal code: Address not mapped (1)
+[node031:14482] Failing at address: (nil)
+[node031:14482] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14769335ccf0]
+[node031:14482] *** End of error message ***
+[node031:14451] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x145955c26cf0]
+[node031:14451] *** End of error message ***
+[node031:14457] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x1527b54d6cf0]
+[node031:14457] *** End of error message ***
+[node031:14470] *** Process received signal ***
+[node031:14470] Signal: Segmentation fault (11)
+[node031:14470] Signal code: Address not mapped (1)
+[node031:14470] Failing at address: (nil)
+[node031:14470] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14981dfd8cf0]
+[node031:14470] *** End of error message ***
+[node031:14455] *** Process received signal ***
+[node031:14455] Signal: Segmentation fault (11)
+[node031:14455] Signal code: Address not mapped (1)
+[node031:14455] Failing at address: (nil)
+[node031:14455] [ 0] /lib64/libpthread.so.0(+0x12cf0)[0x14aaf9c38cf0]
+[node031:14455] *** End of error message ***
+srun: error: node031: tasks 0-1,4,6,8,16-17,19,21-24,26-27,30-31: Segmentation fault
+srun: error: node031: tasks 2-3,5,7,9-15,18,20,25,28-29: Segmentation fault (core dumped)
