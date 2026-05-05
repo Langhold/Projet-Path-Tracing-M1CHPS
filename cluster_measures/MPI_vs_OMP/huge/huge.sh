@@ -1,14 +1,17 @@
-#!/bin/zsh
+#!/bin/bash
+#SBATCH --job-name=MPI_vs_OMP_ppn
+#SBATCH --output=cluster_measures/MPI_vs_OMP/output/cluster/cluster_slurm-%j.out
+#SBATCH --error=cluster_measures/MPI_vs_OMP/output/cluster/cluster_slurm-%j.err
+#SBATCH --time=00:10:00
+#SBATCH --nodes=1
 
-NPC=10
+npc=$SLURM_NTASKS
+ntc=${OMP_NUM_THREADS}
+echo "MPI processes: $npc"
+echo "OMP threads per process: $ntc"
 
-for J in {1..10}; do
+echo "Running with $npc Process and $ntc CPUs..."
 
-if [ $(($NPC % $J)) -eq 0 ]; then
-export OMP_NUM_THREADS=$(($NPC/$J))
+srun --cpu-bind=cores ./build/ppm $1
 
 
-mpirun -np $J ./build/ppm "cluster_measures/MPI_vs_OMP/huge/config/cluster.txt"
-
-fi
-done

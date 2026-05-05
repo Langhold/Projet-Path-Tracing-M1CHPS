@@ -4,7 +4,7 @@ echo "Job started on $(hostname) at $(date)"
 
 export npc=1
 
-for J in {1 2 3 4 8 10 16 20 24 32}; do
+for J in 1 2 3 4 8 10 16 20 24 32; do
 
 npc=$J
 
